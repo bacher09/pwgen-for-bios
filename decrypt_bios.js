@@ -164,17 +164,18 @@ function bruteForce(hash, salt, digitsOnly, charsOnly, minLen, maxLen){
     } else {
         var my_keyboard_dict = keyboardDict;
     }
-    var my_keyboard_dict_len = keys(my_keyboard_dict).length;
+    var my_keyboard_dict_keys = keys(my_keyboard_dict);
+    var my_keyboard_dict_len = my_keyboard_dict_keys.length;
 
     while(true){
         var rndVal = Math.random()*my_keyboard_dict_len;       
         for(var i=0; i<7; i++){
             var value = Math.floor(rndVal % my_keyboard_dict_len);
-            encodedPwd[i]= keys(my_keyboard_dict)[value];
+            encodedPwd[i]= my_keyboard_dict_keys[value];
             rndVal *= 7;
         }
         kk++;
-        if(kk > 60000){
+        if(kk > 50000){
             return "No";
         }
         for(var i=minLen;i<=maxLen; i++){
