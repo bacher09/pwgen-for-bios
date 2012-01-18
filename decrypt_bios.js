@@ -463,3 +463,54 @@ function getBiosPwdForFSIhex(serial){
     }
     return decryptCode(serial);
 }
+
+/* Return true of false (valid format and not) */
+function numberChecker(serial, len_arr, decimal, hexdecimal){
+    decimal = (typeof(decimal) == 'undefined') ? true : decimal;
+    hexdecimal = (typeof(decimal) == 'undefined') ? false : hexdecimal;
+    if(decimal){
+        var code = parseInt(serial);
+        var code_len = code.toString().length;
+    } else if (hexdecimal){
+        var code = parseInt(serial,16);
+        var code_len = code.toString(16).length;
+    } else {
+        return false;
+    }
+
+    if((code != NaN) && (code_len in len_arr ){
+        return true;
+    } else {
+        return false;
+    }
+
+
+}
+
+/* Auto function return password if serial is valid,
+ * or false if it is bad */
+function autoGetBiosPwdForSony(serial){
+    if(numberChecker(serial, [7],true,false)){
+        return getBiosPwdForSony(serial);
+    } else {
+        return false;
+    }
+}
+
+
+function autoGetBiosPwdForSamsung(serial){
+    if(numberChecker(serial, [12,18],false,true)){
+        return getBiosPwdForSamsung(serial);
+    } else {
+        return false;
+    }
+}
+
+function autoGetBiosPwdForGenericPhoenix(serial){
+    var code = parseInt(serial);
+    if((code != NaN) && (code.toString().length == 7)){
+        return getBiosPwdForSony(serial);
+    } else {
+        return false;
+    }
+}
