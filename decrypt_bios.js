@@ -464,27 +464,38 @@ function getBiosPwdForFSIhex(serial){
     return decryptCode(serial);
 }
 
+function has_element(element, arr){
+    for(var i=0;i<arr.length;i++){
+        if(arr[i] == element){
+            return true;
+        }
+    }
+    return false;
+}
+
 /* Return true of false (valid format and not) */
 function numberChecker(serial, len_arr, decimal, hexdecimal){
     decimal = (typeof(decimal) == 'undefined') ? true : decimal;
     hexdecimal = (typeof(decimal) == 'undefined') ? false : hexdecimal;
+    var i =0;
     if(decimal){
-        var code = parseInt(serial);
-        var code_len = code.toString().length;
+        var code = parseInt(serial,10);
+        var code_len = code.toString(10).length;
     } else if (hexdecimal){
         var code = parseInt(serial,16);
         var code_len = code.toString(16).length;
     } else {
         return false;
     }
+    while(serial.charAt(i++)=='0'){
+        code_len++;
+    }
 
-    if((code != NaN) && (code_len in len_arr ){
+    if((code != NaN) && has_element(code_len, len_arr)){
         return true;
     } else {
         return false;
     }
-
-
 }
 
 /* Auto function return password if serial is valid,
@@ -499,17 +510,25 @@ function autoGetBiosPwdForSony(serial){
 
 
 function autoGetBiosPwdForSamsung(serial){
-    if(numberChecker(serial, [12,18],false,true)){
+    if(numberChecker(serial, [12,16,18],false,true)){
         return getBiosPwdForSamsung(serial);
     } else {
         return false;
     }
 }
 
+/* Maybe create one function for Phoenix  */
 function autoGetBiosPwdForGenericPhoenix(serial){
-    var code = parseInt(serial);
-    if((code != NaN) && (code.toString().length == 7)){
+    if(numberChecker(serial, [5],true,false)){
         return getBiosPwdForSony(serial);
+    } else {
+        return false;
+    }
+}
+
+function autoGetBiosPwdForInsyde(serial){
+    if(numberChecker(serial, [8],true,false)){
+        return getBiosPwdForInsyde(serial);
     } else {
         return false;
     }
