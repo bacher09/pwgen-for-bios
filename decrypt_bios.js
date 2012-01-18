@@ -497,39 +497,47 @@ function numberChecker(serial, len_arr, decimal, hexdecimal){
         return false;
     }
 }
+/* Just shortcut */
+function autoCheckAndRun(serial, run_func, len_arr, decimal, hexdecimal){
+    if(numberChecker(serial, len_arr,decimal,hexdecimal)){
+        return run_func(serial);
+    } else {
+        return false;
+    }
+}
 
 /* Auto function return password if serial is valid,
  * or false if it is bad */
 function autoGetBiosPwdForSony(serial){
-    if(numberChecker(serial, [7],true,false)){
-        return getBiosPwdForSony(serial);
-    } else {
-        return false;
-    }
+    return autoCheckAndRun(serial, getBiosPwdForSony, [7], true,false);
 }
 
 
 function autoGetBiosPwdForSamsung(serial){
-    if(numberChecker(serial, [12,16,18],false,true)){
-        return getBiosPwdForSamsung(serial);
-    } else {
-        return false;
-    }
+    return autoCheckAndRun(serial, getBiosPwdForSamsung, [12,16,18],false,true);
 }
 
 /* Maybe create one function for Phoenix  */
 function autoGetBiosPwdForGenericPhoenix(serial){
-    if(numberChecker(serial, [5],true,false)){
-        return getBiosPwdForSony(serial);
+    return autoCheckAndRun(serial, getBiosPwdForGenericPhoenix, [5], true);
+}
+
+function autoGetBiosPwdForInsyde(serial){
+    return autoCheckAndRun(serial, getBiosPwdForInsyde, [8], true);
+}
+
+function autoGetBiosPwdForHpmini(serial){
+    if(serial.length == 10){
+        return getBiosPwdForHpmini(serial);
     } else {
         return false;
     }
 }
 
-function autoGetBiosPwdForInsyde(serial){
-    if(numberChecker(serial, [8],true,false)){
-        return getBiosPwdForInsyde(serial);
-    } else {
-        return false;
-    }
+function autoGetBiosPwdForFSI20dec(serial){
+    return autoCheckAndRun(serial, getBiosPwdForFSI20dec, [20], true);
+}
+
+function autoGetBiosPwdForFSIhex(serial){
+    return autoCheckAndRun(serial, getBiosPwdForFSIhex, [8,20], false, true);
 }
