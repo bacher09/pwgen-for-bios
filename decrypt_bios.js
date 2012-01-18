@@ -4,6 +4,22 @@ var keyboardDict = {  2: '1',  3: '2',  4: '3',  5: '4',  6: '5',  7: '6',  8: '
                  30: 'a', 31: 's', 32: 'd', 33: 'f', 34: 'g', 35: 'h', 36: 'j', 37: 'k', 38: 'l', 
                  44: 'z', 45: 'x', 46: 'c', 47: 'v', 48: 'b', 49: 'n', 50: 'm' };
 
+var SONY = 'sony';
+var SAMSUNG = 'samsung';
+var PHOENIX = 'phoenix';
+var HP_COMPAQ = 'hp_compaq_phoenix';
+var FSI_PHOENIX = 'fsi_phoenix';
+var FSI_L_PHOENIX = 'fsi_l_phoenix';
+var FSI_P_PHOENIX = 'fsi_p_phoenix';
+var FSI_S_PHOENIX = 'fsi_s_phoenix';
+var FSI_X_PHOENIX = 'fsi_x_phoenix';
+var INSYDE = 'insyde';
+var HP_MINI = 'hp_mini';
+var FSI_20_DEC_NEW = 'fsi_20_dec_new';
+var FSI_20_DEC_OLD = 'fsi_20_dec_old';
+var FSI_HEX = 'fsi_hex';
+
+
 /* Keys function for hashArray for compability 
  * with browsers witch does't have keys function */
 if(typeof(Object.keys) == 'undefined'){
@@ -34,6 +50,12 @@ Array.prototype.swap = function (x,y) {
     this[x] = this[y];
     this[y] = b;
     return this;
+}
+
+if(typeof(String.prototype.trim) === "undefined"){
+    String.prototype.trim = function() {
+        return String(this).replace(/^\s+|\s+$/g, '');
+    };
 }
 
 function min(x, y){
@@ -298,7 +320,7 @@ function getBiosPwdForHpmini(serial){
     if(password1 == password2){
         return password1.toLowerCase();
     } else {
-        return password1.toLowerCase() + " OR " + password2.toLowerCase();
+        return [password1.toLowerCase(), password2.toLowerCase()];
     }
 }
 
@@ -406,8 +428,9 @@ function getBiosPwdForFSI20dec_new(serial){
 /* For Fujinsu-Siemens. 5x4 dicimal digits. */
 function getBiosPwdForFSI20dec(serial){
 
-    return getBiosPwdForFSI20dec_new(serial) + " OR "+ 
-           getBiosPwdForFsi20dec_old(serial);
+    return CreateHashTable([FSI_20_DEC_NEW,FSI_20_DEC_OLD],
+        [getBiosPwdForFSI20dec_new(serial),getBiosPwdForFsi20dec_old(serial)]);
+               
 }
 
 /* For Fujinsu-Siemens. 8 or 5x4 hexadecimal digits. */
@@ -506,29 +529,61 @@ function autoCheckAndRun(serial, run_func, len_arr, decimal, hexdecimal){
     }
 }
 
+/* Just shortcut */
+function autoCheckAndRunWithKey(serial, run_func,
+                                key, len_arr,
+                                decimal, hexdecimal){
+
+    var res = autoCheckAndRun(serial, run_func, len_arr, decimal, hexdecimal);
+    if(res != false){
+        var r_ob = new Object();
+        r_ob[key]= res;
+        return r_ob;
+    } else {
+        return false;
+    }
+}
 /* Auto function return password if serial is valid,
  * or false if it is bad */
 function autoGetBiosPwdForSony(serial){
-    return autoCheckAndRun(serial, getBiosPwdForSony, [7], true,false);
+    return autoCheckAndRunWithKey(serial, getBiosPwdForSony,SONY,
+                                  [7], true,false);
 }
 
 
 function autoGetBiosPwdForSamsung(serial){
-    return autoCheckAndRun(serial, getBiosPwdForSamsung, [12,16,18],false,true);
+    return autoCheckAndRunWithKey(serial, getBiosPwdForSamsung,SAMSUNG,
+                                  [12,16,18],false,true);
 }
 
 /* Maybe create one function for Phoenix  */
-function autoGetBiosPwdForGenericPhoenix(serial){
-    return autoCheckAndRun(serial, getBiosPwdForGenericPhoenix, [5], true);
+function autoGetBiosPwdForAllPhoenix(serial){
+    if(numberChecker(serial,[5],true)){
+        return CreateHashTable( [PHOENIX, HP_COMPAQ, FSI_PHOENIX,
+                                FSI_L_PHOENIX,FSI_P_PHOENIX,FSI_S_PHOENIX,
+                                FSI_X_PHOENIX
+                                ],
+                            [getBiosPwdForGenericPhoenix(serial),
+                             getBiosPwdForHPCompaqPhoenix(serial),
+                             getBiosPwdForFsiPhoenix(serial),
+                             getBiosPwdForFsiLPhoenix(serial),
+                             getBiosPwdForFsiPPhoenix(serial),
+                             getBiosPwdForFsiSPhoenix(serial),
+                             getBiosPwdForFsiXPhoenix(serial)
+                             ]);
+    } else {
+        return false;
+    }
 }
 
 function autoGetBiosPwdForInsyde(serial){
-    return autoCheckAndRun(serial, getBiosPwdForInsyde, [8], true);
+    return autoCheckAndRunWithKey(serial, getBiosPwdForInsyde,INSYDE,
+                                 [8], true);
 }
 
 function autoGetBiosPwdForHpmini(serial){
     if(serial.length == 10){
-        return getBiosPwdForHpmini(serial);
+        return CreateHashTable([HP_MINI], [getBiosPwdForHpmini(serial)]);
     } else {
         return false;
     }
@@ -539,5 +594,30 @@ function autoGetBiosPwdForFSI20dec(serial){
 }
 
 function autoGetBiosPwdForFSIhex(serial){
-    return autoCheckAndRun(serial, getBiosPwdForFSIhex, [8,20], false, true);
+    return autoCheckAndRunWithKey(serial, getBiosPwdForFSIhex, FSI_HEX,
+                                  [8,20], false, true);
+}
+
+var arr_of_bios_pwgen_fun = [autoGetBiosPwdForSony,
+                             autoGetBiosPwdForSamsung,
+                             autoGetBiosPwdForAllPhoenix,
+                             autoGetBiosPwdForInsyde,
+                             autoGetBiosPwdForHpmini,
+                             autoGetBiosPwdForFSI20dec,
+                             autoGetBiosPwdForFSIhex
+                            ];
+
+function autoGetBiosPwd(serial){
+    var temp = "";
+    var ret_arr = new Object();
+    serial = serial.trim().replace(/-/gi,'');
+    for(var i=0;i< arr_of_bios_pwgen_fun.length; i++){
+        temp = arr_of_bios_pwgen_fun[i](serial);
+        if(temp != false){
+            for(var c in temp){
+                ret_arr[c] = temp[c];
+            }
+        }
+    }
+    return ret_arr;
 }
