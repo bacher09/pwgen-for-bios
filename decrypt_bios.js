@@ -130,9 +130,9 @@ function badCRC16(pwd, salt){
     salt = (typeof(salt) == 'undefined') ? 0 : salt;
     var hash = salt;
     var c = 0;
-    for(c in pwd){
+    for(var c=0;c < pwd.length;c++){
         hash ^= pwd[c] ;
-        for(var i=0;i<8;i++){
+        for(var i=8;i--;){
             if(hash & 1){
                 hash = (hash >> 1) ^ 0x2001;
             } else {
