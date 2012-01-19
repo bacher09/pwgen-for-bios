@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Ganerate password for BIOS</title>
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <link href="bootstrap.min.css" rel="stylesheet">
+        <style type="text/css">
+            body {
+                padding-top: 60px;
+            }
+        </style>
+        <script type="text/javascript" src="decrypt_bios.js">
+        </script>
+        <script type="text/javascript" >
+            function calcPass(){
+                var serial =  document.getElementById('serial_id').value;
+                var str = "";
+                var pass_object = autoGetBiosPwd(serial);
+                for(var i in pass_object){
+                    str += i + " : " + pass_object[i] + "<br />"
+                }
+                var an = document.getElementById("answer");
+                an.innerHTML = str;
+            }
+
+        </script>
+    </head>
+    <body>
+        <div class="topbar">
+            <div class="fill">
+                <div class="container">
+                    <a class="brand" href="#">Take your password down</a>
+                    <ul class="nav">
+                        <li class="active"><a href="#">Home</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="hero-unit">
+                <h1></h1>
+                <p>Solution for recovery password</p>
+            </div>
+            <div class="row" style="padding-left: 400px; padding-bottom:100px;">
+                <h2>Type your code</h2><br/>
+                <form name="pwgen" id="form_id">
+                    <input placeholder="Code" style="width:240px;" type="text" name="serial" id="serial_id" />
+                    <br/><br/>
+                    <input style="width:250px;" type="button" class="btn primary" name="serial" id="button_id" value="Compute" onclick="calcPass()" />
+                </form>
+                <div id="answer" style="padding: 20px; ">
+                    <span class="label important">Hacked:</span><br/>
+                </div>
+            </div>
+            <footer style="text-align: center;">
+            </footer>
+        </div>
+    </body>
+</html>
