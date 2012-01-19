@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title>Ganerate password for BIOS</title>
+        <!--   Design by Alexander Burmystrov -->
         <!--[if lt IE 9]>
           <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
@@ -13,11 +14,30 @@
             }
             .answer_table {
                 align: center;
+                width: 450px;
+                padding-left: 0px;
             }
         </style>
         <script type="text/javascript" src="decrypt_bios.js">
         </script>
         <script type="text/javascript" >
+
+            var sDescription = CreateHashTable([[SONY,"Old Sony"],
+                                [SAMSUNG,"Samsung"],
+                                [PHOENIX,"Generic Phoenix"],
+                                [HP_COMPAQ,"HP/Compaq Phoenix BIOS"],
+                                [FSI_PHOENIX,"Fujitsu-Siemens Phoenix"],
+                        [FSI_L_PHOENIX,"Fujitsu-Siemens (model L) Phoenix "],
+                        [FSI_P_PHOENIX,"Fujitsu-Siemens (model P) Phoenix "],
+                        [FSI_S_PHOENIX,"Fujitsu-Siemens (model S) Phoenix "],
+                        [FSI_X_PHOENIX,"Fujitsu-Siemens (model X) Phoenix "],
+                        [INSYDE,"InsydeH2O BIOS (Acer, HP)"],
+                        [HP_MINI,"HP/Compaq Mini Netbooks"],
+                        [FSI_20_DEC_NEW,"Fujitsu-Siemens new"],
+                        [FSI_20_DEC_OLD,"Fujitsu-Siemens old"],
+                        [FSI_HEX,"Fujitsu-Siemens"]
+                        ]);
+
 
             function converToTable(answ){
                 var str ='<table class="answer_table">';
@@ -39,11 +59,18 @@
                 }
                 return ret;
             }
+
+            function toDescription(arr){
+                for(var i=0;i<arr.length;i++){
+                    arr[i][0] = sDescription[arr[i][0]];
+                }
+                return arr;
+            }
             
             function calcPass(){
                 var serial =  document.getElementById('serial_id').value;
                 var pass_object = autoGetBiosPwd(serial);
-                var answ = toArray(pass_object);
+                var answ = toDescription(toArray(pass_object));
                 var k = answ.length;
                 var str = converToTable(answ) ;
                 var th = document.getElementById('try_this');
@@ -74,16 +101,18 @@
                 <h1></h1>
                 <p>Solution for recovery password</p>
             </div>
-            <div class="row" style="padding-left: 400px; padding-bottom:100px;">
+            <div class="row" >
+            <div style="padding-left: 345px; padding-right:345px;">
                 <h2>Type your code</h2><br/>
                 <form name="pwgen" id="form_id">
                     <input placeholder="Code" style="width:240px;" type="text" name="serial" id="serial_id" />
                     <br/><br/>
                     <input style="width:250px;" type="button" class="btn primary" name="serial" id="button_id" value="Compute" onclick="calcPass()" />
                 </form>
-                <div>
+                </div>
+                <div style="padding-left: 270px;">
                 <span class="label important" style="display: none;" id="try_this">Try this:</span><br/>
-                <div id="answer" style="padding: 20px; align: center;  margin:0px auto;">
+                <div id="answer" style="padding: 20px; align: center;  margin:0px auto; padding-left: 10px;">
                 </div>
                 </div>
             </div>
