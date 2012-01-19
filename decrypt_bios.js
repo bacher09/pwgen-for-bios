@@ -65,13 +65,26 @@ function min(x, y){
     return y;
 }
 
-function CreateHashTable(mkeys, mvalues){
+function CreateHashTable2(mkeys, mvalues){
     var k = min(mkeys.length, mvalues.length); 
     var hash = new Object();
     for(var i=0;i<k;i++){
         hash[mkeys[i]] = mvalues[i];
     }
     return hash;
+}
+
+function CreateHashTable3(arr){
+    var hash = new Object();
+    for(var i=0;i<arr.length;i++){
+        hash[arr[i][0]] = arr[i][1];
+    }
+    return hash;
+}
+
+function CreateHashTable(a, b){
+    return (typeof(b) =="undefined") ?  CreateHashTable3(a)
+        : CreateHashTable2(a,b);
 }
 
 function ord(str){
