@@ -15,12 +15,39 @@
         <script type="text/javascript" src="decrypt_bios.js">
         </script>
         <script type="text/javascript" >
+
+            function converToTable(answ){
+                var str ="<table>";
+                for(var i=0; i<answ.length; i++){
+                    str += "<tr>";
+                    for(var j=0; j< answ[i].length; j++){
+                        str +=  '<td>' + answ[i][j] + '<td>' ;
+                    }
+                    str += "</tr>";
+                }
+                str += "</table>";
+                return str;
+            }
+
+            function toArray(obj){
+                var ret = [];
+                for(var i in obj){
+                    ret.push([i,obj[i]]);
+                }
+                return ret;
+            }
+            
             function calcPass(){
                 var serial =  document.getElementById('serial_id').value;
-                var str = "";
                 var pass_object = autoGetBiosPwd(serial);
-                for(var i in pass_object){
-                    str += i + " : " + pass_object[i] + "<br />"
+                var answ = toArray(pass_object);
+                var k = answ.length;
+                var str = converToTable(answ) ;
+                var th = document.getElementById('try_this');
+                if(k>0){
+                    th.style.display = "";
+                } else {
+                    th.style.display = "none";
                 }
                 var an = document.getElementById("answer");
                 an.innerHTML = str;
@@ -51,8 +78,10 @@
                     <br/><br/>
                     <input style="width:250px;" type="button" class="btn primary" name="serial" id="button_id" value="Compute" onclick="calcPass()" />
                 </form>
+                <div>
+                <span class="label important" style="display: none;" id="try_this">Try this:</span><br/>
                 <div id="answer" style="padding: 20px; ">
-                    <span class="label important">Hacked:</span><br/>
+                </div>
                 </div>
             </div>
             <footer style="text-align: center;">
