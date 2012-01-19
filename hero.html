@@ -9,14 +9,6 @@
         <![endif]-->
         <link href="bootstrap.min.css" rel="stylesheet">
         <style type="text/css">
-            body {
-                padding-top: 60px;
-            }
-            .answer_table {
-                align: center;
-                width: 450px;
-                padding-left: 0px;
-            }
         </style>
         <script type="text/javascript" src="decrypt_bios.js">
         </script>
@@ -40,17 +32,17 @@
                 <p>Solution for recovery password</p>
             </div>
             <div class="row" >
-            <div style="padding-left: 345px; padding-right:345px;">
+            <div id="control_id" >
                 <h2>Type your code</h2><br/>
                 <form name="pwgen" id="form_id">
-                    <input placeholder="Code" style="width:240px;" type="text" name="serial" id="serial_id" />
+                    <input placeholder="Code" type="text" name="serial" id="serial_id" />
                     <br/><br/>
-                    <input style="width:250px;" type="button" class="btn primary" name="serial" id="button_id" value="Compute" onclick="calcPass()" />
+                    <input type="button" class="btn primary" name="serial" id="button_id" value="Compute" onclick="calcPass()" />
                 </form>
                 </div>
-                <div style="padding-left: 270px;">
+                <div id="result_id">
                 <span class="label important" style="display: none;" id="try_this">Try this:</span><br/>
-                <div id="answer" style="padding: 20px; align: center;  margin:0px auto; padding-left: 10px;">
+                <div id="answer">
                 </div>
                 </div>
             </div>
