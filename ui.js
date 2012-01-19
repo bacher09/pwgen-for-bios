@@ -46,16 +46,11 @@ function toDescription(arr){
 
 function calcPass(){
     var serial =  document.getElementById('serial_id').value;
-    var pass_object = autoGetBiosPwd(serial);
-    var answ = toDescription(toArray(pass_object));
+    var answ = toDescription(toArray(autoGetBiosPwd(serial)));
     var k = answ.length;
     var str = converToTable(answ) ;
     var th = document.getElementById('try_this');
-    if(k>0){
-        th.style.display = "";
-    } else {
-        th.style.display = "none";
-    }
+    th.style.display = (k>0) ?  "" :"none";
     var an = document.getElementById("answer");
     an.innerHTML = str;
 }
