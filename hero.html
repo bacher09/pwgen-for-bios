@@ -11,13 +11,16 @@
             body {
                 padding-top: 60px;
             }
+            .answer_table {
+                align: center;
+            }
         </style>
         <script type="text/javascript" src="decrypt_bios.js">
         </script>
         <script type="text/javascript" >
 
             function converToTable(answ){
-                var str ="<table>";
+                var str ='<table class="answer_table">';
                 for(var i=0; i<answ.length; i++){
                     str += "<tr>";
                     for(var j=0; j< answ[i].length; j++){
@@ -80,7 +83,7 @@
                 </form>
                 <div>
                 <span class="label important" style="display: none;" id="try_this">Try this:</span><br/>
-                <div id="answer" style="padding: 20px; ">
+                <div id="answer" style="padding: 20px; align: center;  margin:0px auto;">
                 </div>
                 </div>
             </div>
