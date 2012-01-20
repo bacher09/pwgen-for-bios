@@ -327,9 +327,10 @@ function getBiosPwdForHpmini(serial){
     
     var password1 = "";
     var password2 = "";
+    serial = serial.toLowerCase();
     for(var i=0;i<serial.length;i++){
-        password1 += table1[serial.charAt(i).toLowerCase()]
-        password2 += table2[serial.charAt(i).toLowerCase()]
+        password1 += table1[serial.charAt(i)]
+        password2 += table2[serial.charAt(i)]
     }
     if(password1 == password2){
         return password1.toLowerCase();

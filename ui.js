@@ -21,7 +21,15 @@ function converToTable(answ){
     for(var i=0; i<answ.length; i++){
         str += "<tr>";
         for(var j=0; j< answ[i].length; j++){
-            str +=  '<td>' + answ[i][j] + '<td>' ;
+            str += '<td>' ;
+            if(typeof(answ[i][j])=='object'){
+                for(var k=0;k<answ[i][j].length;k++){
+                    str += answ[i][j][k] + '<br />';
+                }
+            } else {
+                str +=    answ[i][j] ;
+            }
+            str += '</td>' ;
         }
         str += "</tr>";
     }
