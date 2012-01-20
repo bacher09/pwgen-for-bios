@@ -35,7 +35,7 @@
             <div id="control_id" >
                 <h2>Type your code</h2><br/>
                 <form name="pwgen" id="form_id">
-                    <input placeholder="Code" type="text" name="serial" id="serial_id" />
+                    <input placeholder="Code" type="text" name="serial" id="serial_id" onkeypress="enterPress(event);" />
                     <br/><br/>
                     <input type="button" class="btn primary" name="serial" id="button_id" value="Compute" onclick="calcPass()" />
                 </form>

@@ -44,6 +44,23 @@ function toDescription(arr){
     return arr;
 }
 
+function enterPress(e){
+    var keynum=0;
+    if(e.which){
+        keynum = e.which;
+    }else if(window.event){
+        keynum = e.keyCode ;
+    }
+    if(keynum == 13){
+        if(e.preventDefault){
+            e.preventDefault();
+        } else {
+            e.returnValue = false;
+        }
+        calcPass();
+    }
+}
+
 function calcPass(){
     var serial =  document.getElementById('serial_id').value;
     var answ = toDescription(toArray(autoGetBiosPwd(serial)));
