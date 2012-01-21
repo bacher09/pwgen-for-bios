@@ -26,6 +26,11 @@ function toByte(arr){
     return arr;
 }
         
+function calc_in(l_arr){
+    return [ (l_arr[1] >> 1),
+             ((l_arr[1] >> 6) | (l_arr[0] << 2)), 
+             (l_arr[0] >> 3) ];
+}
 
 function begin_calc(serial, s_arr){
     var ret_arr = [];
@@ -41,11 +46,7 @@ function begin_calc(serial, s_arr){
     ret_arr[3] = (serial[ s_arr[2] ] >> 7) | (serial[ s_arr[1] ] << 1);
     ret_arr[4] = (serial[ s_arr[1] ] >> 4) | (serial[ s_arr[0] ] << 4);
 
-
-    ret_arr[5] = (serial[1] >> 1);
-    ret_arr[6] = (serial[1] >> 6) | (serial[0] << 2);
-    ret_arr[7] = (serial[0] >> 3);
-    
+   ret_arr = ret_arr.concat(calc_in(serial)); 
 
     return toByte(ret_arr);
 }
@@ -76,8 +77,24 @@ function calc_suffix_tag(serial){
     return calc_suffix_shortcut(serial, [1,2,3,4],[4,3,2]);
 }
 
-function calc_suffix_hddn(serial){
+function calc_suffix_hdd_new(serial){
     return calc_suffix_shortcut(serial, [1,10,9,8], [8,9,10]);
+}
+
+/* Depends only in first two chars */
+function calc_suffix_hdd_old(serial){
+    // encscans[26], enscans[0xAA % enscans.length]
+    var ret_arr = [49,49,49,49,49]; 
+    var serial_arr = StrintToArray(serial);
+    ret_arr = ret_arr.concat(calc_in(serial_arr));
+    // lower bits then 5 are never change
+    for(var i=5;i<8;i++){
+        var r = 0xAA;
+        (ret_arr[i] & 8) && (r ^= serial[1]);
+        (ret_arr[i] & 16) && (r ^= serial[0]);
+        ret_arr[i] = encscans[ r % encscans.length];
+    }
+    return ret_arr;
 }
 
 function dell_service_tag(serial){
