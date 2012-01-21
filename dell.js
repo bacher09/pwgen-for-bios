@@ -1,4 +1,12 @@
 
+
+var encscans = [0x05,0x10,0x13,0x09,0x32,0x03,0x25,0x11,0x1F,0x17,0x06,
+                0x15,0x30,0x19,0x26,0x22,0x0A,0x02,0x2C,0x2F,0x16,0x14,0x07,
+                0x18,0x24,0x23,0x31,0x20,0x1E,0x08,0x2D,0x21,0x04,0x0B,0x12,
+                0x2E];
+
+
+
 function ord(str){
     return str.charCodeAt(0);
 }
@@ -42,14 +50,26 @@ function begin_calc(serial, s_arr){
     return toByte(ret_arr);
 }
 
+function end_calc(serial, calced_arr, s_arr){
+    var r = 0;
+    var ret_arr = [];
+    for (var i=0;i<8;i++) {
+        r = 0xAA;
+        (calced_arr[i] & 1) && (r ^= serial[ s_arr[0] ]);
+        (calced_arr[i] & 2) && (r ^= serial[ s_arr[1] ]);
+        (calced_arr[i] & 4) && ( r ^= serial[ s_arr[2] ]);
+        (calced_arr[i] & 8) && (r ^= serial[1]);
+        (calced_arr[i] & 16) && (r ^= serial[0]);
+        
+        ret_arr[i] = encscans[r % encscans.length];
+    }
+    return ret_arr;
+}
 
 function calc_suffix_tag(serial){
-    var ret_arr = begin_calc(serial,[1,2,3,4]);
-
-
-
-
-
+    var serial_arr = StrintToArray(serial);
+    var ret_arr = begin_calc(serial_arr,[1,2,3,4]);
+    return end_calc(serial_arr, ret_arr, [4,3,2]); //8,9.10 For HDD
 }
 
 function dell_service_tag(serial){
