@@ -5,10 +5,16 @@ var encscans = [0x05,0x10,0x13,0x09,0x32,0x03,0x25,0x11,0x1F,0x17,0x06,
                 0x18,0x24,0x23,0x31,0x20,0x1E,0x08,0x2D,0x21,0x04,0x0B,0x12,
                 0x2E];
 
+var  scancods = "\00\0331234567890-=\010\011qwertyuiop[]\015\377asdfghjkl;'`\377\\zxcvbnm,./";
+
 
 
 function ord(str){
     return str.charCodeAt(0);
+}
+
+function chr(ascii_code){
+    return String.fromCharCode(ascii_code);
 }
 
 function StrintToArray(str){
@@ -101,4 +107,14 @@ function dell_service_tag(serial){
 
 
 
+}
+
+/* Depends only in first two chars */
+function dell_service_hdd_old(serial){
+    var t_arr = calc_suffix_hdd_old(serial);
+    var ret_str = "";
+    for(var i=0;i<t_arr.length;i++){
+        ret_str += scancods.charAt( t_arr[i]);
+    }
+    return ret_str;
 }
