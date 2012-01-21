@@ -66,10 +66,18 @@ function end_calc(serial, calced_arr, s_arr){
     return ret_arr;
 }
 
-function calc_suffix_tag(serial){
+function calc_suffix_shortcut(serial, s_arr1, s_arr2){
     var serial_arr = StrintToArray(serial);
-    var ret_arr = begin_calc(serial_arr,[1,2,3,4]);
-    return end_calc(serial_arr, ret_arr, [4,3,2]); //8,9.10 For HDD
+    var ret_arr = begin_calc(serial_arr,s_arr1);
+    return end_calc(serial_arr, ret_arr, s_arr2); 
+}
+
+function calc_suffix_tag(serial){
+    return calc_suffix_shortcut(serial, [1,2,3,4],[4,3,2]);
+}
+
+function calc_suffix_hddn(serial){
+    return calc_suffix_shortcut(serial, [1,10,9,8], [8,9,10]);
 }
 
 function dell_service_tag(serial){
