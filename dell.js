@@ -7,7 +7,8 @@ var encscans = [0x05,0x10,0x13,0x09,0x32,0x03,0x25,0x11,0x1F,0x17,0x06,
 
 var  scancods = "\00\0331234567890-=\010\011qwertyuiop[]\015\377asdfghjkl;'`\377\\zxcvbnm,./";
 
-
+var encData = [0x1,0x23,0x45,0x67,0x89,0xAB,0xCD,0xEF,0xFE,0xDC,0xBA,0x98,
+               0x76, 0x54, 0x32, 0x10];
 
 function ord(str){
     return str.charCodeAt(0);
@@ -17,10 +18,21 @@ function chr(ascii_code){
     return String.fromCharCode(ascii_code);
 }
 
+function copy_array(ar){
+    var temp_arr = [];
+    for(var i=0;i<ar.length;i++){
+        temp_arr[i] = ar[i];
+    }
+    return temp_arr;
+}
+
 function StrintToArray(str){
     var arr = [];
+    if(typeof(str)=="object"){
+        return str;
+    }
     for(var i=0;i<str.length;i++){
-        arr[i] = ord(str.charAt(i));
+        arr[i] = str.charCodeAt(i);
     }
     return arr;
 }
@@ -31,6 +43,36 @@ function toByte(arr){
     }
     return arr;
 }
+
+
+function ByteArrToIntArr(b_arr){
+    var k = b_arr.length >> 2;
+    var ret_arr = [];
+    for(var i=0;i<=k;i++){
+        ret_arr[i] = b_arr[i*4] | (b_arr[i*4+1] << 8) |
+                     (b_arr[i*4+2] << 16) |
+                     (b_arr[i*4+3] << 24);
+    }
+    return ret_arr;
+}
+
+function StringToIntArr(str){
+    return (typeof(str)=="object") ? ByteArrToIntArr(str) :
+                        ByteArrToIntArr(StrintToArray(str));
+}
+
+function fill_zero(arr, from, to){
+    for(var i=from;i<to;i++){
+        arr[i] = 0;
+    }
+    return arr;
+}
+
+function encF2(num1, num2, num3) {return ((( num3 ^ num2) & num1) ^ num3);}
+function encF3 (num1, num2, num3) {return ((( num1 ^ num2) & num3) ^ num2);}
+function encF4(num1, num2, num3) {return (( num2 ^ num1) ^ num3); }
+function encF5(num1, num2, num3) {return (( num1 | ~num3) ^ num2); }
+
         
 function calc_in(l_arr){
     return [ (l_arr[1] >> 1),
@@ -103,8 +145,26 @@ function calc_suffix_hdd_old(serial){
     return ret_arr;
 }
 
-function dell_service_tag(serial){
 
+function blockEncode(){
+
+
+}
+
+function encode(in_str, cnt){
+    var m_encData  = copy_array(encData);
+    in_str[cnt + 1] = 0x80;
+    var encBlock = StringToIntArr(in_str);
+    encBlock = fill_zero(encBlock,10,16);
+    encBlock[14] = (cnt << 3); 
+
+
+}
+
+function dell_service_tag(serial){
+    var serial_arr = StrintToArray(serial);
+    serial_arr = serial_arr.concat(calc_suffix_tag(serial_arr));
+    encode(serial_arr,23);
 
 
 }
