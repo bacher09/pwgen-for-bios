@@ -23,6 +23,9 @@ var DELL_HDD_NEW = 'dell_hdd_new';
 var DELL_HDD_OLD = 'dell_hdd_old';
 
 
+var DELL_SERIES_PREFIX = ['595B','D35B','2A7B','A95B'];
+
+
 var encscans = [0x05,0x10,0x13,0x09,0x32,0x03,0x25,0x11,0x1F,0x17,0x06,
                 0x15,0x30,0x19,0x26,0x22,0x0A,0x02,0x2C,0x2F,0x16,0x14,0x07,
                 0x18,0x24,0x23,0x31,0x20,0x1E,0x08,0x2D,0x21,0x04,0x0B,0x12,
@@ -968,13 +971,13 @@ function autoGetBiosPwdForDellHddOld(serial){
 /* 7 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
 function autoGetBiosPwdForDellTag(serial){
     return dellCheckAndRunWithKey(serial, getBiosPwdForDellTag, 
-                                DELL_TAG, [11],['595B','D35B','2A7B','A95B']);
+                                DELL_TAG, [11],DELL_SERIES_PREFIX);
 }
 
 /* 11 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
 function autoGetBiosPwdForDellHddNew(serial){
     return dellCheckAndRunWithKey(serial, getBiosPwdForDellHddNew, 
-                                DELL_HDD_NEW, [15],['595B','D35B','2A7B','A95B']);
+                                DELL_HDD_NEW, [15],DELL_SERIES_PREFIX);
 }
 
 var arr_of_bios_pwgen_fun = [autoGetBiosPwdForSony,
