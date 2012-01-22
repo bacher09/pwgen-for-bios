@@ -980,7 +980,10 @@ var arr_of_bios_pwgen_fun = [autoGetBiosPwdForSony,
                              autoGetBiosPwdForInsyde,
                              autoGetBiosPwdForHpmini,
                              autoGetBiosPwdForFSI20dec,
-                             autoGetBiosPwdForFSIhex
+                             autoGetBiosPwdForFSIhex,
+                             autoGetBiosPwdForDellHddOld,
+                             autoGetBiosPwdForDellTag,
+                             autoGetBiosPwdForDellHddNew,
                             ];
 
 function autoGetBiosPwd(serial){
