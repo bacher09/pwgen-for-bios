@@ -974,7 +974,7 @@ function autoGetBiosPwdForDellTag(serial){
 /* 11 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
 function autoGetBiosPwdForDellHddNew(serial){
     return dellCheckAndRunWithKey(serial, getBiosPwdForDellHddNew, 
-                                DELL_HDD_OLD, [15],['595B','D35B','2A7B','A95B']);
+                                DELL_HDD_NEW, [15],['595B','D35B','2A7B','A95B']);
 }
 
 var arr_of_bios_pwgen_fun = [autoGetBiosPwdForSony,
