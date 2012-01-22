@@ -18,6 +18,9 @@ var HP_MINI = 'hp_mini';
 var FSI_20_DEC_NEW = 'fsi_20_dec_new';
 var FSI_20_DEC_OLD = 'fsi_20_dec_old';
 var FSI_HEX = 'fsi_hex';
+var DELL_TAG = 'dell_tag';
+var DELL_HDD_NEW = 'dell_hdd_new';
+var DELL_HDD_OLD = 'dell_hdd_old';
 
 
 var encscans = [0x05,0x10,0x13,0x09,0x32,0x03,0x25,0x11,0x1F,0x17,0x06,
