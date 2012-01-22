@@ -279,22 +279,37 @@ function choseEncode(encBlock, serial){
     }
 }
 
+function answerToString(b_arr){
+    var r = b_arr[0] % 9;
+    var ret_str = "";
+    for(var i = 0;i<16;i++){
+        if( ( r <= i) && (ret_str.length < 8) ){
+            ret_str += scancods.charAt(encscans[b_arr[i] % encscans.length]);
+        }
+    }
+    return ret_str;       
+}
+
 function encode(in_str, cnt, serial){
     in_str[cnt] = 0x80;
     var encBlock = StringToIntArr(in_str);
     encBlock = fill_zero(encBlock,6,16);
     encBlock[14] = (cnt << 3); 
     
-    return choseEncode(encBlock, serial);
+    return IntArrToByteArr(choseEncode(encBlock, serial));
 
 }
 
 function dell_service_tag(serial){
     var serial_arr = StrintToArray(serial);
     serial_arr = serial_arr.concat(calc_suffix_tag(serial_arr));
-    return encode(serial_arr,23, serial);
+    return answerToString(encode(serial_arr,23, serial));
+}
 
-
+function dell_service_hdd_new(serial){
+    var serial_arr = StrintToArray(serial);
+    serial_arr = serial_arr.concat(calc_suffix_hdd_new(serial_arr));
+    return answerToString(encode(serial_arr,23, serial));
 }
 
 /* Depends only in first two chars */
