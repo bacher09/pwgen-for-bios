@@ -850,14 +850,17 @@ function numberChecker(serial, len_arr, decimal, hexdecimal){
 
 function dellChecker(serial, len_arr, series_arr){
     series_arr = (typeof(series_arr) == 'undefine') ? false : series_arr;
-    if((!series_arr) && has_element(serial.length, len_arr)){
-        return true;
-    }
-    var ls = serial.length;
-    for(var i=0;i<len_arr.len_arr;i++){
-        var l = series_arr[i].length   
-        if(serial.substr(ls-l,ls) == series_arr[i]){
+    if(has_element(serial.length, len_arr)){
+        if(!series_arr) {
             return true;
+        }
+        
+        var ls = serial.length;
+        for(var i=0;i<len_arr.length;i++){
+            var l = series_arr[i].length;
+            if(serial.substr(ls-l,ls) == series_arr[i]){
+                return true;
+            }
         }
     }
     return false;
@@ -957,6 +960,18 @@ function autoGetBiosPwdForFSIhex(serial){
 function autoGetBiosPwdForDellHddOld(serial){
     return dellCheckAndRunWithKey(serial, getBiosPwdForDellHddOld, 
                                 DELL_HDD_OLD, [11], false);
+}
+
+/* 7 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
+function autoGetBiosPwdForDellTag(serial){
+    return dellCheckAndRunWithKey(serial, getBiosPwdForDellTag, 
+                                DELL_TAG, [11],['595B','D35B','2A7B','A95B']);
+}
+
+/* 11 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
+function autoGetBiosPwdForDellHddNew(serial){
+    return dellCheckAndRunWithKey(serial, getBiosPwdForDellHddNew, 
+                                DELL_HDD_OLD, [15],['595B','D35B','2A7B','A95B']);
 }
 
 var arr_of_bios_pwgen_fun = [autoGetBiosPwdForSony,
