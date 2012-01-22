@@ -858,7 +858,7 @@ function dellChecker(serial, len_arr, series_arr){
         var ls = serial.length;
         for(var i=0;i<len_arr.length;i++){
             var l = series_arr[i].length;
-            if(serial.substr(ls-l,ls) == series_arr[i]){
+            if(serial.substr(ls-l,ls).toUpperCase() == series_arr[i]){
                 return true;
             }
         }
@@ -894,8 +894,11 @@ function autoCheckAndRunWithKey(serial, run_func,
 /* Just shortcut */
 function dellCheckAndRunWithKey(serial, run_func, key, len_arr, series){
     if(dellChecker(serial, len_arr, series)){
+        var l = serial.length;
+        var bs = l - 4;
+        var n_ser = serial.substr(0, bs) + serial.substr(bs,l).toUpperCase();
         var r_ob = new Object();
-        r_ob[key] = run_func(serial);
+        r_ob[key] = run_func(n_ser);
         return r_ob;
     } else {
         return false;
