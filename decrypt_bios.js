@@ -110,6 +110,18 @@ Array.prototype.swap = function (x,y) {
     return this;
 }
 
+Array.prototype.getUnique = function(){
+    var u = {}, a = [];
+    for(var i = 0, l = this.length; i < l; ++i){
+        if(this[i] in u){
+            continue;
+        }
+        a.push(this[i]);
+        u[this[i]] = 1;
+    }
+    return a;
+}
+
 if(typeof(String.prototype.trim) === "undefined"){
     String.prototype.trim = function() {
         return String(this).replace(/^\s+|\s+$/g, '');
@@ -1018,7 +1030,7 @@ function metaDellManyTag(serial, len, key, func){
             return false;
         }
         var r_ob = new Object();
-        r_ob[key] = answ_arr;
+        r_ob[key] = answ_arr.getUnique();
         return r_ob;
     } else {
         return false;
