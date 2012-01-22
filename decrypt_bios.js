@@ -859,7 +859,7 @@ function dellChecker(serial, len_arr, series_arr){
         }
         
         var ls = serial.length;
-        for(var i=0;i<len_arr.length;i++){
+        for(var i=0;i<series_arr.length;i++){
             var l = series_arr[i].length;
             if(serial.substr(ls-l,ls).toUpperCase() == series_arr[i]){
                 return true;
