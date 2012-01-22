@@ -486,20 +486,23 @@ function dell_encode(in_str, cnt, serial){
 
 }
 
-function dell_service_tag(serial){
+/* 7 symbols + 4 symbols ( 595B, D35B, 2A7B ) */
+function getBiosPwdForSonyTag(serial){
     var serial_arr = StrintToArray(serial);
     serial_arr = serial_arr.concat(calc_suffix_tag(serial_arr));
     return answerToString(dell_encode(serial_arr,23, serial));
 }
 
-function dell_service_hdd_new(serial){
+/* 12 symbols + 4 symbols ( 595B, D35B, 2A7B ) */
+function getBiosPwdForSonyHddNew(serial){
     var serial_arr = StrintToArray(serial);
     serial_arr = serial_arr.concat(calc_suffix_hdd_new(serial_arr));
     return answerToString(dell_encode(serial_arr,23, serial));
 }
 
-/* Depends only in first two chars */
-function dell_service_hdd_old(serial){
+/* Depends only in first two chars
+ *  12 symbols                      */
+function getBiosPwdForSonyHddOld(serial){
     var t_arr = calc_suffix_hdd_old(serial);
     var ret_str = "";
     for(var i=0;i<t_arr.length;i++){
