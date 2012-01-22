@@ -32,6 +32,8 @@ var encscans = [0x05,0x10,0x13,0x09,0x32,0x03,0x25,0x11,0x1F,0x17,0x06,
                 0x2E];
 
 
+var chartabl2A7B = "012345679abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0";
+
 
 var  scancods = "\00\0331234567890-=\010\011qwertyuiop[]\015\377asdfghjkl;'`\377\\zxcvbnm,./";
 
@@ -165,7 +167,7 @@ function copy_array(ar){
     return temp_arr;
 }
 
-function StrintToArray(str){
+function StringToArray(str){
     var arr = [];
     if(typeof(str)=="object"){
         return str;
@@ -174,6 +176,14 @@ function StrintToArray(str){
         arr[i] = str.charCodeAt(i);
     }
     return arr;
+}
+
+function ArrayToString(arr){
+    var str = "";
+    for(var i=0;i<arr.length;i++){
+        str += chr(arr[i]);
+    }
+    return str;
 }
 
 function toByte(arr){
@@ -197,7 +207,7 @@ function ByteArrToIntArr(b_arr){
 
 function StringToIntArr(str){
     return (typeof(str)=="object") ? ByteArrToIntArr(str) :
-                        ByteArrToIntArr(StrintToArray(str));
+                        ByteArrToIntArr(StringToArray(str));
 }
 
 function IntToByteArr(num){
@@ -326,7 +336,7 @@ function calc_in(l_arr){
 function begin_calc(serial, s_arr){
     var ret_arr = [];
     if(typeof(serial)=="string"){
-        serial = StrintToArray(serial);
+        serial = StringToArray(serial);
     }
     
     ret_arr[0] = serial[ s_arr[3] ];
@@ -342,7 +352,7 @@ function begin_calc(serial, s_arr){
     return toByte(ret_arr);
 }
 
-function end_calc(serial, calced_arr, s_arr){
+function end_calc(serial, calced_arr, s_arr, table){
     var r = 0;
     var ret_arr = [];
     for (var i=0;i<8;i++) {
@@ -353,15 +363,18 @@ function end_calc(serial, calced_arr, s_arr){
         (calced_arr[i] & 8) && (r ^= serial[1]);
         (calced_arr[i] & 16) && (r ^= serial[0]);
         
-        ret_arr[i] = encscans[r % encscans.length];
+        ret_arr[i] = table[r % table.length];
     }
     return ret_arr;
 }
 
 function calc_suffix_shortcut(serial, s_arr1, s_arr2){
-    var serial_arr = StrintToArray(serial);
+    var serial_arr = StringToArray(serial);
     var ret_arr = begin_calc(serial_arr,s_arr1);
-    return end_calc(serial_arr, ret_arr, s_arr2); 
+    if(dell_get_serial_line(serial) == '2A7B'){
+        return end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl2A7B)); 
+    } 
+    return end_calc(serial_arr, ret_arr, s_arr2, encscans); 
 }
 
 function calc_suffix_tag(serial){
@@ -376,7 +389,7 @@ function calc_suffix_hdd_new(serial){
 function calc_suffix_hdd_old(serial){
     // encscans[26], enscans[0xAA % enscans.length]
     var ret_arr = [49,49,49,49,49]; 
-    var serial_arr = StrintToArray(serial);
+    var serial_arr = StringToArray(serial);
     ret_arr = ret_arr.concat(calc_in(serial_arr));
     // lower bits then 5 are never change
     for(var i=5;i<8;i++){
@@ -437,6 +450,10 @@ function blockEncode(encBlock,f1, f2, f3, f4 ,f5){
 }
 
 function dell_get_serial_line(serial){
+    if(typeof(serial) == 'object'){
+        return ArrayToString(serial.slice(serial.length - 4,
+                            serial.length)).toUpperCase();
+    }
     return serial.substr(serial.length - 4, serial.length).toUpperCase();
 }
 
@@ -475,12 +492,13 @@ function choseEncode(encBlock, serial){
     }
 }
 
-// Need fixing for 2A7B
 function answerToString(b_arr, serial){
     var r = b_arr[0] % 9;
     var ret_str = "";
     for(var i = 0;i<16;i++){
-        if( ( r <= i) && (ret_str.length < 8) ){
+        if(dell_get_serial_line(serial) == "2A7B"){
+            ret_str += chartabl2A7B.charAt( b_arr[i] % chartabl2A7B.length);
+        } else if( ( r <= i) && (ret_str.length < 8) ){
             ret_str += scancods.charAt(encscans[b_arr[i] % encscans.length]);
         }
     }
@@ -499,14 +517,14 @@ function dell_encode(in_str, cnt, serial){
 
 /* 7 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
 function getBiosPwdForDellTag(serial){
-    var serial_arr = StrintToArray(serial);
+    var serial_arr = StringToArray(serial);
     serial_arr = serial_arr.concat(calc_suffix_tag(serial_arr));
     return answerToString(dell_encode(serial_arr,23, serial), serial);
 }
 
 /* 12 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
 function getBiosPwdForDellHddNew(serial){
-    var serial_arr = StrintToArray(serial);
+    var serial_arr = StringToArray(serial);
     serial_arr = serial_arr.concat(calc_suffix_hdd_new(serial_arr));
     return answerToString(dell_encode(serial_arr,23, serial), serial);
 }
