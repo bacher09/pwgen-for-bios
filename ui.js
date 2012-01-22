@@ -12,7 +12,10 @@ var sDescription = CreateHashTable([[SONY,"Old Sony"],
             [HP_MINI,"HP/Compaq Mini Netbooks"],
             [FSI_20_DEC_NEW,"Fujitsu-Siemens new"],
             [FSI_20_DEC_OLD,"Fujitsu-Siemens old"],
-            [FSI_HEX,"Fujitsu-Siemens"]
+            [FSI_HEX,"Fujitsu-Siemens"],
+            [DELL_TAG,"Dell by serial number"],
+            [DELL_HDD_OLD,"Dell by hdd serial number old"],
+            [DELL_HDD_NEW,"Dell by hdd serial number new"]
             ]);
 
 
