@@ -436,6 +436,10 @@ function blockEncode(encBlock,f1, f2, f3, f4 ,f5){
 
 }
 
+function dell_get_serial_line(serial){
+    return serial.substr(serial.length - 4, serial.length).toUpperCase();
+}
+
 function choseEncode(encBlock, serial){
 
     function encF2(num1, num2, num3) {
@@ -463,7 +467,7 @@ function choseEncode(encBlock, serial){
     function encF5N(num1, num2, num3){ return encF5(~num1, num2, num3); }
     
     /* Main part */
-    var type = serial.substr(serial.length - 4, serial.length);
+    var type = dell_get_serial_line(serial);
     if(type == 'D35B'){
         return blockEncode(encBlock, encF1, encF2, encF3, encF4, encF5);
     } else {
@@ -471,7 +475,8 @@ function choseEncode(encBlock, serial){
     }
 }
 
-function answerToString(b_arr){
+// Need fixing for 2A7B
+function answerToString(b_arr, serial){
     var r = b_arr[0] % 9;
     var ret_str = "";
     for(var i = 0;i<16;i++){
@@ -496,14 +501,14 @@ function dell_encode(in_str, cnt, serial){
 function getBiosPwdForDellTag(serial){
     var serial_arr = StrintToArray(serial);
     serial_arr = serial_arr.concat(calc_suffix_tag(serial_arr));
-    return answerToString(dell_encode(serial_arr,23, serial));
+    return answerToString(dell_encode(serial_arr,23, serial), serial);
 }
 
 /* 12 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
 function getBiosPwdForDellHddNew(serial){
     var serial_arr = StrintToArray(serial);
     serial_arr = serial_arr.concat(calc_suffix_hdd_new(serial_arr));
-    return answerToString(dell_encode(serial_arr,23, serial));
+    return answerToString(dell_encode(serial_arr,23, serial), serial);
 }
 
 /* Depends only in first two chars
@@ -858,10 +863,8 @@ function dellChecker(serial, len_arr, series_arr){
             return true;
         }
         
-        var ls = serial.length;
         for(var i=0;i<series_arr.length;i++){
-            var l = series_arr[i].length;
-            if(serial.substr(ls-l,ls).toUpperCase() == series_arr[i]){
+            if(dell_get_serial_line(serial) == series_arr[i]){
                 return true;
             }
         }
