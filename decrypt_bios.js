@@ -457,6 +457,10 @@ function dell_get_serial_line(serial){
     return serial.substr(serial.length - 4, serial.length).toUpperCase();
 }
 
+function dell_get_serial_main(serial){
+    return serial.substr(0,serial.length - 4);
+}
+
 function choseEncode(encBlock, serial){
 
     function encF2(num1, num2, num3) {
@@ -517,6 +521,9 @@ function dell_encode(in_str, cnt, serial){
 
 /* 7 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
 function getBiosPwdForDellTag(serial){
+    if(dell_get_serial_line(serial) == 'A95B'){ // A95B
+        serial = dell_get_serial_main(serial) + '595B';
+    }
     var serial_arr = StringToArray(serial);
     serial_arr = serial_arr.concat(calc_suffix_tag(serial_arr));
     return answerToString(dell_encode(serial_arr,23, serial), serial);
@@ -524,6 +531,10 @@ function getBiosPwdForDellTag(serial){
 
 /* 12 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
 function getBiosPwdForDellHddNew(serial){
+    if(dell_get_serial_line(serial) == 'A95B'){ // A95B
+        var zero_chars = chr(0) + chr(0) + chr(0);
+        serial = serial.slice(3,serial.length - 4) + zero_chars + '595B';
+    }
     var serial_arr = StringToArray(serial);
     serial_arr = serial_arr.concat(calc_suffix_hdd_new(serial_arr));
     return answerToString(dell_encode(serial_arr,23, serial), serial);
@@ -916,9 +927,7 @@ function autoCheckAndRunWithKey(serial, run_func,
 }
 
 function dell_serial_normalize(serial){
-        var l = serial.length;
-        var bs = l - 4;
-        return serial.substr(0, bs) + serial.substr(bs,l).toUpperCase();
+        return dell_get_serial_main(serial) + dell_get_serial_line(serial);
 }
 
 /* Just shortcut */
