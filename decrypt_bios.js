@@ -394,8 +394,8 @@ function calc_suffix_hdd_old(serial){
     // lower bits then 5 are never change
     for(var i=5;i<8;i++){
         var r = 0xAA;
-        (ret_arr[i] & 8) && (r ^= serial[1]);
-        (ret_arr[i] & 16) && (r ^= serial[0]);
+        (ret_arr[i] & 8) && (r ^= serial_arr[1]);
+        (ret_arr[i] & 16) && (r ^= serial_arr[0]);
         ret_arr[i] = encscans[ r % encscans.length];
     }
     return ret_arr;
