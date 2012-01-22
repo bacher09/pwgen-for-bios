@@ -894,14 +894,17 @@ function autoCheckAndRunWithKey(serial, run_func,
     }
 }
 
+function dell_serial_normalize(serial){
+        var l = serial.length;
+        var bs = l - 4;
+        return serial.substr(0, bs) + serial.substr(bs,l).toUpperCase();
+}
+
 /* Just shortcut */
 function dellCheckAndRunWithKey(serial, run_func, key, len_arr, series){
     if(dellChecker(serial, len_arr, series)){
-        var l = serial.length;
-        var bs = l - 4;
-        var n_ser = serial.substr(0, bs) + serial.substr(bs,l).toUpperCase();
         var r_ob = new Object();
-        r_ob[key] = run_func(n_ser);
+        r_ob[key] = run_func(dell_serial_normalize(serial));
         return r_ob;
     } else {
         return false;
@@ -974,10 +977,39 @@ function autoGetBiosPwdForDellTag(serial){
                                 DELL_TAG, [11],DELL_SERIES_PREFIX);
 }
 
+
+function metaDellManyTag(serial, len, key, func){
+    if(serial.length == len){
+        var answ_arr = []; 
+        for(var i=0;i<DELL_SERIES_PREFIX.length;i++){
+            answ_arr[i] = func(serial + DELL_SERIES_PREFIX[i]);
+        }
+        if(answ_arr.length == 0){
+            return false;
+        }
+        var r_ob = new Object();
+        r_ob[key] = answ_arr;
+        return r_ob;
+    } else {
+        return false;
+    }
+}
+
+
 /* 11 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
 function autoGetBiosPwdForDellHddNew(serial){
     return dellCheckAndRunWithKey(serial, getBiosPwdForDellHddNew, 
                                 DELL_HDD_NEW, [15],DELL_SERIES_PREFIX);
+}
+
+// 7 symbols
+function autoGetBiosPwdForDellTagAll(serial){
+    return metaDellManyTag(serial, 7, DELL_TAG, getBiosPwdForDellTag);
+}
+
+// 11 symbols
+function autoGetBiosPwdForDellHddNewAll(serial){
+    return metaDellManyTag(serial,11,DELL_HDD_NEW,getBiosPwdForDellHddNew);
 }
 
 var arr_of_bios_pwgen_fun = [autoGetBiosPwdForSony,
@@ -990,6 +1022,8 @@ var arr_of_bios_pwgen_fun = [autoGetBiosPwdForSony,
                              autoGetBiosPwdForDellHddOld,
                              autoGetBiosPwdForDellTag,
                              autoGetBiosPwdForDellHddNew,
+                             autoGetBiosPwdForDellTagAll,
+                             autoGetBiosPwdForDellHddNewAll
                             ];
 
 function autoGetBiosPwd(serial){
