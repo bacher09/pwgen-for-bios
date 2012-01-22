@@ -489,15 +489,15 @@ function dell_encode(in_str, cnt, serial){
 
 }
 
-/* 7 symbols + 4 symbols ( 595B, D35B, 2A7B ) */
-function getBiosPwdForSonyTag(serial){
+/* 7 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
+function getBiosPwdForDellTag(serial){
     var serial_arr = StrintToArray(serial);
     serial_arr = serial_arr.concat(calc_suffix_tag(serial_arr));
     return answerToString(dell_encode(serial_arr,23, serial));
 }
 
-/* 12 symbols + 4 symbols ( 595B, D35B, 2A7B ) */
-function getBiosPwdForSonyHddNew(serial){
+/* 12 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
+function getBiosPwdForDellHddNew(serial){
     var serial_arr = StrintToArray(serial);
     serial_arr = serial_arr.concat(calc_suffix_hdd_new(serial_arr));
     return answerToString(dell_encode(serial_arr,23, serial));
@@ -505,7 +505,7 @@ function getBiosPwdForSonyHddNew(serial){
 
 /* Depends only in first two chars
  *  12 symbols                      */
-function getBiosPwdForSonyHddOld(serial){
+function getBiosPwdForDellHddOld(serial){
     var t_arr = calc_suffix_hdd_old(serial);
     var ret_str = "";
     for(var i=0;i<t_arr.length;i++){
@@ -847,6 +847,23 @@ function numberChecker(serial, len_arr, decimal, hexdecimal){
         return false;
     }
 }
+
+function dellChecker(serial, len_arr, series_arr){
+    series_arr = (typeof(series_arr) == 'undefine') ? false : series_arr;
+    if((!series_arr) && has_element(serial.length, len_arr)){
+        return true;
+    }
+    var ls = serial.length;
+    for(var i=0;i<len_arr.len_arr;i++){
+        var l = series_arr[i].length   
+        if(serial.substr(ls-l,ls) == series_arr[i]){
+            return true;
+        }
+    }
+    return false;
+}
+
+
 /* Just shortcut */
 function autoCheckAndRun(serial, run_func, len_arr, decimal, hexdecimal){
     if(numberChecker(serial, len_arr,decimal,hexdecimal)){
@@ -870,6 +887,18 @@ function autoCheckAndRunWithKey(serial, run_func,
         return false;
     }
 }
+
+/* Just shortcut */
+function dellCheckAndRunWithKey(serial, run_func, key, len_arr, series){
+    if(dellChecker(serial, len_arr, series)){
+        var r_ob = new Object();
+        r_ob[key] = run_func(serial);
+        return r_ob;
+    } else {
+        return false;
+    }
+}
+
 /* Auto function return password if serial is valid,
  * or false if it is bad */
 function autoGetBiosPwdForSony(serial){
@@ -923,6 +952,11 @@ function autoGetBiosPwdForFSI20dec(serial){
 function autoGetBiosPwdForFSIhex(serial){
     return autoCheckAndRunWithKey(serial, getBiosPwdForFSIhex, FSI_HEX,
                                   [8,20], false, true);
+}
+
+function autoGetBiosPwdForDellHddOld(serial){
+    return dellCheckAndRunWithKey(serial, getBiosPwdForDellHddOld, 
+                                DELL_HDD_OLD, [11], false);
 }
 
 var arr_of_bios_pwgen_fun = [autoGetBiosPwdForSony,
