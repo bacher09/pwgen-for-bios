@@ -7,10 +7,12 @@ var encscans = [0x05,0x10,0x13,0x09,0x32,0x03,0x25,0x11,0x1F,0x17,0x06,
 
 var  scancods = "\00\0331234567890-=\010\011qwertyuiop[]\015\377asdfghjkl;'`\377\\zxcvbnm,./";
 
-var encData = [0x1,0x23,0x45,0x67,0x89,0xAB,0xCD,0xEF,0xFE,0xDC,0xBA,0x98,
-               0x76, 0x54, 0x32, 0x10];
+var encData = [ 0x67452301 | 0, // For bit alignment
+                0xEFCDAB89 | 0,
+                0x98BADCFE | 0,
+                0x10325476 | 0];
 
-var MD5magic = [
+var MD5magic_o = [
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
     0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
     0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
@@ -29,6 +31,18 @@ var MD5magic = [
     0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
             ];
 
+function CorectBits(arr){
+    if(typeof(arr) == 'object'){
+        for(var i = 0;i<arr.length;i++){
+            arr[i] = arr[i] | 0;
+        }
+        return arr;
+    } else {
+        return arr | 0;
+    }
+}
+
+var MD5magic = CorectBits(MD5magic_o);
 
 function ord(str){
     return str.charCodeAt(0);
@@ -36,6 +50,10 @@ function ord(str){
 
 function chr(ascii_code){
     return String.fromCharCode(ascii_code);
+}
+
+function SignedToUnsigned(num){
+    return num >>> 0;
 }
 
 function copy_array(ar){
@@ -88,10 +106,6 @@ function fill_zero(arr, from, to){
     return arr;
 }
 
-function encF2(num1, num2, num3) {return ((( num3 ^ num2) & num1) ^ num3);}
-function encF3 (num1, num2, num3) {return ((( num1 ^ num2) & num3) ^ num2);}
-function encF4(num1, num2, num3) {return (( num2 ^ num1) ^ num3); }
-function encF5(num1, num2, num3) {return (( num1 | ~num3) ^ num2); }
 
         
 function calc_in(l_arr){
@@ -166,30 +180,102 @@ function calc_suffix_hdd_old(serial){
 }
 
 
-function blockEncode(){
-    var m_encData  = copy_array(encData);
-    var A = m_encData[0];
-    var B = m_encData[1];
-    var C = m_encData[2];
-    var D = m_encData[3];
+function blockEncode(encBlock,f1, f2, f3, f4 ,f5){
+    var A = encData[0] | 0; // For bit alignment
+    var B = encData[1] | 0;
+    var C = encData[2] | 0;
+    var D = encData[3] | 0;
+    
+    function rol(t, bitsrot, num){
+        var k = bitsrot[num >> 4][i & 3];
+        return  (SignedToUnsigned(t)/ Math.pow(2,32 - k)) | 
+                ((SignedToUnsigned(t) << k) | 0 );
+    }
 
+    function f_shortcut(func, key, num){
+        return (A + f1(func, B, C , D, MD5magic[num] + encBlock[ key ])) | 0;
+    }
+    
+    var S = [ [ 7, 12, 17, 22 ],
+              [ 5, 9,  14, 20 ],
+              [ 4, 11, 16, 23 ],
+              [ 6, 10, 15, 21 ]
+            ];
+    var t;
+    for(i=0;i<64;i++){
+        switch(i >> 4){
+            case 0: 
+                    t = f_shortcut(f2, i & 15, i); // Use half byte
+                    break;
+            case 1:
+                    t = f_shortcut(f3, (i*5 + 1) & 15, i);
+                    break;
+            case 2:
+                    t = f_shortcut(f4, (i*3 + 5) & 15, i);
+                    break;
+            case 3:
+                    t = f_shortcut(f5, (i*7) & 15, i);
+                    break;
+        }
+        A = D, D = C, C = B, B = (rol(t,S,i) + B) | 0; 
+    }
 
+    return CorectBits([ A + encData[0],
+                        B + encData[1],
+                        C + encData[2],
+                        D + encData[3]]);
 
 }
 
-function encode(in_str, cnt){
+function choseEncode(encBlock, serial){
+
+    function encF2(num1, num2, num3) {
+        return ((( num3 ^ num2) & num1) ^ num3);
+    }
+    
+    function encF3 (num1, num2, num3) {
+        return ((( num1 ^ num2) & num3) ^ num2);
+    }
+    
+    function encF4(num1, num2, num3) {return (( num2 ^ num1) ^ num3); }
+    
+    function encF5(num1, num2, num3) {return (( num1 | ~num3) ^ num2); }
+
+    function encF1(func, num1,num2, num3, key){
+        return (func(num1,num2,num3) + key) | 0; // For bit alignment
+    } 
+    
+    // Negative functions
+    function encF1N(func, num1, num2, num3, key) { 
+        return encF1(func,num1,num2, num3, -key);
+    }
+    function encF2N(num1, num2, num3){ return encF2(num1, num2, ~num3); }
+    function encF4N(num1, num2, num3){ return encF4(num1, ~num2, num3); }
+    function encF5N(num1, num2, num3){ return encF5(~num1, num2, num3); }
+    
+    /* Main part */
+    var type = serial.substr(serial.length - 4, serial.length);
+    if(type == 'D35B'){
+        return blockEncode(encBlock, encF1, encF2, encF3, encF4, encF5);
+    } else {
+        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N);
+    }
+}
+
+function encode(in_str, cnt, serial){
     in_str[cnt] = 0x80;
     var encBlock = StringToIntArr(in_str);
     encBlock = fill_zero(encBlock,6,16);
     encBlock[14] = (cnt << 3); 
-
+    
+    return choseEncode(encBlock, serial);
 
 }
 
 function dell_service_tag(serial){
     var serial_arr = StrintToArray(serial);
     serial_arr = serial_arr.concat(calc_suffix_tag(serial_arr));
-    encode(serial_arr,23);
+    return encode(serial_arr,23, serial);
 
 
 }
