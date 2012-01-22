@@ -99,6 +99,23 @@ function StringToIntArr(str){
                         ByteArrToIntArr(StrintToArray(str));
 }
 
+function IntToByteArr(num){
+    var ret_arr = [];
+    ret_arr[0] = (num & 0xFF );
+    ret_arr[1] = ((num >> 8) & 0xFF );
+    ret_arr[2] = ((num >> 16) & 0xFF );
+    ret_arr[3] = ((num >> 24) & 0xFF );
+    return ret_arr
+}
+
+function IntArrToByteArr(int_arr){
+    var ret_arr = [];
+    for(var i=0;i<int_arr.length;i++){
+        ret_arr = ret_arr.concat(IntToByteArr(int_arr[i]));
+    }
+    return ret_arr;
+}
+
 function fill_zero(arr, from, to){
     for(var i=from;i<to;i++){
         arr[i] = 0;
