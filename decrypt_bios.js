@@ -573,7 +573,7 @@ function getBiosPwdForSony(serial){
 	var pos = 0;
     var code= "";
     for(var i=0;i<serial.length;i++){
-		code += table.charAt(parseInt(serial.charAt(i))+10*pos);
+		code += table.charAt(parseInt(serial.charAt(i), 10)+10*pos);
 		pos++;
     }
     return code;
@@ -613,37 +613,37 @@ function getBiosPwdForSamsung(serial){
 
 /* Compute password for phoenix bios. 5 digits */
 function getBiosPwdForGenericPhoenix(serial){
-    return bruteForce(parseInt(serial));
+    return bruteForce(parseInt(serial,10));
 }
 
 /* Compute password for phoenix bios HP/Compaq.5 digits */
 function getBiosPwdForHPCompaqPhoenix(serial){
-    return bruteForce(parseInt(serial),17232);
+    return bruteForce(parseInt(serial,10),17232);
 }
 
 /* Compute password for FSI phoenix bios.  5 digits */
 function getBiosPwdForFsiPhoenix(serial){
-    return bruteForce(parseInt(serial),65,true,false,3,7);
+    return bruteForce(parseInt(serial,10),65,true,false,3,7);
 }
 
 /* Compute password for FSI (L model) phoenix bios. 5 digits */
 function getBiosPwdForFsiLPhoenix(serial){
-    return bruteForce(parseInt(serial)+1,ord('L'),true,false,3,7);
+    return bruteForce(parseInt(serial,10)+1,ord('L'),true,false,3,7);
 }
 
 /* Compute password for FSI (P model) phoenix bios. 5 digits */
 function getBiosPwdForFsiPPhoenix(serial){
-    return bruteForce(parseInt(serial)+1,ord('P'),true,false,3,7);
+    return bruteForce(parseInt(serial,10)+1,ord('P'),true,false,3,7);
 }
 
 /* Compute password for FSI (S model) phoenix bios. 5 digits */
 function getBiosPwdForFsiSPhoenix(serial){
-    return bruteForce(parseInt(serial)+1,ord('S'),true,false,3,7);
+    return bruteForce(parseInt(serial,10)+1,ord('S'),true,false,3,7);
 }
 
 /* Compute password for FSI (X model) phoenix bios. 5 digits */
 function getBiosPwdForFsiXPhoenix(serial){
-    return bruteForce(parseInt(serial)+1,ord('X'),true,false,3,7);
+    return bruteForce(parseInt(serial,10)+1,ord('X'),true,false,3,7);
 }
 
 /* Maybe need fixing for browsers where numbers is 32-bits */
@@ -720,10 +720,10 @@ function getBiosPwdForFsi20dec_old(serial){
     }
 
     function codeToBytes(code){
-        var numbers = [parseInt(code.slice(0,5)), 
-                       parseInt(code.slice(5,10)), 
-                       parseInt(code.slice(10,15)),
-                       parseInt(code.slice(15,20))
+        var numbers = [parseInt(code.slice(0,5), 10), 
+                       parseInt(code.slice(5,10), 10), 
+                       parseInt(code.slice(10,15), 10),
+                       parseInt(code.slice(15,20), 10)
                       ];
         var bytes = [];
         for(var i=0;i<numbers.length;i++){
@@ -795,7 +795,7 @@ function getBiosPwdForFSI20dec_new(serial){
     var masterPwd = "";
     var i = 0;
     for(var j=0;j<pwdHash.length;j++){
-        masterPwd += f_keys[i].charAt(parseInt(pwdHash.charAt(j)));
+        masterPwd += f_keys[i].charAt(parseInt(pwdHash.charAt(j), 10));
         i++;
     }
     return masterPwd
