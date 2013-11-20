@@ -206,6 +206,16 @@ function toByte(arr){
 }
 
 
+function isHexNumber(num_str) {
+    return /[0-9ABCDEF]/gi.test(num_str);
+}
+
+
+function isDecNumber(num_str) {
+    return /[0-9]/gi.test(num_str);
+}
+
+
 function ByteArrToIntArr(b_arr){
     var k = b_arr.length >> 2;
     var ret_arr = [];
@@ -876,25 +886,17 @@ function has_element(element, arr){
 function numberChecker(serial, len_arr, decimal, hexdecimal){
     decimal = (typeof(decimal) == 'undefined') ? true : decimal;
     hexdecimal = (typeof(decimal) == 'undefined') ? false : hexdecimal;
-    var i =0;
-    if(decimal){
-        var code = parseInt(serial,10);
-        var code_len = code.toString(10).length;
-    } else if (hexdecimal){
-        var code = parseInt(serial,16);
-        var code_len = code.toString(16).length;
-    } else {
-        return false;
-    }
-    while(serial.charAt(i++)=='0'){
-        code_len++;
-    }
+    var valid = false,
+        code_len = serial.length;
 
-    if((code != NaN) && has_element(code_len, len_arr)){
-        return true;
-    } else {
+    if(decimal)
+        valid = isDecNumber(serial);
+    else if (hexdecimal)
+        valid = isHexNumber(serial);
+    else
         return false;
-    }
+
+    return ((valid == true) && has_element(code_len, len_arr)) ? true : false;
 }
 
 function dellChecker(serial, len_arr, series_arr){
