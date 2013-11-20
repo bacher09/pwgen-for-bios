@@ -215,6 +215,15 @@ function isDecNumber(num_str) {
     return /[0-9]/gi.test(num_str);
 }
 
+// rewrite it in functional style
+function filterFalse(arr) {
+    var res_arr = [];
+    for(var i=0; i<arr.length; i++)
+        if(arr[i]) res_arr.push(arr[i]);
+
+    return res_arr;
+}
+
 
 function ByteArrToIntArr(b_arr){
     var k = b_arr.length >> 2;
@@ -630,7 +639,7 @@ function getBiosPwdForSamsung(serial){
     var asciiPassword1 = keyToAscii(decryptHash(hash, key, rotationMatrix1));
     var asciiPassword2 = keyToAscii(decryptHash(hash, key, rotationMatrix2));
 
-    return [scanCodePassword, asciiPassword1, asciiPassword2];
+    return filterFalse([scanCodePassword, asciiPassword1, asciiPassword2]);
 }
 
 /* Compute password for phoenix bios. 5 digits */
