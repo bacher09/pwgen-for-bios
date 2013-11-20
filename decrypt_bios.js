@@ -263,7 +263,17 @@ var keyboardDictDigits = CreateHashTable(keys(keyboardDict).slice(0,9),
 var keyboardDictChars = CreateHashTable(keys(keyboardDict).slice(10,36),
                                          values(keyboardDict).slice(10,36));
 
-
+function keyToAscii(inKey){
+    var out= "";
+    for(var i=0;i<inKey.length;i++){
+        if (inKey[i] == 0) return out;
+	out += String.fromCharCode(inKey[i]);	
+    }
+    if (/^[\x00-\x7F]*$/.test(out)) {
+      return out;
+    }
+}
+ 
 /* Decode Keyboard code to Ascii symbol */
 function keyboardEncToAscii(inKey){
     var out= "";
@@ -613,12 +623,15 @@ function getBiosPwdForSamsung(serial){
     }
     var key = parseInt(serial.substring(0,2), 16) % 5
 
-    var password = keyboardEncToAscii(decryptHash(hash, key, rotationMatrix1))
-    if(password == ""){
-	    password = keyboardEncToAscii(decryptHash(hash, key, rotationMatrix2))
+    var scanCodePassword = keyboardEncToAscii(decryptHash(hash, key, rotationMatrix1))
+    if(scanCodePassword == ""){
+	    scanCodePassword = keyboardEncToAscii(decryptHash(hash, key, rotationMatrix2))
     }
 
-    return password
+    var asciiPassword1 = keyToAscii(decryptHash(hash, key, rotationMatrix1));
+    var asciiPassword2 = keyToAscii(decryptHash(hash, key, rotationMatrix2));
+
+    return [scanCodePassword, asciiPassword1, asciiPassword2];
 }
 
 /* Compute password for phoenix bios. 5 digits */
