@@ -267,11 +267,10 @@ function keyToAscii(inKey){
     var out= "";
     for(var i=0;i<inKey.length;i++){
         if (inKey[i] == 0) return out;
-	out += String.fromCharCode(inKey[i]);	
+        if(inKey[i] < 32 || inKey[i] > 127) return undefined;
+        out += String.fromCharCode(inKey[i]);	
     }
-    if (/^[\x00-\x7F]*$/.test(out)) {
-      return out;
-    }
+    return out;
 }
  
 /* Decode Keyboard code to Ascii symbol */
