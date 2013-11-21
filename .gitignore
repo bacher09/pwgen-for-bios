@@ -1,5 +1,3 @@
 index.html
-test.html
-.*.swp
-.*.swo
+.*.sw[po]
 *.bak
