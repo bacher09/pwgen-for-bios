@@ -13,9 +13,9 @@ var sDescription = CreateHashTable([[SONY,"Old Sony"],
             [FSI_20_DEC_NEW,"Fujitsu-Siemens new"],
             [FSI_20_DEC_OLD,"Fujitsu-Siemens old"],
             [FSI_HEX,"Fujitsu-Siemens"],
-            [DELL_TAG,"Dell by serial number"],
-            [DELL_HDD_OLD,"Dell by hdd serial number old"],
-            [DELL_HDD_NEW,"Dell by hdd serial number new"]
+            [DELL_TAG,"Dell from serial number"],
+            [DELL_HDD_OLD,"Dell from hdd serial number (old)"],
+            [DELL_HDD_NEW,"Dell from hdd serial number (new)"]
             ]);
 
 
@@ -80,6 +80,7 @@ function calcPass(){
     var th = document.getElementById('try_this');
     th.style.display = (k>0) ?  "" :"none";
     var an = document.getElementById("answer");
+    var th2 = document.getElementById('dell_note');
+    th2.style.display = (k>0) ?  "" :"none";
     an.innerHTML = str;
 }
-

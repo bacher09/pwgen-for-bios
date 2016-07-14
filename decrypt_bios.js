@@ -1,7 +1,7 @@
 /* May be need add 51,52 and 53 symbol  */
 var keyboardDict = {  2: '1',  3: '2',  4: '3',  5: '4',  6: '5',  7: '6',  8: '7',  9: '8', 10: '9', 11: '0',
                  16: 'q', 17: 'w', 18: 'e', 19: 'r', 20: 't', 21: 'y', 22: 'u', 23: 'i', 24: 'o', 25: 'p',
-                 30: 'a', 31: 's', 32: 'd', 33: 'f', 34: 'g', 35: 'h', 36: 'j', 37: 'k', 38: 'l', 
+                 30: 'a', 31: 's', 32: 'd', 33: 'f', 34: 'g', 35: 'h', 36: 'j', 37: 'k', 38: 'l',
                  44: 'z', 45: 'x', 46: 'c', 47: 'v', 48: 'b', 49: 'n', 50: 'm' };
 
 var SONY = 'sony';
@@ -23,7 +23,7 @@ var DELL_HDD_NEW = 'dell_hdd_new';
 var DELL_HDD_OLD = 'dell_hdd_old';
 
 
-var DELL_SERIES_PREFIX = ['595B','D35B','2A7B','A95B'];
+var DELL_SERIES_PREFIX = ['595B','D35B','2A7B','A95B','1D3B'];
 
 
 var encscans = [0x05,0x10,0x13,0x09,0x32,0x03,0x25,0x11,0x1F,0x17,0x06,
@@ -33,14 +33,10 @@ var encscans = [0x05,0x10,0x13,0x09,0x32,0x03,0x25,0x11,0x1F,0x17,0x06,
 
 
 var chartabl2A7B = "012345679abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0";
+var chartabl1D3B = "0BfIUG1kuPvc8A9Nl5DLZYSno7Ka6HMgqsJWm65yCQR94b21OTp7VFX2z0jihE33d4xtrew0";
 
 
 var  scancods = "\00\0331234567890-=\010\011qwertyuiop[]\015\377asdfghjkl;'`\377\\zxcvbnm,./";
-
-var encData = [ 0x67452301 | 0, // For bit alignment
-                0xEFCDAB89 | 0,
-                0x98BADCFE | 0,
-                0x10325476 | 0];
 
 var MD5magic_o = [
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
@@ -78,7 +74,7 @@ function SignedToUnsigned(num){
     return num >>> 0;
 }
 
-/* Keys function for hashArray for compability 
+/* Keys function for hashArray for compability
  * with browsers witch does't have keys function */
 if(typeof(Object.keys) == 'undefined'){
     Object.keys =  function (hash){
@@ -89,9 +85,9 @@ if(typeof(Object.keys) == 'undefined'){
         return mkeys;
     };
 }
-var keys = Object.keys; 
+var keys = Object.keys;
 
-/* values function for hashArray for compability 
+/* values function for hashArray for compability
  * with browsers witch does't have values function */
 if(typeof(values) == 'undefined'){
     values =  function (hash){
@@ -131,12 +127,12 @@ if(typeof(String.prototype.trim) === "undefined"){
 function min(x, y){
     if (x < y){
         return x;
-    }  
+    }
     return y;
 }
 
 function CreateHashTable2(mkeys, mvalues){
-    var k = min(mkeys.length, mvalues.length); 
+    var k = min(mkeys.length, mvalues.length);
     var hash = new Object();
     for(var i=0;i<k;i++){
         hash[mkeys[i]] = mvalues[i];
@@ -277,11 +273,11 @@ function keyToAscii(inKey){
     for(var i=0;i<inKey.length;i++){
         if (inKey[i] == 0) return out;
         if(inKey[i] < 32 || inKey[i] > 127) return undefined;
-        out += String.fromCharCode(inKey[i]);	
+        out += String.fromCharCode(inKey[i]);
     }
     return out;
 }
- 
+
 /* Decode Keyboard code to Ascii symbol */
 function keyboardEncToAscii(inKey){
     var out= "";
@@ -327,7 +323,7 @@ function bruteForce(hash, salt, digitsOnly, charsOnly, minLen, maxLen){
     charsOnly = (typeof(charsOnly) == 'undefined') ? true : charsOnly;
     minLen = (typeof(minLen) == 'undefined') ? 3 : minLen;
     maxLen = (typeof(maxLen) == 'undefined') ? 7 : maxLen;
-    
+
     var encodedPwd = [0,0,0,0,0,0,0];
 
     if(hash > 0x3FFF){
@@ -345,7 +341,7 @@ function bruteForce(hash, salt, digitsOnly, charsOnly, minLen, maxLen){
     var my_keyboard_dict_len = my_keyboard_dict_keys.length;
 
     while(true){
-        var rndVal = Math.random()*my_keyboard_dict_len;       
+        var rndVal = Math.random()*my_keyboard_dict_len;
         for(var i=0; i<7; i++){
             var value = Math.floor(rndVal % my_keyboard_dict_len);
             encodedPwd[i]= my_keyboard_dict_keys[value];
@@ -366,10 +362,10 @@ function bruteForce(hash, salt, digitsOnly, charsOnly, minLen, maxLen){
 
 
 
-        
+
 function calc_in(l_arr){
     return [ (l_arr[1] >> 1),
-             ((l_arr[1] >> 6) | (l_arr[0] << 2)), 
+             ((l_arr[1] >> 6) | (l_arr[0] << 2)),
              (l_arr[0] >> 3) ];
 }
 
@@ -378,7 +374,7 @@ function begin_calc(serial, s_arr){
     if(typeof(serial)=="string"){
         serial = StringToArray(serial);
     }
-    
+
     ret_arr[0] = serial[ s_arr[3] ];
     ret_arr[1] = ( serial[ s_arr[3] ] >> 5) |
                  (( (serial[ s_arr[2] ] >> 5) | (serial[ s_arr[2] ] << 3))
@@ -387,7 +383,7 @@ function begin_calc(serial, s_arr){
     ret_arr[3] = (serial[ s_arr[2] ] >> 7) | (serial[ s_arr[1] ] << 1);
     ret_arr[4] = (serial[ s_arr[1] ] >> 4) | (serial[ s_arr[0] ] << 4);
 
-   ret_arr = ret_arr.concat(calc_in(serial)); 
+   ret_arr = ret_arr.concat(calc_in(serial));
 
     return toByte(ret_arr);
 }
@@ -402,7 +398,7 @@ function end_calc(serial, calced_arr, s_arr, table){
         (calced_arr[i] & 4) && ( r ^= serial[ s_arr[2] ]);
         (calced_arr[i] & 8) && (r ^= serial[1]);
         (calced_arr[i] & 16) && (r ^= serial[0]);
-        
+
         ret_arr[i] = table[r % table.length];
     }
     return ret_arr;
@@ -412,9 +408,11 @@ function calc_suffix_shortcut(serial, s_arr1, s_arr2){
     var serial_arr = StringToArray(serial);
     var ret_arr = begin_calc(serial_arr,s_arr1);
     if(dell_get_serial_line(serial) == '2A7B'){
-        return end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl2A7B)); 
-    } 
-    return end_calc(serial_arr, ret_arr, s_arr2, encscans); 
+        return end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl2A7B));
+    } else if(dell_get_serial_line(serial) == '1D3B'){
+        return end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl1D3B));
+    }
+    return end_calc(serial_arr, ret_arr, s_arr2, encscans);
 }
 
 function calc_suffix_tag(serial){
@@ -428,7 +426,7 @@ function calc_suffix_hdd_new(serial){
 /* Depends only in first two chars */
 function calc_suffix_hdd_old(serial){
     // encscans[26], enscans[0xAA % enscans.length]
-    var ret_arr = [49,49,49,49,49]; 
+    var ret_arr = [49,49,49,49,49];
     var serial_arr = StringToArray(serial);
     ret_arr = ret_arr.concat(calc_in(serial_arr));
     // lower bits then 5 are never change
@@ -442,50 +440,66 @@ function calc_suffix_hdd_old(serial){
 }
 
 
-function blockEncode(encBlock,f1, f2, f3, f4 ,f5){
+function blockEncode(encBlock,f1, f2, f3, f4 ,f5,repeater){
+
+	var encData = [ 0x67452301 | 0, // Reinit each run
+                0xEFCDAB89 | 0,
+                0x98BADCFE | 0,
+                0x10325476 | 0];
+
+
     var A = encData[0] | 0; // For bit alignment
     var B = encData[1] | 0;
     var C = encData[2] | 0;
     var D = encData[3] | 0;
-    
+
     function rol(t, bitsrot, num){
         var k = bitsrot[num >> 4][i & 3];
-        return  (SignedToUnsigned(t)/ Math.pow(2,32 - k)) | 
+        return  (SignedToUnsigned(t)/ Math.pow(2,32 - k)) |
                 ((SignedToUnsigned(t) << k) | 0 );
     }
 
     function f_shortcut(func, key, num){
         return (A + f1(func, B, C , D, MD5magic[num] + encBlock[ key ])) | 0;
     }
-    
+
     var S = [ [ 7, 12, 17, 22 ],
               [ 5, 9,  14, 20 ],
               [ 4, 11, 16, 23 ],
               [ 6, 10, 15, 21 ]
             ];
     var t;
-    for(i=0;i<64;i++){
-        switch(i >> 4){
-            case 0: 
-                    t = f_shortcut(f2, i & 15, i); // Use half byte
-                    break;
-            case 1:
-                    t = f_shortcut(f3, (i*5 + 1) & 15, i);
-                    break;
-            case 2:
-                    t = f_shortcut(f4, (i*3 + 5) & 15, i);
-                    break;
-            case 3:
-                    t = f_shortcut(f5, (i*7) & 15, i);
-                    break;
+    for(j=0;j<=repeater*20;j++){
+       if(repeater){
+            A|=0x97;
+            B^=0x8;
+            C|=(0x60606161 - j);
+            D^=(0x50501010 + j);
         }
-        A = D, D = C, C = B, B = (rol(t,S,i) + B) | 0; 
+        for(i=0;i<64;i++){
+            switch(i >> 4){
+                case 0:
+                        t = f_shortcut(f2, i & 15, i); // Use half byte
+                        break;
+                case 1:
+                        t = f_shortcut(f3, (i*5 + 1) & 15, i);
+                        break;
+                case 2:
+                        t = f_shortcut(f4, (i*3 + 5) & 15, i);
+                        break;
+                case 3:
+                        t = f_shortcut(f5, (i*7) & 15, i);
+                        break;
+            }
+            A = D, D = C, C = B, B = (rol(t,S,i) + B) | 0;
+        }
+		encData[0]+=A;
+        encData[1]+=B;
+		encData[2]+=C;
+		encData[3]+=D;
     }
 
-    return CorectBits([ A + encData[0],
-                        B + encData[1],
-                        C + encData[2],
-                        D + encData[3]]);
+    return CorectBits([encData[0],encData[1],encData[2],encData[3]]);
 
 }
 
@@ -506,33 +520,35 @@ function choseEncode(encBlock, serial){
     function encF2(num1, num2, num3) {
         return ((( num3 ^ num2) & num1) ^ num3);
     }
-    
+
     function encF3 (num1, num2, num3) {
         return ((( num1 ^ num2) & num3) ^ num2);
     }
-    
+
     function encF4(num1, num2, num3) {return (( num2 ^ num1) ^ num3); }
-    
+
     function encF5(num1, num2, num3) {return (( num1 | ~num3) ^ num2); }
 
     function encF1(func, num1,num2, num3, key){
         return (func(num1,num2,num3) + key) | 0; // For bit alignment
-    } 
-    
+    }
+
     // Negative functions
-    function encF1N(func, num1, num2, num3, key) { 
+    function encF1N(func, num1, num2, num3, key) {
         return encF1(func,num1,num2, num3, -key);
     }
     function encF2N(num1, num2, num3){ return encF2(num1, num2, ~num3); }
     function encF4N(num1, num2, num3){ return encF4(num1, ~num2, num3); }
     function encF5N(num1, num2, num3){ return encF5(~num1, num2, num3); }
-    
+
     /* Main part */
     var type = dell_get_serial_line(serial);
     if(type == 'D35B'){
-        return blockEncode(encBlock, encF1, encF2, encF3, encF4, encF5);
+        return blockEncode(encBlock, encF1, encF2, encF3, encF4, encF5,0);
+    } else if(type == '1D3B'){
+        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N,1);
     } else {
-        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N);
+        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N,0);
     }
 }
 
@@ -542,24 +558,26 @@ function answerToString(b_arr, serial){
     for(var i = 0;i<16;i++){
         if(dell_get_serial_line(serial) == "2A7B"){
             ret_str += chartabl2A7B.charAt( b_arr[i] % chartabl2A7B.length);
+        } else if(dell_get_serial_line(serial) == "1D3B"){
+            ret_str += chartabl1D3B.charAt( b_arr[i] % chartabl1D3B.length);
         } else if( ( r <= i) && (ret_str.length < 8) ){
             ret_str += scancods.charAt(encscans[b_arr[i] % encscans.length]);
         }
     }
-    return ret_str;       
+    return ret_str;
 }
 
 function dell_encode(in_str, cnt, serial){
     in_str[cnt] = 0x80;
     var encBlock = StringToIntArr(in_str);
     encBlock = fill_zero(encBlock,6,16);
-    encBlock[14] = (cnt << 3); 
-    
+    encBlock[14] = (cnt << 3);
+
     return IntArrToByteArr(choseEncode(encBlock, serial));
 
 }
 
-/* 7 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
+/* 7 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B, 1D3B ) */
 function getBiosPwdForDellTag(serial){
     if(dell_get_serial_line(serial) == 'A95B'){ // A95B
         serial = dell_get_serial_main(serial) + '595B';
@@ -708,7 +726,7 @@ function getBiosPwdForHpmini(serial){
                   'n': '9', 'q': '5', 'p': '2', 's': 'N', 'r': 'B', 'u': 'L',
                   't': 'A', 'w': 'D', 'v': '6', 'y': 'I', 'x': '4', 'z': '0'
                   };
-    
+
     var table2 = {'1': '3', '0': '1', '3': 'F', '2': '7', '5': 'Q', '4': 'V',
                   '7': 'X', '6': 'G', '9': 'O', '8': 'U', 'a': 'C', 'c': 'E',
                   'b': 'P', 'e': 'M', 'd': 'T', 'g': 'H', 'f': '8', 'i': 'Y',
@@ -716,7 +734,7 @@ function getBiosPwdForHpmini(serial){
                   'n': '9', 'q': '5', 'p': '2', 's': 'N', 'r': 'B', 'u': 'L',
                   't': 'A', 'w': 'D', 'v': '6', 'y': 'I', 'x': 'R', 'z': '0'
                   };
-    
+
     var password1 = "";
     var password2 = "";
     serial = serial.toLowerCase();
@@ -751,8 +769,8 @@ function getBiosPwdForFsi20dec_old(serial){
     }
 
     function codeToBytes(code){
-        var numbers = [parseInt(code.slice(0,5), 10), 
-                       parseInt(code.slice(5,10), 10), 
+        var numbers = [parseInt(code.slice(0,5), 10),
+                       parseInt(code.slice(5,10), 10),
                        parseInt(code.slice(10,15), 10),
                        parseInt(code.slice(15,20), 10)
                       ];
@@ -763,7 +781,7 @@ function getBiosPwdForFsi20dec_old(serial){
         }
         return bytes;
     }
-    
+
 /* op_arr - array with that operations do, ar1,ar2 - numbers */
     function interleave(op_arr,ar1, ar2 ){
         var arr = copy_array(op_arr);
@@ -788,14 +806,14 @@ function getBiosPwdForFsi20dec_old(serial){
         for(var i=0;i<bytes.length;i++){
             bytes[i] = bytes[i] ^ ord(XORkey.charAt(i));
         }
-    
+
         // swap two bytes
         bytes.swap(2,6);
         bytes.swap(3,7);
-        
+
         bytes = interleave(bytes, [0,1,2,3],[0,1,2,3]);
         bytes = interleave(bytes, [4,5,6,7],[6,7,4,5]);
-    
+
         // final rotations
         bytes[0] = ((bytes[0] << 3) & 0xFF) | (bytes[0] >> 5);
     	bytes[1] = ((bytes[1] << 5) & 0xFF) | (bytes[1] >> 3);
@@ -804,10 +822,10 @@ function getBiosPwdForFsi20dec_old(serial){
     	bytes[5] = ((bytes[5] << 6) & 0xFF) | (bytes[5] >> 2);
     	bytes[6] = ((bytes[6] << 1) & 0xFF) | (bytes[6] >> 7);
     	bytes[7] = ((bytes[7] << 2) & 0xFF) | (bytes[7] >> 6);
-    
+
         // len(solution space) = 10 + 26
         bytes = convert_to_remainder(bytes);
-    
+
         return bytesToString(bytes);
     }
 
@@ -816,7 +834,7 @@ function getBiosPwdForFsi20dec_old(serial){
 
 /* For Fujinsu-Siemens. 5x4 dicimal digits. new */
 function getBiosPwdForFSI20dec_new(serial){
-    var f_keys = ["4798156302", "7201593846", "5412367098", "6587249310", 
+    var f_keys = ["4798156302", "7201593846", "5412367098", "6587249310",
             "9137605284", "3974018625", "8052974163"];
 
     var pwdHash = serial.charAt(0) + serial.charAt(2) + serial.charAt(5) +
@@ -837,7 +855,7 @@ function getBiosPwdForFSI20dec(serial){
 
     return CreateHashTable([FSI_20_DEC_NEW,FSI_20_DEC_OLD],
         [getBiosPwdForFSI20dec_new(serial),getBiosPwdForFsi20dec_old(serial)]);
-               
+
 }
 
 /* For Fujinsu-Siemens. 8 or 5x4 hexadecimal digits. */
@@ -853,7 +871,7 @@ function getBiosPwdForFSIhex(serial){
                 crc = (crc << 1);
                 if(crc & 0x10000){
                     crc = crc ^ 0x1021;
-                } 
+                }
             }
             table.push(crc & 0xFFFF);
         }
@@ -863,15 +881,15 @@ function getBiosPwdForFSIhex(serial){
     function hashToChar(hash,code, num){
         return chr(code + ((hash >> num) % 16) % 10);
     }
-    
+
     function hashToString(hash){
         var a = ord('0')
-        return (hashToChar(hash, a, 12) + 
+        return (hashToChar(hash, a, 12) +
                 hashToChar(hash, a, 8)  +
                 hashToChar(hash, a, 4)  +
                 hashToChar(hash, a, 0)  );
     }
-    
+
     function calculateHash(word, table){
         var hash = 0;
         var d =0;
@@ -881,12 +899,12 @@ function getBiosPwdForFSIhex(serial){
         }
         return hash
     }
-    
+
     function decryptCode(code){
         var table = generateCRC16Table();
         return (hashToString(calculateHash(code.slice(0,4), table)) +
                hashToString(calculateHash(code.slice(4,8), table)));
-    
+
     }
     if (serial.length == 20){
         serial = serial.slice(12,20);
@@ -926,7 +944,7 @@ function dellChecker(serial, len_arr, series_arr){
         if(!series_arr) {
             return true;
         }
-        
+
         for(var i=0;i<series_arr.length;i++){
             if(dell_get_serial_line(serial) == series_arr[i]){
                 return true;
@@ -1032,20 +1050,20 @@ function autoGetBiosPwdForFSIhex(serial){
 }
 
 function autoGetBiosPwdForDellHddOld(serial){
-    return dellCheckAndRunWithKey(serial, getBiosPwdForDellHddOld, 
+    return dellCheckAndRunWithKey(serial, getBiosPwdForDellHddOld,
                                 DELL_HDD_OLD, [11], false);
 }
 
-/* 7 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
+/* 7 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B, 1D3B ) */
 function autoGetBiosPwdForDellTag(serial){
-    return dellCheckAndRunWithKey(serial, getBiosPwdForDellTag, 
+    return dellCheckAndRunWithKey(serial, getBiosPwdForDellTag,
                                 DELL_TAG, [11],DELL_SERIES_PREFIX);
 }
 
 
 function metaDellManyTag(serial, len, key, func){
     if(serial.length == len){
-        var answ_arr = []; 
+        var answ_arr = [];
         for(var i=0;i<DELL_SERIES_PREFIX.length;i++){
             answ_arr[i] = func(serial + DELL_SERIES_PREFIX[i]);
         }
@@ -1061,9 +1079,9 @@ function metaDellManyTag(serial, len, key, func){
 }
 
 
-/* 11 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B ) */
+/* 11 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B, 1D3B ) */
 function autoGetBiosPwdForDellHddNew(serial){
-    return dellCheckAndRunWithKey(serial, getBiosPwdForDellHddNew, 
+    return dellCheckAndRunWithKey(serial, getBiosPwdForDellHddNew,
                                 DELL_HDD_NEW, [15],DELL_SERIES_PREFIX);
 }
 
