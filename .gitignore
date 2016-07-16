@@ -2,3 +2,4 @@
 *.bak
 upload/
 build/
+temp/
