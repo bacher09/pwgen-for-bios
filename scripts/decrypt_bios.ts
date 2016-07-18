@@ -28,8 +28,8 @@ interface BIOSDecoder {
 type FindResult = Tuple<string[], BIOSDecoder>;
 
 namespace Utils {
-    /* May be need add 51,52 and 53 symbol  */
-    const keyboardDict = {
+    /* May be need add 51, 52 and 53 symbol  */
+    const keyboardDict: {[key: number]: string} = {
         2: "1",  3: "2",  4: "3",  5: "4",  6: "5",  7: "6",  8: "7",  9: "8",
         10: "9", 11: "0", 16: "q", 17: "w", 18: "e", 19: "r", 20: "t", 21: "y",
         22: "u", 23: "i", 24: "o", 25: "p", 30: "a", 31: "s", 32: "d", 33: "f",
@@ -95,7 +95,7 @@ function SamsungSolver(serial: string): string[] {
     }
 
     function decryptHash(hash: number[], key: number, rotationMatrix: number[]) {
-        let outhash = [];
+        let outhash: number[] = [];
         for (let i = 0; i < hash.length; i++) {
             let val = ((hash[i] << (rotationMatrix[7 * key + i])) & 0xFF) |
                       (hash[i] >> (8 - rotationMatrix[7 * key + i]));
@@ -111,7 +111,7 @@ function SamsungSolver(serial: string): string[] {
     }
     let key = parseInt(serial.substring(0, 2), 16) % 5;
 
-    let calcScanCodePwd = (matrix) =>
+    let calcScanCodePwd = (matrix: number[]) =>
         Utils.keyboardEncToAscii(decryptHash(hash, key, matrix));
 
     let scanCodePassword = calcScanCodePwd(rotationMatrix1);
@@ -162,4 +162,4 @@ export function runDecoders(serial: string, decoders: BIOSDecoder[]): FindResult
         [runDecoder(serial, dec), dec]).filter(res => res[0].length > 0);
 }
 
-export let findPassword = serial => runDecoders(serial, Decoders);
+export let findPassword = (serial: string) => runDecoders(serial, Decoders);
