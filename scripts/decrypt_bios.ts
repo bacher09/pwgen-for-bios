@@ -36,11 +36,6 @@ namespace Utils {
         34: "g", 35: "h", 36: "j", 37: "k", 38: "l", 44: "z", 45: "x", 46: "c",
         47: "v", 48: "b", 49: "n", 50: "m"
     };
-    // Integer divide
-    // TODO: Possible update this code
-    export function div(a: number, b: number): number {
-        return a / b - a % b / b;
-    }
     /* Decode Keyboard code to Ascii symbol */
     export function keyboardEncToAscii(inKey: number[]): string {
         let out = "";
@@ -105,7 +100,7 @@ function SamsungSolver(serial: string): string[] {
     }
 
     let hash: number[] = [];
-    for (let i = 1; i < Utils.div(serial.length, 2); i++) {
+    for (let i = 1; i < Math.floor(serial.length / 2); i++) {
         let val = parseInt(serial.charAt(2 * i) + serial.charAt(2 * i + 1), 16);
         hash.push(val);
     }
