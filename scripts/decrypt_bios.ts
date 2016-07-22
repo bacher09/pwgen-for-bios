@@ -165,7 +165,7 @@ export let Sony: BIOSDecoder = {
     model: BIOSModels.Sony,
     name: "Sony",
     examples: ["1234567"],
-    check: (s) => /\d{7}/gi.test(s),
+    check: (s) => /^\d{7}$/i.test(s),
     solve: (s) => {
         let res = SonySolver(s);
         return res ? [res] : [];
@@ -176,7 +176,7 @@ export let Samsung: BIOSDecoder = {
     model: BIOSModels.Samsung,
     name: "Samsung",
     examples: ["07088120410C0000"],
-    check: (s) => /[0-9ABCDEF]+/gi.test(s) && (
+    check: (s) => /^[0-9ABCDEF]+$/i.test(s) && (
         s.length === 12 || s.length === 14 || s.length === 16
     ),
     solve: SamsungSolver

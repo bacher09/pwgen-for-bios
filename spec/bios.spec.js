@@ -10,6 +10,7 @@ describe("Decryp BIOS", function() {
         expect(bios.Sony.check("1234567")).toBe(true);
         expect(bios.Sony.check("0123456")).toBe(true);
         expect(bios.Sony.check("123o567")).toBe(false);
+        expect(bios.Sony.check("1234567D")).toBe(false);
     });
 
     it("Samsung key for 07088120410C0000 is 12345", function() {
@@ -18,6 +19,8 @@ describe("Decryp BIOS", function() {
 
     it("Samsung input validation", function() {
         expect(bios.Samsung.check("07088120410C0000")).toBe(true);
+        expect(bios.Samsung.check("07088120410C000000")).toBe(false);
+        expect(bios.Samsung.check("07088120410C000O")).toBe(false);
         expect(bios.Samsung.check("07088120410C")).toBe(true);
         expect(bios.Samsung.check("07088120410C00")).toBe(true);
         expect(bios.Samsung.check("0123456")).toBe(false);
