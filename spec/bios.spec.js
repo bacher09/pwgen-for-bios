@@ -51,5 +51,6 @@ describe("Decryp BIOS", function() {
 
     it("FSI 20 dec old key for 1234-4321-1234-4321-1234 is 10cphf0b", function() {
         expect(bios.FSI20DecOld.solve("12344321123443211234")).toEqual(["10cphf0b"]);
+        expect(bios.FSI20DecOld.solve("12344321123443211236")).toEqual(["100phf0b"]);
     })
 });
