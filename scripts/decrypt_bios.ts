@@ -163,9 +163,8 @@ function InsydeSolver(serial: string): string[] {
     let password = "";
     let b = 0;
     let a = 0;
-    let ord = (str: string) => str.charCodeAt(0);
     for (let i = 0; i < 8; i++) {
-        b = ord(salt.charAt(i)) ^ ord(serial.charAt(i));
+        b = salt.charCodeAt(i) ^ serial.charCodeAt(i);
         a = b;
         // a = (a * 0x66666667) >> 32;
         a = (a * 0x66666667);
@@ -182,8 +181,6 @@ function InsydeSolver(serial: string): string[] {
 
 /* For Fujinsu-Siemens. 5x4 dicimal digits */
 function FSI20DecOldSolver(serial: string): string {
-    let ord = (str: string) => str.charCodeAt(0);
-
     function swap<T> (arr: T[], i1: number, i2: number): void {
         let temp = arr[i1];
         arr[i1] = arr[i2];
@@ -217,7 +214,7 @@ function FSI20DecOldSolver(serial: string): string {
         const XORkey = ":3-v@e4i";
         // apply XOR key
         bytes.forEach((val, i, arr) => {
-            arr[i] = val ^ ord(XORkey.charAt(i));
+            arr[i] = val ^ XORkey.charCodeAt(i);
         });
         // swap two bytes
         swap(bytes, 2, 6);
@@ -235,8 +232,8 @@ function FSI20DecOldSolver(serial: string): string {
         // len(solution space) = 10 + 26
         bytes = bytes.map(b => b % 36);
         return bytes.map(sbyte => (sbyte > 9 )
-            ? String.fromCharCode(ord("a") + sbyte - 10)
-            : String.fromCharCode(ord("0") + sbyte)
+            ? String.fromCharCode("a".charCodeAt(0) + sbyte - 10)
+            : String.fromCharCode("0".charCodeAt(0) + sbyte)
         ).join("");
     }
 
