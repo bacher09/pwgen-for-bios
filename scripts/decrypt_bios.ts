@@ -256,6 +256,48 @@ function FSI20DecNewSolver(serial: string): string {
     }).join("");
 }
 
+/* For Fujinsu-Siemens. 8 or 5x4 hexadecimal digits. */
+function FSI20HexSolver(serial: string): string {
+
+    function generateCRC16Table(): number[] {
+        let table: number[] = [];
+        for (let i = 0, crc = 0; i < 256; i++) {
+            crc = (i << 8);
+            for (let j = 0; j < 8; j++) {
+                crc = (crc << 1);
+                if (crc & 0x10000)
+                    crc = crc ^ 0x1021;
+            }
+            table.push(crc & 0xFFFF);
+        }
+        return table;
+    }
+
+    function hashToString(hash: number) {
+        const zero = "0".charCodeAt(0);
+        return [12, 8, 4, 0].reduce((acc, num) => {
+            let temp = String.fromCharCode(zero + ((hash >> num) % 16) % 10);
+            return acc + temp;
+        }, "");
+    }
+
+    function calculateHash(word: string, table: number[]) {
+        let hash = 0;
+        for (let i = 0, d = 0; i < word.length; i++) {
+            d = table[(word.charCodeAt(i) ^ (hash >> 8)) % 256];
+            hash = ((hash << 8) ^ d) & 0xFFFF ;
+        }
+        return hash;
+    }
+
+    if (serial.length === 20)
+        serial = serial.slice(12, 20);
+
+    const table = generateCRC16Table();
+    return hashToString(calculateHash(serial.slice(0, 4), table)) +
+           hashToString(calculateHash(serial.slice(4, 8), table));
+}
+
 export let CleanSerial = (serial: string) => serial.trim().replace(/-/gi, "");
 
 export let Sony: BIOSDecoder = {
@@ -297,10 +339,18 @@ export let Insyde: BIOSDecoder = {
 
 export let FSI20DecOld: BIOSDecoder = {
     model: BIOSModels.FSIPhoenix,
-    name: "Fujitsu-Siemens old",
+    name: "Fujitsu-Siemens decimal",
     examples: ["1234-4321-1234-4321-1234"],
     check: (s) => /^\d{20}$/i.test(s),
     solve: (serial) => [FSI20DecNewSolver(serial), FSI20DecOldSolver(serial)]
+};
+
+export let FSI20Hex: BIOSDecoder = {
+    model: BIOSModels.FSILPhoenix,
+    name: "Fujitsu-Siemens hexdigits",
+    examples: ["AAAA-BBBB-CCCC-DEAD-BEEF"],
+    check: (s) => /^[0-9ABCDEF]{20}$/i.test(s),
+    solve: (serial) => [FSI20HexSolver(serial)]
 };
 
 export let Decoders: BIOSDecoder[] = [
