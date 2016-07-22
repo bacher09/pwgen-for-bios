@@ -37,4 +37,15 @@ describe("Decryp BIOS", function() {
         expect(bios.HPMini.check("CNU12$4ABC")).toBe(false);
         expect(bios.HPMini.check("CNU12п4ABC")).toBe(false);
     });
+
+    it("Insyde key for 03133610 is 12891236", function() {
+        expect(bios.Insyde.solve("03133610")).toEqual(["12891236"]);
+    });
+
+    it("Insyde input validation", function() {
+        expect(bios.Insyde.check("12345678")).toBe(true);
+        expect(bios.Insyde.check("123456789")).toBe(false);
+        expect(bios.Insyde.check("1234o678")).toBe(false);
+        expect(bios.Insyde.check("12345678d")).toBe(false);
+    });
 });

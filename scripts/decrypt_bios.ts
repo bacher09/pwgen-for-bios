@@ -161,6 +161,30 @@ function HPMiniSolver(serial: string): string[] {
     }
 }
 
+/* Maybe need fixing for browsers where numbers is 32-bits */
+/* Some Acer, HP  laptops. 8 digit */
+function InsydeSolver(serial: string): string[] {
+    const salt = "Iou|hj&Z";
+    let password = "";
+    let b = 0;
+    let a = 0;
+    let ord = (str: string) => str.charCodeAt(0);
+    for (let i = 0; i < 8; i++) {
+        b = ord(salt.charAt(i)) ^ ord(serial.charAt(i));
+        a = b;
+        // a = (a * 0x66666667) >> 32;
+        a = (a * 0x66666667);
+        a = Math.floor(a  / Math.pow(2, 32));
+        a = (a >> 2) | (a & 0xC0);
+        if (a & 0x80000000) {
+            a++;
+        }
+        a *= 10;
+        password += (b - a).toString();
+    }
+    return [password];
+}
+
 export let Sony: BIOSDecoder = {
     model: BIOSModels.Sony,
     name: "Sony",
@@ -188,6 +212,14 @@ export let HPMini: BIOSDecoder = {
     examples: ["CNU1234ABC"],
     check: (s) => /^[0-9A-Z]{10}$/i.test(s),
     solve: HPMiniSolver
+};
+
+export let Insyde: BIOSDecoder = {
+    model: BIOSModels.Insyde,
+    name: "Insyde H2O",
+    examples: ["03133610"],
+    check: (s) => /^\d{8}$/i.test(s),
+    solve: InsydeSolver
 };
 
 export let Decoders: BIOSDecoder[] = [
