@@ -243,6 +243,8 @@ function FSI20DecOldSolver(serial: string): string[] {
     return [decryptCode_old(codeToBytes(serial))];
 }
 
+export let CleanSerial = (serial: string) => serial.trim().replace(/-/gi, "");
+
 export let Sony: BIOSDecoder = {
     model: BIOSModels.Sony,
     name: "Sony",
@@ -284,7 +286,7 @@ export let FSI20DecOld: BIOSDecoder = {
     model: BIOSModels.FSIPhoenix,
     name: "Fujitsu-Siemens old",
     examples: ["1234-4321-1234-4321-1234"],
-    check: (s) => true,
+    check: (s) => /^\d{20}$/i.test(s),
     solve: FSI20DecOldSolver
 };
 
@@ -301,4 +303,5 @@ export function runDecoders(serial: string, decoders: BIOSDecoder[]): FindResult
         [runDecoder(serial, dec), dec]).filter(res => res[0].length > 0);
 }
 
-export let findPassword = (serial: string) => runDecoders(serial, Decoders);
+export let findPassword = (serial: string) =>
+    runDecoders(CleanSerial(serial), Decoders);
