@@ -185,6 +185,104 @@ function InsydeSolver(serial: string): string[] {
     return [password];
 }
 
+/* For Fujinsu-Siemens. 5x4 dicimal digits */
+function FSI20DecOldSolver(serial: string): string[] {
+    let ord = (str: string) => str.charCodeAt(0);
+
+    function copy_array(ar: number[]): number[] {
+        let temp_arr: number[] = [];
+        for (let i = 0; i < ar.length; i++) {
+            temp_arr[i] = ar[i];
+        }
+        return temp_arr;
+    }
+
+    function byteToChar(symbol_byte: number) {
+        if (symbol_byte > 9 ) {
+            return String.fromCharCode(ord("a") + symbol_byte - 10);
+        } else {
+            return String.fromCharCode(ord("0") + symbol_byte);
+        }
+    }
+
+    function bytesToString(bytes: number[]): string {
+        let str = "";
+        for (let i = 0; i < bytes.length; i++) {
+            str += byteToChar(bytes[i]);
+        }
+        return str;
+    }
+
+    function codeToBytes(code: string) {
+        let numbers = [
+            parseInt(code.slice(0, 5), 10),
+            parseInt(code.slice(5, 10), 10),
+            parseInt(code.slice(10, 15), 10),
+            parseInt(code.slice(15, 20), 10)
+        ];
+        let bytes: number[] = [];
+        for (let i = 0; i < numbers.length; i++) {
+            bytes.push(numbers[i] % 256);
+            bytes.push(Math.floor(numbers[i] / 256));
+        }
+        return bytes;
+    }
+
+/* op_arr - array with that operations do, ar1,ar2 - numbers */
+    function interleave(op_arr: number[], ar1: number[], ar2: number[]) {
+        let arr = copy_array(op_arr);
+        arr[ar1[0]] = ((op_arr[ar2[0]] >> 4) | (op_arr[ar2[3]] << 4)) & 0xFF;
+        arr[ar1[1]] = ((op_arr[ar2[0]] & 0x0F) | (op_arr[ar2[3]] & 0xF0));
+        arr[ar1[2]] = ((op_arr[ar2[1]] >> 4) | (op_arr[ar2[2]] << 4) & 0xFF);
+        arr[ar1[3]] = (op_arr[ar2[1]] & 0x0F) | (op_arr[ar2[2]] & 0xF0);
+        return arr;
+    }
+
+    function convert_to_remainder(arr: number[]) {
+        let temp_arr: number[] = [];
+        for (let i = 0; i < arr.length; i++) {
+            temp_arr[i] = arr[i] % 36;
+        }
+        return temp_arr;
+    }
+
+    function decryptCode_old(bytes: number[]) {
+        const XORkey = ":3-v@e4i";
+        function swap<T> (arr: T[], i1: number, i2: number): void {
+            let temp = arr[i1];
+            arr[i1] = arr[i2];
+            arr[i2] = temp;
+        };
+        // apply XOR key
+        for (let i = 0; i < bytes.length; i++) {
+            bytes[i] = bytes[i] ^ ord(XORkey.charAt(i));
+        }
+
+        // swap two bytes
+        swap(bytes, 2, 6);
+        swap(bytes, 3, 7);
+
+        bytes = interleave(bytes, [0, 1, 2, 3], [0, 1, 2, 3]);
+        bytes = interleave(bytes, [4, 5, 6, 7], [6, 7, 4, 5]);
+
+        // final rotations
+        bytes[0] = ((bytes[0] << 3) & 0xFF) | (bytes[0] >> 5);
+        bytes[1] = ((bytes[1] << 5) & 0xFF) | (bytes[1] >> 3);
+        bytes[2] = ((bytes[2] << 7) & 0xFF) | (bytes[2] >> 1);
+        bytes[3] = ((bytes[3] << 4) & 0xFF) | (bytes[3] >> 4);
+        bytes[5] = ((bytes[5] << 6) & 0xFF) | (bytes[5] >> 2);
+        bytes[6] = ((bytes[6] << 1) & 0xFF) | (bytes[6] >> 7);
+        bytes[7] = ((bytes[7] << 2) & 0xFF) | (bytes[7] >> 6);
+
+        // len(solution space) = 10 + 26
+        bytes = convert_to_remainder(bytes);
+
+        return bytesToString(bytes);
+    }
+
+    return [decryptCode_old(codeToBytes(serial))];
+}
+
 export let Sony: BIOSDecoder = {
     model: BIOSModels.Sony,
     name: "Sony",
@@ -222,8 +320,16 @@ export let Insyde: BIOSDecoder = {
     solve: InsydeSolver
 };
 
+export let FSI20DecOld: BIOSDecoder = {
+    model: BIOSModels.FSIPhoenix,
+    name: "Fujitsu-Siemens old",
+    examples: ["1234-4321-1234-4321-1234"],
+    check: (s) => true,
+    solve: FSI20DecOldSolver
+};
+
 export let Decoders: BIOSDecoder[] = [
-    Sony, Samsung, HPMini
+    Sony, Samsung, HPMini, Insyde, FSI20DecOld
 ];
 
 export function runDecoder(serial: string, decoder: BIOSDecoder): string[] {
