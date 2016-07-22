@@ -23,4 +23,15 @@ describe("Decryp BIOS", function() {
         expect(bios.Samsung.check("0123456")).toBe(false);
         expect(bios.Samsung.check("07088a20410C00")).toBe(true);
     });
+
+    it("HPMini key for CNU1234ABC is e9l37fvcpe", function() {
+        expect(bios.HPMini.solve("CNU1234ABC")).toEqual(["e9l37fvcpe"]);
+    });
+
+    it("HPMini input validation", function() {
+        expect(bios.HPMini.check("CNU1234ABC")).toBe(true);
+        expect(bios.HPMini.check("CNU1234ABCV")).toBe(false);
+        expect(bios.HPMini.check("CNU12$4ABC")).toBe(false);
+        expect(bios.HPMini.check("CNU12п4ABC")).toBe(false);
+    });
 });
