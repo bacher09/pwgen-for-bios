@@ -181,7 +181,7 @@ function InsydeSolver(serial: string): string[] {
 }
 
 /* For Fujinsu-Siemens. 5x4 dicimal digits */
-function FSI20DecOldSolver(serial: string): string[] {
+function FSI20DecOldSolver(serial: string): string {
     let ord = (str: string) => str.charCodeAt(0);
 
     function swap<T> (arr: T[], i1: number, i2: number): void {
@@ -240,7 +240,20 @@ function FSI20DecOldSolver(serial: string): string[] {
         ).join("");
     }
 
-    return [decryptCode_old(codeToBytes(serial))];
+    return decryptCode_old(codeToBytes(serial));
+}
+
+/* For Fujinsu-Siemens. 5x4 dicimal digits. new */
+function FSI20DecNewSolver(serial: string): string {
+    const f_keys = [
+        "4798156302", "7201593846", "5412367098", "6587249310",
+        "9137605284", "3974018625", "8052974163"
+    ];
+
+    return [0, 2, 5, 11, 13, 15, 16].map((val, i, arr) => {
+        let temp = parseInt(serial.charAt(val), 10);
+        return f_keys[i].charAt(temp);
+    }).join("");
 }
 
 export let CleanSerial = (serial: string) => serial.trim().replace(/-/gi, "");
@@ -287,7 +300,7 @@ export let FSI20DecOld: BIOSDecoder = {
     name: "Fujitsu-Siemens old",
     examples: ["1234-4321-1234-4321-1234"],
     check: (s) => /^\d{20}$/i.test(s),
-    solve: FSI20DecOldSolver
+    solve: (serial) => [FSI20DecNewSolver(serial), FSI20DecOldSolver(serial)]
 };
 
 export let Decoders: BIOSDecoder[] = [

@@ -49,11 +49,11 @@ describe("Decryp BIOS", function() {
         expect(bios.Insyde.check("12345678d")).toBe(false);
     });
 
-    it("FSI 20 dec old key for 1234-4321-1234-4321-1234 is 10cphf0b", function() {
+    it("FSI 20 dec old key for 1234-4321-1234-4321-1234 is 7122790 or 10cphf0b", function() {
         expect(bios.FSI20DecOld.solve(bios.CleanSerial("1234-4321-1234-4321-1234")))
-            .toEqual(["10cphf0b"]);
+            .toEqual(["7122790", "10cphf0b"]);
 
         expect(bios.FSI20DecOld.solve(bios.CleanSerial("1234-4321-1234-4321-1236")))
-            .toEqual(["100phf0b"]);
+            .toEqual(["7122790", "100phf0b"]);
     })
 });
