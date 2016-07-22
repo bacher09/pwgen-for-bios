@@ -3,9 +3,13 @@
         "module": "commonjs",
         "target": "es3",
         "noImplicitAny": true,
-        "sourceMap": false
+        "sourceMap": false,
+        "outDir": "javascript/"
     },
     "exclude": [
         "node_modules"
+    ],
+    "files": [
+        "scripts/decrypt_bios.ts"
     ]
 }

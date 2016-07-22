@@ -3,3 +3,5 @@
 upload/
 build/
 temp/
+typings/
+typings.json
