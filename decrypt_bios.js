@@ -34,6 +34,8 @@ var encscans = [0x05,0x10,0x13,0x09,0x32,0x03,0x25,0x11,0x1F,0x17,0x06,
 
 var chartabl2A7B = "012345679abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0";
 var chartabl1D3B = "0BfIUG1kuPvc8A9Nl5DLZYSno7Ka6HMgqsJWm65yCQR94b21OTp7VFX2z0jihE33d4xtrew0";
+var chartabl1F66 = "0ewr3d4xtUG1ku0BfIp7VFb21OTSno7KDLZYqsJWa6HMgCQR94m65y9Nl5Pvc8AjihE3X2z0";
+var chartabl6FF1 = "08rptBxfbGVMz38IiSoeb360MKcLf4QtBCbWVzmH5wmZUcRR5DZG2xNCEv1nFtzsZB2bw1X0";
 
 
 var  scancods = "\00\0331234567890-=\010\011qwertyuiop[]\015\377asdfghjkl;'`\377\\zxcvbnm,./";
@@ -411,6 +413,10 @@ function calc_suffix_shortcut(serial, s_arr1, s_arr2){
         return end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl2A7B));
     } else if(dell_get_serial_line(serial) == '1D3B'){
         return end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl1D3B));
+    } else if(dell_get_serial_line(serial) == '1F66'){
+        return end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl1F66));
+    } else if(dell_get_serial_line(serial) == '6FF1'){
+        return end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl6FF1));
     }
     return end_calc(serial_arr, ret_arr, s_arr2, encscans);
 }
@@ -469,10 +475,18 @@ function blockEncode(encBlock,f1, f2, f3, f4 ,f5,repeater){
               [ 6, 10, 15, 21 ]
             ];
     var t;
-    for(j=0;j<=repeater*20;j++){
+    for(j=0;j<=repeater;j++){
        if(repeater){
-            A|=0x97;
-            B^=0x8;
+       		if (repeater == 16) {
+       			A|=0x100097;
+				B^=0xA0008;
+       		} else (repeater == 22) {
+       			A|=0xA08097;
+       			B^=0x0A010908;
+			} else {
+            	A|=0x97;
+            	B^=0x8;
+            }
             C|=(0x60606161 - j);
             D^=(0x50501010 + j);
         }
@@ -546,7 +560,11 @@ function choseEncode(encBlock, serial){
     if(type == 'D35B'){
         return blockEncode(encBlock, encF1, encF2, encF3, encF4, encF5,0);
     } else if(type == '1D3B'){
-        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N,1);
+        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N,20);
+    } else if(type == '1F66'){
+        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N,16);
+    } else if(type == '6FF1'){
+        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N,22);
     } else {
         return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N,0);
     }
