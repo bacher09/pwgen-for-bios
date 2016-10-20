@@ -23,7 +23,7 @@ var DELL_HDD_NEW = 'dell_hdd_new';
 var DELL_HDD_OLD = 'dell_hdd_old';
 
 
-var DELL_SERIES_PREFIX = ['595B','D35B','2A7B','A95B','1D3B'];
+var DELL_SERIES_PREFIX = ['595B','D35B','2A7B','A95B','1D3B','1F66','6FF1'];
 
 
 var encscans = [0x05,0x10,0x13,0x09,0x32,0x03,0x25,0x11,0x1F,0x17,0x06,
@@ -59,6 +59,24 @@ var MD5magic_o = [
     0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
             ];
 
+var MD5magic_x = [
+0xd76aa478,0xe8c7b756,0x242070db,0xc1bdceee,
+0xf57c0faf,0x4787c62a,0xa8304613,0xfd469501,
+0x698098d8,0x8b44f7af,0xffff5bb1,0x895cd7be,
+0x6b901122,0xfd987193,0xa679438e,0x49b40821,
+0xf61e2562,0xc040b340,0x265e5a51,0xe9b6c7aa,
+0xd62f105d,0x02441453,0xd8a1e681,0xe7d3fbc8,
+0x21e1cde6,0xc33707d6,0xf4d50d87,0x455a14ed,
+0xa9e3e905,0xfcefa3f8,0x676f02d9,0x8d2a4c8a,
+0xd9d4d039,0xe6db99e5,0x1fa27cf8,0xc4ac5665,
+0x289b7ec6,0xeaa127fa,0xd4ef3085,0x04881d05,
+0xa4beea44,0x4bdecfa9,0xf6bb4b60,0xbebfbc70,
+0xfffa3942,0x8771f681,0x6d9d6122,0xfde5380c,
+0xf7537e82,0xbd3af235,0x2ad7d2bb,0xeb86d391,
+0x6fa87e4f,0xfe2ce6e0,0xa3014314,0x4e0811a1,
+0x655b59c3,0x8f0ccc92,0xffeff47d,0x85845dd1,
+0xf4292244,0x432aff97,0xab9423a7,0xfc93a039];
+
 function CorectBits(arr){
     if(typeof(arr) == 'object'){
         for(var i = 0;i<arr.length;i++){
@@ -71,6 +89,22 @@ function CorectBits(arr){
 }
 
 var MD5magic = CorectBits(MD5magic_o);
+var MD5magic2 = CorectBits(MD5magic_x);
+
+function decimalToHexString(number) { // debug
+    if (number < 0) {
+        number = 0xFFFFFFFF + number + 1;
+    }
+    return number.toString(16).toUpperCase();
+}
+
+function decimalToHexStringLE(number) { // little endian
+    if (number < 0) {
+        number = 0xFFFFFFFF + number + 1;
+    }
+    return number.toString(16).replace(/^(.(..)*)$/, "0$1").match(/../g).reverse().join("").toUpperCase(); // swap endiannes
+}
+
 /* Convert signed int to unsined like in C */
 function SignedToUnsigned(num){
     return num >>> 0;
@@ -363,8 +397,6 @@ function bruteForce(hash, salt, digitsOnly, charsOnly, minLen, maxLen){
 }
 
 
-
-
 function calc_in(l_arr){
     return [ (l_arr[1] >> 1),
              ((l_arr[1] >> 6) | (l_arr[0] << 2)),
@@ -408,17 +440,19 @@ function end_calc(serial, calced_arr, s_arr, table){
 
 function calc_suffix_shortcut(serial, s_arr1, s_arr2){
     var serial_arr = StringToArray(serial);
+    var suffix;
     var ret_arr = begin_calc(serial_arr,s_arr1);
     if(dell_get_serial_line(serial) == '2A7B'){
-        return end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl2A7B));
+        suffix=end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl2A7B));
     } else if(dell_get_serial_line(serial) == '1D3B'){
-        return end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl1D3B));
+        suffix=end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl1D3B));
     } else if(dell_get_serial_line(serial) == '1F66'){
-        return end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl1F66));
+        suffix=end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl1F66));
     } else if(dell_get_serial_line(serial) == '6FF1'){
-        return end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl6FF1));
-    }
-    return end_calc(serial_arr, ret_arr, s_arr2, encscans);
+        suffix=end_calc(serial_arr,ret_arr,s_arr2,StringToArray(chartabl6FF1));
+    } else
+        suffix=end_calc(serial_arr, ret_arr, s_arr2, encscans);
+    return suffix;
 }
 
 function calc_suffix_tag(serial){
@@ -448,11 +482,7 @@ function calc_suffix_hdd_old(serial){
 
 function blockEncode(encBlock,f1, f2, f3, f4 ,f5,repeater){
 
-	var encData = [ 0x67452301 | 0, // Reinit each run
-                0xEFCDAB89 | 0,
-                0x98BADCFE | 0,
-                0x10325476 | 0];
-
+    var encData = [ 0x67452301 | 0, 0xEFCDAB89 | 0, 0x98BADCFE | 0, 0x10325476 | 0]; // reinit each run
 
     var A = encData[0] | 0; // For bit alignment
     var B = encData[1] | 0;
@@ -464,57 +494,248 @@ function blockEncode(encBlock,f1, f2, f3, f4 ,f5,repeater){
         return  (SignedToUnsigned(t)/ Math.pow(2,32 - k)) |
                 ((SignedToUnsigned(t) << k) | 0 );
     }
-
+    function rol2(t, factor){
+        return  (SignedToUnsigned(t)/ Math.pow(2,32 - factor)) |
+                ((SignedToUnsigned(t) << factor) | 0 );
+    }
     function f_shortcut(func, key, num){
         return (A + f1(func, B, C , D, MD5magic[num] + encBlock[ key ])) | 0;
+    }
+    function f_shortcut2(func, key, num){
+        return (A + f1(func, B, C , D, MD5magic2[num] + encBlock[key])) | 0;
     }
 
     var S = [ [ 7, 12, 17, 22 ],
               [ 5, 9,  14, 20 ],
               [ 4, 11, 16, 23 ],
-              [ 6, 10, 15, 21 ]
-            ];
+              [ 6, 10, 15, 21 ] ];
     var t;
+
     for(j=0;j<=repeater;j++){
-       if(repeater){
-       		if (repeater == 16) {
-       			A|=0x100097;
-				B^=0xA0008;
-       		} else (repeater == 22) {
-       			A|=0xA08097;
-       			B^=0x0A010908;
-			} else {
-            	A|=0x97;
-            	B^=0x8;
-            }
+        if (repeater == 16) {          // 1f66
+            A|=0x00100097;
+            B^=0x000A0008;
             C|=(0x60606161 - j);
             D^=(0x50501010 + j);
-        }
-        for(i=0;i<64;i++){
-            switch(i >> 4){
-                case 0:
+            for (i=0;i<4;i++) {
+                t=f_shortcut2(f2,(i*4  ) & 15,16+(i*4)  |0);
+                A=D; D=C; C=B; B=(rol2(t,S[0][0]) + B) | 0;
+                t=f_shortcut2(f2,(i*4+1) & 15,16+(i*4)+1|0);
+                A=D; D=C; C=B; B=(rol2(t,S[0][1]) + B) | 0;
+                t=f_shortcut2(f2,(i*4+2) & 15,16+(i*4)+2|0);
+                A=D; D=C; C=B; B=(rol2(t,S[0][2]) + B) | 0;
+                t=f_shortcut2(f2,(i*4+3) & 15,16+(i*4)+3|0);
+                A=D; D=C; C=B; B=(rol2(t,S[0][3]) + B) | 0;
+            }
+            for (i=0;i<4;i++) {
+                t=f_shortcut2(f3,(i*4+1)   ,48+(i*4)  );
+                A=D; D=C; C=B; B=(rol2(t,S[1][0]) + B) | 0;
+                t=f_shortcut2(f3,(i*4+6)&15,48+(i*4)+1);
+                A=D; D=C; C=B; B=(rol2(t,S[1][1]) + B) | 0;
+                t=f_shortcut2(f3,(i*4-5)&15,48+(i*4)+2);
+                A=D; D=C; C=B; B=(rol2(t,S[1][2]) + B) | 0;
+                t=f_shortcut2(f3,i*4       ,48+(i*4)+3);
+                A=D; D=C; C=B; B=(rol2(t,S[1][3]) + B) | 0;
+            }
+            for (i=3;i>=0;i--) {
+                t=f_shortcut2(f4,(i*4-7)&15,32+(i*4)  );
+                A=D; D=C; C=B; B=(rol2(t,S[2][0]) + B) | 0;
+                t=f_shortcut2(f4,(i*4-4)&15,32+(i*4)+1);
+                A=D; D=C; C=B; B=(rol2(t,S[2][1]) + B) | 0;
+                t=f_shortcut2(f4,(i*4-1)&15,32+(i*4)+2);
+                A=D; D=C; C=B; B=(rol2(t,S[2][2]) + B) | 0;
+                t=f_shortcut2(f4,(i*4+2)   ,32+(i*4)+3);
+                A=D; D=C; C=B; B=(rol2(t,S[2][3]) + B) | 0;
+            }
+            for (i=3;i>=0;i--) {
+                t=f_shortcut2(f5,(i*4+4)&15, 0+(i*4)  );
+                A=D; D=C; C=B; B=(rol2(t,S[3][0]) + B) | 0;
+                t=f_shortcut2(f5,(i*4-5)&15, 0+(i*4)+1);
+                A=D; D=C; C=B; B=(rol2(t,S[3][1]) + B) | 0;
+                t=f_shortcut2(f5,(i*4+2)   , 0+(i*4)+2);
+                A=D; D=C; C=B; B=(rol2(t,S[3][2]) + B) | 0;
+                t=f_shortcut2(f5,(i*4-7)&15, 0+(i*4)+3);
+                A=D; D=C; C=B; B=(rol2(t,S[3][3]) + B) | 0;
+            }
+        } else if (repeater == 22) {
+            A|=0x00A08097;
+            B^=0x0A010908;
+            C|=(0x60606161 - j);
+            D^=(0x50501010 + j);
+            for (i=0;i<4;i++) {
+                t=f_shortcut2(f2,(i*4  ) & 15,32+(i*4)  |0);
+                A=D; D=C; C=B; B=(rol2(t,S[0][0]) + B) | 0;
+                t=f_shortcut2(f2,(i*4+1) & 15,32+(i*4)+1|0);
+                A=D; D=C; C=B; B=(rol2(t,S[0][1]) + B) | 0;
+                t=f_shortcut2(f2,(i*4+2) & 15,32+(i*4)+2|0);
+                A=D; D=C; C=B; B=(rol2(t,S[0][2]) + B) | 0;
+                t=f_shortcut2(f2,(i*4+3) & 15,32+(i*4)+3|0);
+                A=D; D=C; C=B; B=(rol2(t,S[0][3]) + B) | 0;
+            }
+            for (i=0;i<4;i++) {
+                t=f_shortcut2(f3,(i*4+1)   , 0+(i*4)  );
+                A=D; D=C; C=B; B=(rol2(t,S[1][0]) + B) | 0;
+                t=f_shortcut2(f3,(i*4+6)&15, 0+(i*4)+1);
+                A=D; D=C; C=B; B=(rol2(t,S[1][1]) + B) | 0;
+                t=f_shortcut2(f3,(i*4-5)&15, 0+(i*4)+2);
+                A=D; D=C; C=B; B=(rol2(t,S[1][2]) + B) | 0;
+                t=f_shortcut2(f3,i*4       , 0+(i*4)+3);
+                A=D; D=C; C=B; B=(rol2(t,S[1][3]) + B) | 0;
+            }
+            for (i=3;i>=0;i--) {
+                t=f_shortcut2(f4,(i*4-7)&15,16+(i*4)  );
+                A=D; D=C; C=B; B=(rol2(t,S[2][0]) + B) | 0;
+                t=f_shortcut2(f4,(i*4-4)&15,16+(i*4)+1);
+                A=D; D=C; C=B; B=(rol2(t,S[2][1]) + B) | 0;
+                t=f_shortcut2(f4,(i*4-1)&15,16+(i*4)+2);
+                A=D; D=C; C=B; B=(rol2(t,S[2][2]) + B) | 0;
+                t=f_shortcut2(f4,(i*4+2)   ,16+(i*4)+3);
+                A=D; D=C; C=B; B=(rol2(t,S[2][3]) + B) | 0;
+            }
+            for (i=3;i>=0;i--) {
+                t=f_shortcut2(f5,(i*4+4)&15,48+(i*4)  );
+                A=D; D=C; C=B; B=(rol2(t,S[3][0]) + B) | 0;
+                t=f_shortcut2(f5,(i*4-5)&15,48+(i*4)+1);
+                A=D; D=C; C=B; B=(rol2(t,S[3][1]) + B) | 0;
+                t=f_shortcut2(f5,(i*4+2)   ,48+(i*4)+2);
+                A=D; D=C; C=B; B=(rol2(t,S[3][2]) + B) | 0;
+                t=f_shortcut2(f5,(i*4-7)&15,48+(i*4)+3);
+                A=D; D=C; C=B; B=(rol2(t,S[3][3]) + B) | 0;
+            }
+        } else {
+            if (repeater) {
+                A|=0x97;
+                B^=0x8;
+                C|=(0x60606161 - j);
+                D^=(0x50501010 + j);
+            }
+            for(i=0;i<64;i++){
+                switch(i >> 4){
+                    case 0:
                         t = f_shortcut(f2, i & 15, i); // Use half byte
                         break;
-                case 1:
+                    case 1:
                         t = f_shortcut(f3, (i*5 + 1) & 15, i);
                         break;
-                case 2:
+                    case 2:
                         t = f_shortcut(f4, (i*3 + 5) & 15, i);
                         break;
-                case 3:
+                    case 3:
                         t = f_shortcut(f5, (i*7) & 15, i);
                         break;
+                }
+                A = D, D = C, C = B, B = (rol(t,S,i) + B) | 0;
             }
-            A = D, D = C, C = B, B = (rol(t,S,i) + B) | 0;
         }
-		encData[0]+=A;
+        encData[0]+=A;
         encData[1]+=B;
-		encData[2]+=C;
-		encData[3]+=D;
+        encData[2]+=C;
+        encData[3]+=D;
     }
-
+    if (repeater == 16) { //1f66
+        for(j=0;j<=20;j++){                        //1d3b
+            A|=0x97;
+            B^=0x8;
+            C|=(0x50501010 - j);
+            D^=(0x60606161 + j);
+            for (i=3;i>=0;i--) {
+                t=f_shortcut2(f4,(i*4-7) & 15,32+(i*4)  );
+                A=D; D=C; C=B; B=(rol2(t,S[2][0]) + B) | 0;
+                t=f_shortcut2(f4,(i*4-4) & 15,32+(i*4)+1);
+                A=D; D=C; C=B; B=(rol2(t,S[2][1]) + B) | 0;
+                t=f_shortcut2(f4,(i*4-1) & 15,32+(i*4)+2);
+                A=D; D=C; C=B; B=(rol2(t,S[2][2]) + B) | 0;
+                t=f_shortcut2(f4,i*4+2,32+(i*4)+3);
+                A=D; D=C; C=B; B=(rol2(t,S[2][3]) + B) | 0;
+            }
+            for (i=3;i>=0;i--) {
+                t=f_shortcut2(f5,(i*4+4) & 15,48+(i*4)  );
+                A=D; D=C; C=B; B=(rol2(t,S[3][0]) + B) | 0;
+                t=f_shortcut2(f5,(i*4-5) & 15,48+(i*4)+1);
+                A=D; D=C; C=B; B=(rol2(t,S[3][1]) + B) | 0;
+                t=f_shortcut2(f5,i*4+2,48+(i*4)+2);
+                A=D; D=C; C=B; B=(rol2(t,S[3][2]) + B) | 0;
+                t=f_shortcut2(f5,(i*4-7) & 15,48+(i*4)+3);
+                A=D; D=C; C=B; B=(rol2(t,S[3][3]) + B) | 0;
+            }
+            for (i=0;i<4;i++) {
+                t=f_shortcut2(f2,(i*4  ) & 15, 0+(i*4));
+                A=D; D=C; C=B; B=(rol2(t,S[0][0]) + B) | 0;
+                t=f_shortcut2(f2,(i*4+1) & 15, 0+(i*4)+1);
+                A=D; D=C; C=B; B=(rol2(t,S[0][1]) + B) | 0;
+                t=f_shortcut2(f2,(i*4+2) & 15, 0+(i*4)+2);
+                A=D; D=C; C=B; B=(rol2(t,S[0][2]) + B) | 0;
+                t=f_shortcut2(f2,(i*4+3) & 15, 0+(i*4)+3);
+                A=D; D=C; C=B; B=(rol2(t,S[0][3]) + B) | 0;
+            }
+            for (i=0;i<4;i++) {
+                t=f_shortcut2(f3,(i*4+1),16+(i*4)  );
+                A=D; D=C; C=B; B=(rol2(t,S[1][0]) + B) | 0;
+                t=f_shortcut2(f3,(i*4+6) & 15,16+(i*4)+1);
+                A=D; D=C; C=B; B=(rol2(t,S[1][1]) + B) | 0;
+                t=f_shortcut2(f3,(i*4-5) & 15,16+(i*4)+2);
+                A=D; D=C; C=B; B=(rol2(t,S[1][2]) + B) | 0;
+                t=f_shortcut2(f3,i*4,16+(i*4)+3);
+                A=D; D=C; C=B; B=(rol2(t,S[1][3]) + B) | 0;
+            }
+            encData[0]+=A;
+            encData[1]+=B;
+            encData[2]+=C;
+            encData[3]+=D;
+        }
+    } else if (repeater == 22) {
+        for(j=0;j<=16;j++){
+            A|=0x00100097;
+            B^=0x000A0008;
+            C|=(0x50501010 - j);
+            D^=(0x60606161 + j);
+            for (i=3;i>=0;i--) {
+                t=f_shortcut2(f4,(i*4-7) & 15,16+(i*4)  );
+                A=D; D=C; C=B; B=(rol2(t,S[2][0]) + B) | 0;
+                t=f_shortcut2(f4,(i*4-4) & 15,16+(i*4)+1);
+                A=D; D=C; C=B; B=(rol2(t,S[2][1]) + B) | 0;
+                t=f_shortcut2(f4,(i*4-1) & 15,16+(i*4)+2);
+                A=D; D=C; C=B; B=(rol2(t,S[2][2]) + B) | 0;
+                t=f_shortcut2(f4,i*4+2,16+(i*4)+3);
+                A=D; D=C; C=B; B=(rol2(t,S[2][3]) + B) | 0;
+            }
+            for (i=0;i<4;i++) {
+                t=f_shortcut2(f5,(i*4+4) & 15,32+(i*4)  );
+                A=D; D=C; C=B; B=(rol2(t,S[3][0]) + B) | 0;
+                t=f_shortcut2(f5,(i*4-5) & 15,32+(i*4)+1);
+                A=D; D=C; C=B; B=(rol2(t,S[3][1]) + B) | 0;
+                t=f_shortcut2(f5,i*4+2,32+(i*4)+2);
+                A=D; D=C; C=B; B=(rol2(t,S[3][2]) + B) | 0;
+                t=f_shortcut2(f5,(i*4-7) & 15,32+(i*4)+3);
+                A=D; D=C; C=B; B=(rol2(t,S[3][3]) + B) | 0;
+            }
+            for (i=3;i>=0;i--) {
+                t=f_shortcut2(f2,(i*4  ) & 15, 0+(i*4));
+                A=D; D=C; C=B; B=(rol2(t,S[0][0]) + B) | 0;
+                t=f_shortcut2(f2,(i*4+1) & 15, 0+(i*4)+1);
+                A=D; D=C; C=B; B=(rol2(t,S[0][1]) + B) | 0;
+                t=f_shortcut2(f2,(i*4+2) & 15, 0+(i*4)+2);
+                A=D; D=C; C=B; B=(rol2(t,S[0][2]) + B) | 0;
+                t=f_shortcut2(f2,(i*4+3) & 15, 0+(i*4)+3);
+                A=D; D=C; C=B; B=(rol2(t,S[0][3]) + B) | 0;
+            }
+            for (i=0;i<4;i++) {
+                t=f_shortcut2(f3,(i*4+1),48+(i*4)  );
+                A=D; D=C; C=B; B=(rol2(t,S[1][0]) + B) | 0;
+                t=f_shortcut2(f3,(i*4+6) & 15,48+(i*4)+1);
+                A=D; D=C; C=B; B=(rol2(t,S[1][1]) + B) | 0;
+                t=f_shortcut2(f3,(i*4-5) & 15,48+(i*4)+2);
+                A=D; D=C; C=B; B=(rol2(t,S[1][2]) + B) | 0;
+                t=f_shortcut2(f3,i*4,48+(i*4)+3);
+                A=D; D=C; C=B; B=(rol2(t,S[1][3]) + B) | 0;
+            }
+            encData[0]+=A;
+            encData[1]+=B;
+            encData[2]+=C;
+            encData[3]+=D;
+        }
+    }
     return CorectBits([encData[0],encData[1],encData[2],encData[3]]);
-
 }
 
 function dell_get_serial_line(serial){
@@ -578,6 +799,10 @@ function answerToString(b_arr, serial){
             ret_str += chartabl2A7B.charAt( b_arr[i] % chartabl2A7B.length);
         } else if(dell_get_serial_line(serial) == "1D3B"){
             ret_str += chartabl1D3B.charAt( b_arr[i] % chartabl1D3B.length);
+        } else if(dell_get_serial_line(serial) == "1F66"){
+            ret_str += chartabl1F66.charAt( b_arr[i] % chartabl1F66.length);
+        } else if(dell_get_serial_line(serial) == "6FF1"){
+            ret_str += chartabl6FF1.charAt( b_arr[i] % chartabl6FF1.length);
         } else if( ( r <= i) && (ret_str.length < 8) ){
             ret_str += scancods.charAt(encscans[b_arr[i] % encscans.length]);
         }
@@ -595,7 +820,7 @@ function dell_encode(in_str, cnt, serial){
 
 }
 
-/* 7 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B, 1D3B ) */
+/* 7 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B, 1D3B etc...) */
 function getBiosPwdForDellTag(serial){
     if(dell_get_serial_line(serial) == 'A95B'){ // A95B
         serial = dell_get_serial_main(serial) + '595B';
@@ -633,12 +858,12 @@ function getBiosPwdForSony(serial){
     if(serial.length != 7){
         return ""
     }
-	var table = "0987654321876543210976543210982109876543109876543221098765436543210987";
-	var pos = 0;
+    var table = "0987654321876543210976543210982109876543109876543221098765436543210987";
+    var pos = 0;
     var code= "";
     for(var i=0;i<serial.length;i++){
-		code += table.charAt(parseInt(serial.charAt(i), 10)+10*pos);
-		pos++;
+        code += table.charAt(parseInt(serial.charAt(i), 10)+10*pos);
+        pos++;
     }
     return code;
 }
@@ -653,7 +878,7 @@ function getBiosPwdForSamsung(serial){
 
 
     function decryptHash(hash, key, rotationMatrix){
-	    var outhash = [];
+        var outhash = [];
         for(var i=0;i<hash.length;i++){
             outhash.push(((hash[i] << (rotationMatrix[7*key+i])) & 0xFF) | (hash[i] >> (8-rotationMatrix[7*key+i])));
         }
@@ -663,13 +888,13 @@ function getBiosPwdForSamsung(serial){
     var hash = [];
 
     for(var i=1;i<div(serial.length,2);i++){
-	    hash.push(parseInt(serial.charAt(2*i)+serial.charAt(2*i+1),16))
+        hash.push(parseInt(serial.charAt(2*i)+serial.charAt(2*i+1),16))
     }
     var key = parseInt(serial.substring(0,2), 16) % 5
 
     var scanCodePassword = keyboardEncToAscii(decryptHash(hash, key, rotationMatrix1))
     if(scanCodePassword == ""){
-	    scanCodePassword = keyboardEncToAscii(decryptHash(hash, key, rotationMatrix2))
+        scanCodePassword = keyboardEncToAscii(decryptHash(hash, key, rotationMatrix2))
     }
 
     var asciiPassword1 = keyToAscii(decryptHash(hash, key, rotationMatrix1));
@@ -834,12 +1059,12 @@ function getBiosPwdForFsi20dec_old(serial){
 
         // final rotations
         bytes[0] = ((bytes[0] << 3) & 0xFF) | (bytes[0] >> 5);
-    	bytes[1] = ((bytes[1] << 5) & 0xFF) | (bytes[1] >> 3);
-    	bytes[2] = ((bytes[2] << 7) & 0xFF) | (bytes[2] >> 1);
-    	bytes[3] = ((bytes[3] << 4) & 0xFF) | (bytes[3] >> 4);
-    	bytes[5] = ((bytes[5] << 6) & 0xFF) | (bytes[5] >> 2);
-    	bytes[6] = ((bytes[6] << 1) & 0xFF) | (bytes[6] >> 7);
-    	bytes[7] = ((bytes[7] << 2) & 0xFF) | (bytes[7] >> 6);
+        bytes[1] = ((bytes[1] << 5) & 0xFF) | (bytes[1] >> 3);
+        bytes[2] = ((bytes[2] << 7) & 0xFF) | (bytes[2] >> 1);
+        bytes[3] = ((bytes[3] << 4) & 0xFF) | (bytes[3] >> 4);
+        bytes[5] = ((bytes[5] << 6) & 0xFF) | (bytes[5] >> 2);
+        bytes[6] = ((bytes[6] << 1) & 0xFF) | (bytes[6] >> 7);
+        bytes[7] = ((bytes[7] << 2) & 0xFF) | (bytes[7] >> 6);
 
         // len(solution space) = 10 + 26
         bytes = convert_to_remainder(bytes);
@@ -1072,7 +1297,7 @@ function autoGetBiosPwdForDellHddOld(serial){
                                 DELL_HDD_OLD, [11], false);
 }
 
-/* 7 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B, 1D3B ) */
+/* 7 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B, 1D3B .... ) */
 function autoGetBiosPwdForDellTag(serial){
     return dellCheckAndRunWithKey(serial, getBiosPwdForDellTag,
                                 DELL_TAG, [11],DELL_SERIES_PREFIX);
@@ -1097,7 +1322,7 @@ function metaDellManyTag(serial, len, key, func){
 }
 
 
-/* 11 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B, 1D3B ) */
+/* 11 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B, 1D3B ...) */
 function autoGetBiosPwdForDellHddNew(serial){
     return dellCheckAndRunWithKey(serial, getBiosPwdForDellHddNew,
                                 DELL_HDD_NEW, [15],DELL_SERIES_PREFIX);
