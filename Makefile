@@ -18,7 +18,7 @@ calc_hash = $(shell openssl dgst -sha1 $(1) | cut -d' ' -f2 | cut -b1-8)
 all: $(UPLOAD_DIR) $(UPLOAD_DIR)/index.html $(COMPILED_JS_FILES) $(UPLOAD_DIR)/bootstrap.min.css
 
 $(TEMP_SCRIPT) $(TEMP_MAP): $(JS_FILES) $(TEMP_DIR)
-	$(COMPILE_COMMAND) --js $(JS_FILES) --js_output_file $(TEMP_SCRIPT) --create_source_map $(TEMP_MAP)
+	$(COMPILE_COMMAND) --js $(JS_FILES) --js_output_file $(TEMP_SCRIPT) --create_source_map $(TEMP_MAP) # --compilation_level ADVANCED_OPTIMIZATIONS
 
 $(UPLOAD_DIR)/index.html $(UPLOAD_DIR)/script%.js $(UPLOAD_DIR)/script%.map: $(INDEX_FILE) $(UPLOAD_DIR) $(TEMP_SCRIPT)
 	$(eval VERSION := $(call calc_hash,$(TEMP_SCRIPT)))
