@@ -10,6 +10,6 @@
         "node_modules"
     ],
     "files": [
-        "scripts/decrypt_bios.ts"
+        "src/decrypt_bios.ts"
     ]
 }

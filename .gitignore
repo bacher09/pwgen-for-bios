@@ -5,3 +5,5 @@ build/
 temp/
 typings/
 typings.json
+node_modules/
+dist/

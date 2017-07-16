@@ -1,6 +1,6 @@
-var bios = require('../javascript/decrypt_bios.js');
+var bios = require('../dist/decrypt_bios.js');
 
-describe("Decryp BIOS", function() {
+describe("Decrypt BIOS", function() {
     it("Sony key for 1234567 is 9648669", function() {
         expect(bios.Sony.solve("1234567")).toEqual(["9648669"]);
     });
