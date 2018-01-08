@@ -1,0 +1,45 @@
+import { fsi20DecNewSolver, fsi20DecOldSolver, fsi20HexSolver } from "./fsi";
+
+describe("Test Fujitsu-Siemens 5x4 hexadecimal BIOS", () => {
+    it("FSI key for 1234-4321-1234-4321-1234 is 35682708", () => {
+        expect(fsi20HexSolver("1234-4321-1234-4321-1234")).toEqual(["35683789"]);
+    });
+    it("FSI key for AAAA-BBBB-CCCC-DEAD-BEEF is 64830592", () => {
+        expect(fsi20HexSolver("AAAA-BBBB-CCCC-DEAD-BEEF")).toEqual(["64830592"]);
+        expect(fsi20HexSolver("AAAABBBBCCCCDEADBEEF")).toEqual(["64830592"]);
+    });
+    it("test invalid keys", () => {
+        expect(fsi20HexSolver("AAAA-BBBB-CCCC-DEAD-CODE")).toEqual([]);
+        expect(fsi20HexSolver("AAAA-BBBB-CCCC-DEAD-BEEF-12")).toEqual([]);
+    });
+});
+
+describe("Test Fujitsu-Siemens 5x4 decimal new", () => {
+    it("FSI key for 1234-4321-1234-4321-1234 is 7122790", () => {
+        expect(fsi20DecNewSolver("1234-4321-1234-4321-1234")).toEqual(["7122790"]);
+    });
+
+    it("FSI key for 7234-4321-1234-4321-1234 is 3122790", () => {
+        expect(fsi20DecNewSolver("7234-4321-1234-4321-1234")).toEqual(["3122790"]);
+    });
+
+    it("test invalid keys", () => {
+        expect(fsi20DecNewSolver("1234-4321-1234-4321-1234-1")).toEqual([]);
+        expect(fsi20DecNewSolver("1234-4321-1234-4321-BEEF")).toEqual([]);
+    });
+});
+
+describe("Test Fujitsu-Siemens 5x4 decimal old", () => {
+    it("FSI key for 1234-4321-1234-4321-1234 is 10cphf0b", () => {
+        expect(fsi20DecOldSolver("1234-4321-1234-4321-1234")).toEqual(["10cphf0b"]);
+    });
+
+    it("FSI key for 7234-4321-1234-4321-1234 is 10cphf0b", () => {
+        expect(fsi20DecOldSolver("7234-4321-1234-4321-1234")).toEqual(["90ldhf0b"]);
+    });
+
+    it("test invalid keys", () => {
+        expect(fsi20DecOldSolver("1234-4321-1234-4321-1234-1")).toEqual([]);
+        expect(fsi20DecOldSolver("1234-4321-1234-4321-BEEF")).toEqual([]);
+    });
+});

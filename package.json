@@ -1,0 +1,37 @@
+{
+  "name": "pwgen-for-bios",
+  "version": "2.0.0",
+  "description": "Password generator for BIOS",
+  "main": "decrypt_bios.js",
+  "dependencies": {
+    "@types/jasmine": "^2.8.3",
+    "gulp-jasmine": "^3.0.0",
+    "typescript": "^2.6.2"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.2.3",
+    "typescript": "^2.6.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bacher09/pwgen-for-bios.git"
+  },
+  "keywords": [
+    "bios",
+    "keygen",
+    "password"
+  ],
+  "scripts": {
+      "gulp": "gulp"
+  },
+  "author": "Slava Bacherikov",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/bacher09/pwgen-for-bios/issues"
+  },
+  "homepage": "https://github.com/bacher09/pwgen-for-bios#readme"
+}
