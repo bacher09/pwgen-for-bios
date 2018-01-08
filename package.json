@@ -26,7 +26,8 @@
     "password"
   ],
   "scripts": {
-      "gulp": "gulp"
+      "gulp": "gulp",
+      "test": "gulp test"
   },
   "author": "Slava Bacherikov",
   "license": "GPL-3.0",
