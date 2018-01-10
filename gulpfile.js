@@ -14,10 +14,10 @@ gulp.task('test', ['build'], function() {
     return gulp.src("dist/*.spec.js").pipe(jasmine());
 });
 
-gulp.task('tslint', function() {
+gulp.task('lint', function() {
     return tsProject.src()
         .pipe(tslint({"formatter": "verbose"}))
         .pipe(tslint.report());
 });
 
-gulp.task('default', ['tslint', 'build', 'test'])
+gulp.task('default', ['build', 'test', 'lint'])

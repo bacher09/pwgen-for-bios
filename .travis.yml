@@ -6,6 +6,15 @@ node_js:
   - "8"
   - "node"
 
+sudo: false
+script:
+  - npm run test
+  - npm run lint
+
+git:
+  depth: 1
+  submodules: false
+
 cache:
   directories:
     - "node_modules"

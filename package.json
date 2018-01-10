@@ -16,8 +16,8 @@
     "typescript": "^2.6.2"
   },
   "scripts": {
-    "gulp": "gulp",
-    "test": "gulp test"
+    "test": "gulp test",
+    "lint": "gulp lint"
   },
   "repository": {
     "type": "git",
