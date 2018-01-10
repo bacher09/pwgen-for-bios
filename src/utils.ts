@@ -19,13 +19,26 @@ export interface Solver {
     keygen(code: string): string[];
 }
 
-const keyboardDict: {[key: number]: string} = {
+export const keyboardDict: {[key: number]: string} = {
     2: "1",  3: "2",  4: "3",  5: "4",  6: "5",  7: "6",  8: "7",  9: "8",
     10: "9", 11: "0", 16: "q", 17: "w", 18: "e", 19: "r", 20: "t", 21: "y",
     22: "u", 23: "i", 24: "o", 25: "p", 30: "a", 31: "s", 32: "d", 33: "f",
     34: "g", 35: "h", 36: "j", 37: "k", 38: "l", 44: "z", 45: "x", 46: "c",
     47: "v", 48: "b", 49: "n", 50: "m"
 };
+
+// reverse scan code table
+function generateReverseKeyDict(): {[key: string]: number} {
+    let result: {[key: string]: number} = {};
+    for (let key in keyboardDict) {
+        if (keyboardDict.hasOwnProperty(key)) {
+            result[keyboardDict[key]] = parseInt(key, 10);
+        }
+    }
+    return result;
+}
+
+export const reversedScanCodes = generateReverseKeyDict();
 
 /* Decode Keyboard code to Ascii symbol */
 export function keyboardEncToAscii(inKey: number[]): string {
@@ -42,6 +55,17 @@ export function keyboardEncToAscii(inKey: number[]): string {
         }
     }
     return out;
+}
+
+export function asciiToKeyboardEnc(password: string): number[] {
+    return password.split("").map((c) => {
+        let code = reversedScanCodes[c];
+        if (code === void 0) {
+            throw new Error("Undefined scan code");
+        } else {
+            return code;
+        }
+    });
 }
 
 function cleanSerial(serial: string): string {
