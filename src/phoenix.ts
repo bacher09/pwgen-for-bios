@@ -70,6 +70,33 @@ function badCRC16(pwd: number[], salt: number = 0): number {
     return hash;
 }
 
+/*
+ * Modified version of badCRC16 to speedup bruteForce.
+ * Returns pasword length if it matches required hash
+ * or -1 if it isn't matches requiredHash.
+ */
+function searchBadCRC16(pwd: number[], salt: number, requiredHash: number, minLen: number): number {
+
+    minLen--;
+    let hash = salt;
+    // tslint:disable-next-line:prefer-for-of
+    for (let c = 0; c < pwd.length; c++) {
+        hash ^= pwd[c];
+        for (let i = 8; i--;) {
+            if (hash & 1) {
+                hash = (hash >> 1) ^ 0x2001;
+            } else {
+                hash = (hash >> 1);
+            }
+        }
+
+        if (c >= minLen && hash === requiredHash) {
+            return c + 1;
+        }
+    }
+    return -1; // not found
+}
+
 function generatePhoenixPassword(encodedPwd: number[], characters: string[] = lettersOnly): void {
     let rnd = Math.random() * characters.length;
     for (let i = 0; i < encodedPwd.length; i++) {
@@ -82,7 +109,10 @@ function generatePhoenixPassword(encodedPwd: number[], characters: string[] = le
 function bruteForce(hash: number, salt: number = 0, characters: string[] = lettersOnly,
                     minLen: number = 3, maxLen: number = 7): string | PhoenixErrors {
 
-    let encodedPwd: number[] = [0, 0, 0, 0, 0, 0, 0];
+    let encodedPwd: number[] = [];
+    for (let i = 0; i < maxLen; i++) {
+        encodedPwd.push(0);
+    }
 
     if (hash > 0x3FFF) {
         return PhoenixErrors.BadHash;
@@ -96,10 +126,10 @@ function bruteForce(hash: number, salt: number = 0, characters: string[] = lette
         }
 
         generatePhoenixPassword(encodedPwd, characters);
-        for (let i = minLen; i <= maxLen; i++) {
-            if (badCRC16(encodedPwd.slice(0, i), salt) === hash) {
-                return keyboardEncToAscii(encodedPwd.slice(0, i));
-            }
+
+        let found = searchBadCRC16(encodedPwd, salt, hash, minLen);
+        if (found !== -1) {
+            return keyboardEncToAscii(encodedPwd.slice(0, found));
         }
     }
 }
