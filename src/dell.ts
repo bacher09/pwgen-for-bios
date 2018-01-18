@@ -165,10 +165,11 @@ function blockEncode(encBlock: number[], f1: any, f2: any, f3: any, f4: any, f5:
     let C = encData[2] | 0;
     let D = encData[3] | 0;
 
-    function rol(t: number, bitsrot: number): number {
+    // TODO: maybe get rid from Math.pow
+    function rol(x: number, bitsrot: number): number {
         // n >>> 0 used to convert signed number to unsigned
-        return  ((t >>> 0)/ Math.pow(2, 32 - bitsrot)) |
-                (((t >>> 0) << bitsrot) | 0 );
+        return ((x >>> 0) / Math.pow(2, 32 - bitsrot)) |
+                (((x >>> 0) << bitsrot) | 0 );
     }
     function f_shortcut(func: any, key: number, num: number): number {
         return (A + f1(func, B, C , D, md5magic[num] + encBlock[ key ])) | 0;
@@ -177,237 +178,152 @@ function blockEncode(encBlock: number[], f1: any, f2: any, f3: any, f4: any, f5:
         return (A + f1(func, B, C, D, md5magic2[num] + encBlock[key])) | 0;
     }
 
-    let S = [ [ 7, 12, 17, 22 ],
-              [ 5, 9,  14, 20 ],
-              [ 4, 11, 16, 23 ],
-              [ 6, 10, 15, 21 ] ];
+    const S = [ [ 7, 12, 17, 22 ],
+                [ 5, 9,  14, 20 ],
+                [ 4, 11, 16, 23 ],
+                [ 6, 10, 15, 21 ] ];
     let t: number = 0;
 
-    for (let j=0; j<=repeater; j++) {
-        if (repeater == 16) {          // 1f66
-            A |= 0x00100097;
-            B ^= 0x000A0008;
-            C |= (0x60606161 - j);
-            D ^= (0x50501010 + j);
-            for (let i = 0; i < 4; i++) {
-                t = f_shortcut2(f2, (i * 4) & 15, 16 + (i * 4) | 0);
-                A = D; D = C; C = B; B = (rol(t, S[0][0]) + B) | 0;
+    for (let j = 0; j <= repeater; j++) {
+        if (repeater === 16) {          // 1f66
+            A |= 0x100097;
+            B ^= 0xA0008;
+            C |= 0x60606161 - j;
+            D ^= 0x50501010 + j;
+            for (let i = 0; i < 64; i++) {
+                switch (i >> 4) {
+                    case 0:
+                        t = f_shortcut2(f2, i & 15, i + 16 | 0);
+                        break;
+                    case 1:
+                        t = f_shortcut2(f3, (i * 5 + 1) & 15, i + 32 | 0);
+                        break;
+                    case 2:
+                        t = f_shortcut2(f4, (i * 3 + 5) & 15, i - 2 * (i & 12) + 12);
+                        break;
+                    case 3:
+                        t = f_shortcut2(f5, (i * 7) & 15, 2 * (i & 3) - (i & 15) + 12);
+                        break;
+                }
+                A = D, D = C, C = B, B = rol(t, S[i >> 4][i & 3]) + B | 0;
+            }
 
-                t = f_shortcut2(f2, (i*4+1) & 15, 16+(i*4)+1 | 0);
-                A = D; D = C; C = B; B = (rol(t,S[0][1]) + B) | 0;
+        } else if (repeater === 22) {
+            A |= 0xA08097;
+            B ^= 0xA010908;
+            C |= 0x60606161 - j;
+            D ^= 0x50501010 + j;
 
-                t=f_shortcut2(f2,(i*4+2) & 15, 16+(i*4)+2|0);
-                A=D; D=C; C=B; B=(rol(t,S[0][2]) + B) | 0;
-
-                t = f_shortcut2(f2,(i*4+3) & 15, 16+(i*4)+3|0);
-                A = D; D = C; C = B; B = (rol(t,S[0][3]) + B) | 0;
-            }
-            for (let i=0;i<4;i++) {
-                t=f_shortcut2(f3, i * 4 + 1, 48+(i*4)  );
-                A=D; D=C; C=B; B=(rol(t,S[1][0]) + B) | 0;
-                t=f_shortcut2(f3,(i*4+6)&15,48+(i*4)+1);
-                A=D; D=C; C=B; B=(rol(t,S[1][1]) + B) | 0;
-                t=f_shortcut2(f3,(i*4-5)&15,48+(i*4)+2);
-                A=D; D=C; C=B; B=(rol(t,S[1][2]) + B) | 0;
-                t=f_shortcut2(f3,i*4       ,48+(i*4)+3);
-                A=D; D=C; C=B; B=(rol(t,S[1][3]) + B) | 0;
-            }
-            for (let i=3;i>=0;i--) {
-                t=f_shortcut2(f4,(i*4-7)&15,32+(i*4)  );
-                A=D; D=C; C=B; B=(rol(t,S[2][0]) + B) | 0;
-                t=f_shortcut2(f4,(i*4-4)&15,32+(i*4)+1);
-                A=D; D=C; C=B; B=(rol(t,S[2][1]) + B) | 0;
-                t=f_shortcut2(f4,(i*4-1)&15,32+(i*4)+2);
-                A=D; D=C; C=B; B=(rol(t,S[2][2]) + B) | 0;
-                t=f_shortcut2(f4,(i*4+2)   ,32+(i*4)+3);
-                A=D; D=C; C=B; B=(rol(t,S[2][3]) + B) | 0;
-            }
-            for (let i=3;i>=0;i--) {
-                t=f_shortcut2(f5,(i*4+4)&15, 0+(i*4)  );
-                A=D; D=C; C=B; B=(rol(t,S[3][0]) + B) | 0;
-                t=f_shortcut2(f5,(i*4-5)&15, 0+(i*4)+1);
-                A=D; D=C; C=B; B=(rol(t,S[3][1]) + B) | 0;
-                t=f_shortcut2(f5,(i*4+2)   , 0+(i*4)+2);
-                A=D; D=C; C=B; B=(rol(t,S[3][2]) + B) | 0;
-                t=f_shortcut2(f5,(i*4-7)&15, 0+(i*4)+3);
-                A=D; D=C; C=B; B=(rol(t,S[3][3]) + B) | 0;
-            }
-        } else if (repeater == 22) {
-            A|=0x00A08097;
-            B^=0x0A010908;
-            C|=(0x60606161 - j);
-            D^=(0x50501010 + j);
-            for (let i=0;i<4;i++) {
-                t=f_shortcut2(f2,(i*4  ) & 15,32+(i*4)  |0);
-                A=D; D=C; C=B; B=(rol(t,S[0][0]) + B) | 0;
-                t=f_shortcut2(f2,(i*4+1) & 15,32+(i*4)+1|0);
-                A=D; D=C; C=B; B=(rol(t,S[0][1]) + B) | 0;
-                t=f_shortcut2(f2,(i*4+2) & 15,32+(i*4)+2|0);
-                A=D; D=C; C=B; B=(rol(t,S[0][2]) + B) | 0;
-                t=f_shortcut2(f2,(i*4+3) & 15,32+(i*4)+3|0);
-                A=D; D=C; C=B; B=(rol(t,S[0][3]) + B) | 0;
-            }
-            for (let i=0;i<4;i++) {
-                t=f_shortcut2(f3,(i*4+1)   , 0+(i*4)  );
-                A=D; D=C; C=B; B=(rol(t,S[1][0]) + B) | 0;
-                t=f_shortcut2(f3,(i*4+6)&15, 0+(i*4)+1);
-                A=D; D=C; C=B; B=(rol(t,S[1][1]) + B) | 0;
-                t=f_shortcut2(f3,(i*4-5)&15, 0+(i*4)+2);
-                A=D; D=C; C=B; B=(rol(t,S[1][2]) + B) | 0;
-                t=f_shortcut2(f3,i*4       , 0+(i*4)+3);
-                A=D; D=C; C=B; B=(rol(t,S[1][3]) + B) | 0;
-            }
-            for (let i=3;i>=0;i--) {
-                t=f_shortcut2(f4,(i*4-7)&15,16+(i*4)  );
-                A=D; D=C; C=B; B=(rol(t,S[2][0]) + B) | 0;
-                t=f_shortcut2(f4,(i*4-4)&15,16+(i*4)+1);
-                A=D; D=C; C=B; B=(rol(t,S[2][1]) + B) | 0;
-                t=f_shortcut2(f4,(i*4-1)&15,16+(i*4)+2);
-                A=D; D=C; C=B; B=(rol(t,S[2][2]) + B) | 0;
-                t=f_shortcut2(f4,(i*4+2)   ,16+(i*4)+3);
-                A=D; D=C; C=B; B=(rol(t,S[2][3]) + B) | 0;
-            }
-            for (let i=3;i>=0;i--) {
-                t=f_shortcut2(f5,(i*4+4)&15,48+(i*4)  );
-                A=D; D=C; C=B; B=(rol(t,S[3][0]) + B) | 0;
-                t=f_shortcut2(f5,(i*4-5)&15,48+(i*4)+1);
-                A=D; D=C; C=B; B=(rol(t,S[3][1]) + B) | 0;
-                t=f_shortcut2(f5,(i*4+2)   ,48+(i*4)+2);
-                A=D; D=C; C=B; B=(rol(t,S[3][2]) + B) | 0;
-                t=f_shortcut2(f5,(i*4-7)&15,48+(i*4)+3);
-                A=D; D=C; C=B; B=(rol(t,S[3][3]) + B) | 0;
+            for (let i = 0; i < 64; i++) {
+                let k = (i & 15) - ((i & 12) << 1) + 12;
+                switch (i >> 4) {
+                    case 0:
+                        t = f_shortcut2(f2, i & 15, i + 32 | 0);
+                        break;
+                    case 1:
+                        t = f_shortcut2(f3, (i * 5 + 1) & 15, (i & 15) | 0);
+                        break;
+                    case 2:
+                        t = f_shortcut2(f4, (i * 3 + 5) & 15, k + 16 | 0);
+                        break;
+                    case 3:
+                        t = f_shortcut2(f5, (i * 7) & 15, k + 48 | 0);
+                        break;
+                }
+                A = D, D = C, C = B, B = rol(t, S[i >> 4][i & 3]) + B | 0;
             }
         } else {
             if (repeater) {
-                A |=0x97;
-                B ^=0x8;
-                C |=(0x60606161 - j);
-                D ^=(0x50501010 + j);
+                A |= 0x97;
+                B ^= 0x8;
+                C |= (0x60606161 - j);
+                D ^= (0x50501010 + j);
             }
-            for(let i=0;i<64;i++){
-                switch(i >> 4){
+            for (let i = 0; i < 64; i++) {
+                switch (i >> 4) {
                     case 0:
                         t = f_shortcut(f2, i & 15, i); // Use half byte
                         break;
                     case 1:
-                        t = f_shortcut(f3, (i*5 + 1) & 15, i);
+                        t = f_shortcut(f3, (i * 5 + 1) & 15, i);
                         break;
                     case 2:
-                        t = f_shortcut(f4, (i*3 + 5) & 15, i);
+                        t = f_shortcut(f4, (i * 3 + 5) & 15, i);
                         break;
                     case 3:
-                        t = f_shortcut(f5, (i*7) & 15, i);
+                        t = f_shortcut(f5, (i * 7) & 15, i);
                         break;
                 }
                 A = D, D = C, C = B, B = (rol(t, S[i >> 4][i & 3]) + B) | 0;
             }
         }
-        encData[0]+=A;
-        encData[1]+=B;
-        encData[2]+=C;
-        encData[3]+=D;
+        encData[0] += A;
+        encData[1] += B;
+        encData[2] += C;
+        encData[3] += D;
     }
-    if (repeater == 16) { //1f66
-        for(let j=0;j<=20;j++){                        //1d3b
-            A|=0x97;
-            B^=0x8;
-            C|=(0x50501010 - j);
-            D^=(0x60606161 + j);
-            for (let i=3;i>=0;i--) {
-                t=f_shortcut2(f4,(i*4-7) & 15,32+(i*4)  );
-                A=D; D=C; C=B; B=(rol(t,S[2][0]) + B) | 0;
-                t=f_shortcut2(f4,(i*4-4) & 15,32+(i*4)+1);
-                A=D; D=C; C=B; B=(rol(t,S[2][1]) + B) | 0;
-                t=f_shortcut2(f4,(i*4-1) & 15,32+(i*4)+2);
-                A=D; D=C; C=B; B=(rol(t,S[2][2]) + B) | 0;
-                t=f_shortcut2(f4,i*4+2,32+(i*4)+3);
-                A=D; D=C; C=B; B=(rol(t,S[2][3]) + B) | 0;
+    if (repeater === 16) { // 1F66
+        for (let j = 0; j <= 20; j++) { // 1D3B
+            A |= 0x97;
+            B ^= 0x8;
+            C |= 0x50501010 - j;
+            D ^= 0x60606161 + j;
+
+            for (let i = 0; i < 64; i++) {
+                switch (i >> 4) {
+                    case 0:
+                        t = f_shortcut2(f4, (i * 3 + 5) & 15, 2 * (i & 3) - i + 44);
+                        break;
+                    case 1:
+                        t = f_shortcut2(f5, (i * 7) & 15, 2 * (i & 3) - i + 76);
+                        break;
+                    case 2:
+                        t = f_shortcut2(f2, i & 15, (i & 15) | 0);
+                        break;
+                    case 3:
+                        t = f_shortcut2(f3, (i * 5 + 1) & 15, i - 32 | 0);
+                        break;
+                }
+                let g = (i >> 4) + 2;
+                A = D, D = C, C = B, B = rol(t, S[g & 3][i & 3]) + B | 0;
             }
-            for (let i=3;i>=0;i--) {
-                t=f_shortcut2(f5,(i*4+4) & 15,48+(i*4)  );
-                A=D; D=C; C=B; B=(rol(t,S[3][0]) + B) | 0;
-                t=f_shortcut2(f5,(i*4-5) & 15,48+(i*4)+1);
-                A=D; D=C; C=B; B=(rol(t,S[3][1]) + B) | 0;
-                t=f_shortcut2(f5,i*4+2,48+(i*4)+2);
-                A=D; D=C; C=B; B=(rol(t,S[3][2]) + B) | 0;
-                t=f_shortcut2(f5,(i*4-7) & 15,48+(i*4)+3);
-                A=D; D=C; C=B; B=(rol(t,S[3][3]) + B) | 0;
-            }
-            for (let i=0;i<4;i++) {
-                t=f_shortcut2(f2,(i*4  ) & 15, 0+(i*4));
-                A=D; D=C; C=B; B=(rol(t,S[0][0]) + B) | 0;
-                t=f_shortcut2(f2,(i*4+1) & 15, 0+(i*4)+1);
-                A=D; D=C; C=B; B=(rol(t,S[0][1]) + B) | 0;
-                t=f_shortcut2(f2,(i*4+2) & 15, 0+(i*4)+2);
-                A=D; D=C; C=B; B=(rol(t,S[0][2]) + B) | 0;
-                t=f_shortcut2(f2,(i*4+3) & 15, 0+(i*4)+3);
-                A=D; D=C; C=B; B=(rol(t,S[0][3]) + B) | 0;
-            }
-            for (let i=0;i<4;i++) {
-                t=f_shortcut2(f3,(i*4+1),16+(i*4)  );
-                A=D; D=C; C=B; B=(rol(t,S[1][0]) + B) | 0;
-                t=f_shortcut2(f3,(i*4+6) & 15,16+(i*4)+1);
-                A=D; D=C; C=B; B=(rol(t,S[1][1]) + B) | 0;
-                t=f_shortcut2(f3,(i*4-5) & 15,16+(i*4)+2);
-                A=D; D=C; C=B; B=(rol(t,S[1][2]) + B) | 0;
-                t=f_shortcut2(f3,i*4,16+(i*4)+3);
-                A=D; D=C; C=B; B=(rol(t,S[1][3]) + B) | 0;
-            }
-            encData[0]+=A;
-            encData[1]+=B;
-            encData[2]+=C;
-            encData[3]+=D;
+
+            encData[0] += A;
+            encData[1] += B;
+            encData[2] += C;
+            encData[3] += D;
         }
-    } else if (repeater == 22) {
-        for(let j=0;j<=16;j++){
-            A|=0x00100097;
-            B^=0x000A0008;
-            C|=(0x50501010 - j);
-            D^=(0x60606161 + j);
-            for (let i=3;i>=0;i--) {
-                t=f_shortcut2(f4,(i*4-7) & 15,16+(i*4)  );
-                A=D; D=C; C=B; B=(rol(t,S[2][0]) + B) | 0;
-                t=f_shortcut2(f4,(i*4-4) & 15,16+(i*4)+1);
-                A=D; D=C; C=B; B=(rol(t,S[2][1]) + B) | 0;
-                t=f_shortcut2(f4,(i*4-1) & 15,16+(i*4)+2);
-                A=D; D=C; C=B; B=(rol(t,S[2][2]) + B) | 0;
-                t=f_shortcut2(f4,i*4+2,16+(i*4)+3);
-                A=D; D=C; C=B; B=(rol(t,S[2][3]) + B) | 0;
+    } else if (repeater === 22) {
+        for (let j = 0; j <= 16; j++) {
+            A |= 0x100097;
+            B ^= 0xA0008;
+            C |= 0x50501010 - j;
+            D ^= 0x60606161 + j;
+
+            for (let i = 0; i < 64; i++) {
+                let k = (i & 15) - ((i & 12) << 1) + 12;
+                switch (i >> 4) {
+                    case 0:
+                        t = f_shortcut2(f4, ((i & 15) * 3 + 5) & 15, k + 16);
+                        break;
+                    case 1:
+                        t = f_shortcut2(f5, ((i & 3) * 7 + (i & 12) + 4) & 15, (i & 15) + 32);
+                        break;
+                    case 2:
+                        t = f_shortcut2(f2, k & 15, k);
+                        break;
+                    case 3:
+                        t = f_shortcut2(f3, ((i & 15) * 5 + 1) & 15, (i & 15) + 48);
+                        break;
+                }
+                let g = (i >> 4) + 2;
+                A = D, D = C, C = B, B = rol(t, S[g & 3][i & 3]) + B | 0;
             }
-            for (let i=0;i<4;i++) {
-                t=f_shortcut2(f5,(i*4+4) & 15,32+(i*4)  );
-                A=D; D=C; C=B; B=(rol(t,S[3][0]) + B) | 0;
-                t=f_shortcut2(f5,(i*4-5) & 15,32+(i*4)+1);
-                A=D; D=C; C=B; B=(rol(t,S[3][1]) + B) | 0;
-                t=f_shortcut2(f5,i*4+2,32+(i*4)+2);
-                A=D; D=C; C=B; B=(rol(t,S[3][2]) + B) | 0;
-                t=f_shortcut2(f5,(i*4-7) & 15,32+(i*4)+3);
-                A=D; D=C; C=B; B=(rol(t,S[3][3]) + B) | 0;
-            }
-            for (let i=3;i>=0;i--) {
-                t=f_shortcut2(f2,(i*4  ) & 15, 0+(i*4));
-                A=D; D=C; C=B; B=(rol(t,S[0][0]) + B) | 0;
-                t=f_shortcut2(f2,(i*4+1) & 15, 0+(i*4)+1);
-                A=D; D=C; C=B; B=(rol(t,S[0][1]) + B) | 0;
-                t=f_shortcut2(f2,(i*4+2) & 15, 0+(i*4)+2);
-                A=D; D=C; C=B; B=(rol(t,S[0][2]) + B) | 0;
-                t=f_shortcut2(f2,(i*4+3) & 15, 0+(i*4)+3);
-                A=D; D=C; C=B; B=(rol(t,S[0][3]) + B) | 0;
-            }
-            for (let i=0;i<4;i++) {
-                t=f_shortcut2(f3,(i*4+1),48+(i*4)  );
-                A=D; D=C; C=B; B=(rol(t,S[1][0]) + B) | 0;
-                t=f_shortcut2(f3,(i*4+6) & 15,48+(i*4)+1);
-                A=D; D=C; C=B; B=(rol(t,S[1][1]) + B) | 0;
-                t=f_shortcut2(f3,(i*4-5) & 15,48+(i*4)+2);
-                A=D; D=C; C=B; B=(rol(t,S[1][2]) + B) | 0;
-                t=f_shortcut2(f3,i*4,48+(i*4)+3);
-                A=D; D=C; C=B; B=(rol(t,S[1][3]) + B) | 0;
-            }
-            encData[0]+=A;
-            encData[1]+=B;
-            encData[2]+=C;
-            encData[3]+=D;
+
+            encData[0] += A;
+            encData[1] += B;
+            encData[2] += C;
+            encData[3] += D;
         }
     }
     return encData.map((v) => v | 0);
@@ -419,8 +335,8 @@ function choseEncode(encBlock: number[], tag: DellTag): number[] {
         return ((( num3 ^ num2) & num1) ^ num3);
     }
 
-    function encF3 (num1: number, num2: number, num3: number): number {
-        return ((( num1 ^ num2) & num3) ^ num2);
+    function encF3(num1: number, num2: number, num3: number): number {
+        return (((num1 ^ num2) & num3) ^ num2);
     }
 
     function encF4(num1: number, num2: number, num3: number): number {
@@ -432,12 +348,12 @@ function choseEncode(encBlock: number[], tag: DellTag): number[] {
     }
 
     function encF1(func: any, num1: number, num2: number, num3: number, key: number) {
-        return (func(num1,num2,num3) + key) | 0; // For bit alignment
+        return (func(num1, num2, num3) + key) | 0; // For bit alignment
     }
 
     // Negative functions
     function encF1N(func: any, num1: number, num2: number, num3: number, key: number) {
-        return encF1(func,num1,num2, num3, -key);
+        return encF1(func, num1, num2, num3, -key);
     }
     function encF2N(num1: number, num2: number, num3: number) {
         return encF2(num1, num2, ~num3);
@@ -453,16 +369,30 @@ function choseEncode(encBlock: number[], tag: DellTag): number[] {
 
     /* Main part */
     if (tag === DellTag.TagD35B) {
-        return blockEncode(encBlock, encF1, encF2, encF3, encF4, encF5,0);
+        return blockEncode(encBlock, encF1, encF2, encF3, encF4, encF5, 0);
     } else if (tag === DellTag.Tag1D3B) {
-        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N,20);
+        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N, 20);
     } else if (tag === DellTag.Tag1F66) {
-        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N,16);
+        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N, 16);
     } else if (tag === DellTag.Tag6FF1) {
-        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N,22);
+        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N, 22);
     } else {
-        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N,0);
+        return blockEncode(encBlock, encF1N, encF2N, encF3, encF4N, encF5N, 0);
     }
+}
+
+function resultToString(arr: number[], tag: DellTag): string {
+    let r = arr[0] % 9;
+    let result = "";
+    for (let i = 0; i < 16; i++) {
+        if ((tag as string) in extraCharacters) {
+            let table = extraCharacters[tag as string];
+            result += table.charAt(arr[i] % table.length);
+        } else if (r <= i && result.length < 8) { // 595B, D35B, A95B
+            result += scanCodes.charAt(encscans[arr[i] % encscans.length]);
+        }
+    }
+    return result;
 }
 /*
  * 7 symbols + 4 symbols ( 595B, D35B, 2A7B, A95B, 1D3B etc...)
@@ -493,20 +423,6 @@ export function keygenDell(serial: string, tag: DellTag, type: SuffixType): stri
             result.push((num >> 16) & 0xFF);
             result.push((num >> 24) & 0xFF);
         });
-        return result;
-    }
-
-    function resultToString(arr: number[], tag: DellTag): string {
-        let r = arr[0] % 9;
-        let result = "";
-        for (let i = 0; i < 16; i++) {
-            if ((tag as string) in extraCharacters) {
-                let table = extraCharacters[tag as string];
-                result += table.charAt(arr[i] % table.length);
-            } else if (r <= i && result.length < 8) { // 595B, D35B, A95B
-                result += scanCodes.charAt(encscans[arr[i] % encscans.length]);
-            }
-        }
         return result;
     }
 

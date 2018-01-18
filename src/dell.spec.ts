@@ -124,6 +124,22 @@ describe("Test keygenDell", () => {
         expect(keygenDell("7G9C0G2", DellTag.Tag6FF1, SuffixType.ServiceTag))
         .toEqual("35c0b0tVb32Z6ivD");
     });
+    it("Dell password for: DELLSUX-1F66", () => {
+        expect(keygenDell("DELLSUX", DellTag.Tag1F66, SuffixType.ServiceTag))
+        .toEqual("qHXaL0ntli6Gu4c0");
+    });
+    it("Dell password for: CRPP562-1F66", () => {
+        expect(keygenDell("CRPP562", DellTag.Tag1F66, SuffixType.ServiceTag))
+        .toEqual("8i5qLGa9woA919Ys");
+    });
+    it("Dell password for: CDG8T32-1F66", () => {
+        expect(keygenDell("CDG8T32", DellTag.Tag1F66, SuffixType.ServiceTag))
+        .toEqual("4Ke3y2L3kTP2f6Vo");
+    });
+    it("Dell password for: 8M5RQ32-1F66", () => {
+        expect(keygenDell("8M5RQ32", DellTag.Tag1F66, SuffixType.ServiceTag))
+        .toEqual("3rlrbaSj46Iw221g");
+    });
     // HDD
     it("Dell HDD password for: 1234567890A-595B", () => {
         expect(keygenDell("1234567890A", DellTag.Tag595B, SuffixType.HDD))
