@@ -11,7 +11,13 @@
         "interface-name": [true, "never-prefix"],
         "object-literal-key-quotes": false,
         "object-literal-sort-keys": false,
-        "no-namespace": false
+        "class-name": true,
+        "no-eval": true,
+        "eofline": true,
+        "indent": [true, "spaces", 4],
+        "no-null-keyword": true,
+        "encoding": true,
+        "no-namespace": true
     },
     "rulesDirectory": []
 }

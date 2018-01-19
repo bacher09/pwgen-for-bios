@@ -116,7 +116,7 @@ function fsi20DecNewKeygen(serial: string): string {
         "9137605284", "3974018625", "8052974163"
     ];
 
-    return [0, 2, 5, 11, 13, 15, 16].map((val, i, arr) => {
+    return [0, 2, 5, 11, 13, 15, 16].map((val, i) => {
         let temp = parseInt(serial.charAt(val), 10);
         return fKeys[i].charAt(temp);
     }).join("");

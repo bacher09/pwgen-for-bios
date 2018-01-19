@@ -1,6 +1,6 @@
 /* tslint:disable:no-bitwise */
 import {
-    asciiToKeyboardEnc, keyboardEncToAscii, makeSolver, reversedScanCodes, Solver
+    asciiToKeyboardEnc, keyboardEncToAscii, reversedScanCodes, Solver
 } from "./utils";
 
 export const enum PhoenixErrors {
@@ -36,7 +36,7 @@ const digitsOnly: string[] = "123456789".split("");
 
 const lettersOnly: string[] = "abcdefghijklmnopqrstuvwxyz".split("");
 
-const alphaNumeric: string[] = lettersOnly.concat(digitsOnly);
+// const alphaNumeric: string[] = lettersOnly.concat(digitsOnly);
 
 const defaultPhoenix: PhoenixInfo = {
     shift: 0,

@@ -3,14 +3,16 @@
         "module": "commonjs",
         "target": "es3",
         "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
         "strictNullChecks": true,
+        "strict": true,
         "sourceMap": true,
+        "rootDir": "src/",
         "outDir": "dist/"
     },
     "exclude": [
         "node_modules"
-    ],
-    "files": [
-        "src/*.ts"
     ]
 }
