@@ -1,5 +1,6 @@
    Pwgen For BIOS
 ============================
+[![travis status][build-status]][travis]
 
 About
 ---------------------------
@@ -19,3 +20,6 @@ Supported BIOS types:
 * Samsung - 12 hexadecimal digits
 
 For more information [read this](http://dogber1.blogspot.com/2009/05/table-of-reverse-engineered-bios.html).
+
+[build-status]: https://api.travis-ci.org/bacher09/pwgen-for-bios.svg?branch=master
+[travis]: https://travis-ci.org/bacher09/pwgen-for-bios
