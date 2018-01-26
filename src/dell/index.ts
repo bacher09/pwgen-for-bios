@@ -1,6 +1,6 @@
 /* tslint:disable:no-bitwise */
 import { makeSolver } from "../utils";
-import { choseEncode } from "./encode";
+import { blockEncode } from "./encode";
 import { DellTag, SuffixType } from "./types";
 export { DellTag, SuffixType};
 
@@ -13,7 +13,7 @@ const encscans: number[] = [
     0x24, 0x23, 0x31, 0x20, 0x1E, 0x08, 0x2D, 0x21, 0x04, 0x0B, 0x12, 0x2E
 ];
 
-const extraCharacters: {[key: string]: string} = {
+const extraCharacters: {readonly [P in DellTag]?: string} = {
     "2A7B": "012345679abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0",
     "1D3B": "0BfIUG1kuPvc8A9Nl5DLZYSno7Ka6HMgqsJWm65yCQR94b21OTp7VFX2z0jihE33d4xtrew0",
     "1F66": "0ewr3d4xtUG1ku0BfIp7VFb21OTSno7KDLZYqsJWa6HMgCQR94m65y9Nl5Pvc8AjihE3X2z0",
@@ -76,8 +76,9 @@ export function calculateSuffix(serial: number[], tag: DellTag, type: SuffixType
         suffix[i] = v & 0xFF;
     });
 
-    if ((tag as string) in extraCharacters) {
-        codesTable = extraCharacters[tag as string].split("").map((s) => s.charCodeAt(0));
+    let table = extraCharacters[tag];
+    if (table !== undefined) {
+        codesTable = table.split("").map((s) => s.charCodeAt(0));
     } else {
         codesTable = encscans;
     }
@@ -109,9 +110,9 @@ export function calculateSuffix(serial: number[], tag: DellTag, type: SuffixType
 function resultToString(arr: number[], tag: DellTag): string {
     let r = arr[0] % 9;
     let result = "";
+    let table = extraCharacters[tag];
     for (let i = 0; i < 16; i++) {
-        if ((tag as string) in extraCharacters) {
-            let table = extraCharacters[tag as string];
+        if (table !== undefined) {
             result += table.charAt(arr[i] % table.length);
         } else if (r <= i && result.length < 8) { // 595B, D35B, A95B
             result += scanCodes.charAt(encscans[arr[i] % encscans.length]);
@@ -182,7 +183,7 @@ export function keygenDell(serial: string, tag: DellTag, type: SuffixType): stri
         }
     }
     encBlock[14] = cnt << 3;
-    let decodedBytes = intArrayToByte(choseEncode(encBlock, tag));
+    let decodedBytes = intArrayToByte(blockEncode(encBlock, tag));
     return resultToString(decodedBytes, tag);
 }
 

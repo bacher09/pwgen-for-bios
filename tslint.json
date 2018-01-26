@@ -17,7 +17,25 @@
         "indent": [true, "spaces", 4],
         "no-null-keyword": true,
         "encoding": true,
-        "no-namespace": true
+        "no-namespace": true,
+        "max-classes-per-file": [false],
+        "member-ordering": [true, {"order": [
+            "private-static-field",
+            "protected-static-field",
+            "public-static-field",
+            "private-instance-field",
+            "protected-instance-field",
+            "public-instance-field",
+            "private-constructor",
+            "protected-constructor",
+            "public-constructor",
+            "private-instance-method",
+            "protected-instance-method",
+            "public-instance-method",
+            "private-static-method",
+            "protected-static-method",
+            "public-static-method"
+        ]}]
     },
     "rulesDirectory": []
 }
