@@ -131,6 +131,17 @@ class Tag595BEncoder {
         return this.A + this.f1(temp, this.md5table[key2] + this.encBlock[key1]) | 0;
     }
 
+    protected incrementData() {
+        this.encData[0] += this.A;
+        this.encData[1] += this.B;
+        this.encData[2] += this.C;
+        this.encData[3] += this.D;
+
+        this.encData.forEach((val, index) => {
+            this.encData[index] = val | 0;
+        });
+    }
+
     public makeEncode(): void {
         let t: number = 0;
         for (let i = 0; i < 64; i++) {
@@ -154,10 +165,7 @@ class Tag595BEncoder {
             this.B = rol(t, rotationTable[i >> 4][i & 3]) + this.B | 0;
         }
 
-        this.encData[0] += this.A;
-        this.encData[1] += this.B;
-        this.encData[2] += this.C;
-        this.encData[3] += this.D;
+        this.incrementData();
     }
 
     public result(): number[] {
@@ -235,10 +243,7 @@ class Tag1F66Encoder extends Tag595BEncoder {
                 this.B = rol(t, rotationTable[i >> 4][i & 3]) + this.B | 0;
             }
 
-            this.encData[0] += this.A;
-            this.encData[1] += this.B;
-            this.encData[2] += this.C;
-            this.encData[3] += this.D;
+            this.incrementData();
         }
 
         for (let j = 0; j < 21; j++) {
@@ -270,10 +275,7 @@ class Tag1F66Encoder extends Tag595BEncoder {
                 this.B = rol(t, rotationTable[g & 3][i & 3]) + this.B | 0;
             }
 
-            this.encData[0] += this.A;
-            this.encData[1] += this.B;
-            this.encData[2] += this.C;
-            this.encData[3] += this.D;
+            this.incrementData();
         }
     }
 }
@@ -317,10 +319,7 @@ class Tag6FF1Encoder extends Tag595BEncoder {
                 this.B = rol(t, rotationTable[i >> 4][i & 3]) + this.B | 0;
             }
 
-            this.encData[0] += this.A;
-            this.encData[1] += this.B;
-            this.encData[2] += this.C;
-            this.encData[3] += this.D;
+            this.incrementData();
         }
 
         for (let j = 0; j < 17; j++) {
@@ -352,10 +351,7 @@ class Tag6FF1Encoder extends Tag595BEncoder {
                 this.B = rol(t, rotationTable[g & 3][i & 3]) + this.B | 0;
             }
 
-            this.encData[0] += this.A;
-            this.encData[1] += this.B;
-            this.encData[2] += this.C;
-            this.encData[3] += this.D;
+            this.incrementData();
         }
     }
 }
