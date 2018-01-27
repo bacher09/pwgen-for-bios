@@ -121,7 +121,7 @@ function bruteForce(hash: number, salt: number = 0, characters: string[] = lette
     let kk = 0;
     while (true) {
         kk++;
-        if (kk > 50000) {
+        if (kk > 7000000) {
             return PhoenixErrors.NotFound;
         }
 

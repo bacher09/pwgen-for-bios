@@ -13,7 +13,9 @@ describe("Test Phoenix BIOS", () => {
 
     it("find password for hash 12345", () => {
         function phoenixValidate(solver: bios.PhoenixSolver, hash: string): number {
-            return solver.calculateHash(solver(hash)[0]);
+            let newPassword = solver(hash)[0];
+            expect(newPassword).not.toBeUndefined();
+            return solver.calculateHash(newPassword);
         }
 
         expect(phoenixValidate(bios.phoenixSolver, "12345")).toEqual(12345);
