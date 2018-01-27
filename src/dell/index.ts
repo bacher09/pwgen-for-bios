@@ -187,9 +187,51 @@ export function keygenDell(serial: string, tag: DellTag, type: SuffixType): stri
     return resultToString(decodedBytes, tag);
 }
 
+function checkDellTag(tag: string): boolean {
+    tag = tag.toUpperCase();
+    for (let tagItem in DellTag) {
+        if (tag === DellTag[tagItem]) {
+            return true;
+        }
+    }
+    return false;
+}
+
 export let hddOldSolver = makeSolver({
     name: "Dell HDD Serial Number (old)",
     examples: ["12345678901"],
     inputValidator: (s) => s.length === 11,
     fun: (s) => [keygenHddOld(s)]
+});
+
+export let dellSolver = makeSolver({
+    name: "Dell from serial number",
+    examples: ["1234567-595B", "1234567-1D3B"],
+    inputValidator: (password: string) => {
+        if (password.length !== 11) {
+            return false;
+        } else {
+            return checkDellTag(password.slice(7, 11));
+        }
+    },
+    fun: (password: string) => {
+        let suffix = password.slice(7, 11).toUpperCase();
+        return [keygenDell(password.slice(0, 7), suffix as DellTag, SuffixType.ServiceTag)];
+    }
+});
+
+export let dellHddSolver = makeSolver({
+    name: "Dell from hdd serial number",
+    examples: ["1234567890A-595B"],
+    inputValidator: (password: string) => {
+        if (password.length !== 15) {
+            return false;
+        } else {
+            return checkDellTag(password.slice(11, 15));
+        }
+    },
+    fun: (password: string) => {
+        let suffix = password.slice(11, 15).toUpperCase();
+        return [keygenDell(password.slice(0, 11), suffix as DellTag, SuffixType.HDD)];
+    }
 });

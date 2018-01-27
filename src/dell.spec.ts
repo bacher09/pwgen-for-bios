@@ -5,7 +5,9 @@
 //
 //
 // HDD SN WXH109A14712  ?
-import { calculateSuffix, DellTag, hddOldSolver, keygenDell, SuffixType } from "./dell";
+import {
+    calculateSuffix, dellHddSolver, dellSolver, DellTag, hddOldSolver, keygenDell, SuffixType
+} from "./dell";
 
 // shortcut for simpler testing
 function checkSuffix(serial: string, tag: DellTag, type: SuffixType): number[] {
@@ -170,5 +172,17 @@ describe("Test keygenDell", () => {
 describe("Test Dell BIOS", () => {
     it("Dell for 12345678901 is yyyyyhnn", () => {
         expect(hddOldSolver("12345678901")).toEqual(["yyyyyhnn"]);
+    });
+    it("Dell for 1234567-595B", () => {
+        expect(dellSolver("1234567-595B")).toEqual(["46rg65ky"]);
+    });
+    it("Dell for: 1234567-1F66", () => {
+        expect(dellSolver("1234567-1f66")).toEqual(["kIpTBzx0m3s10JDR"]);
+    });
+    it("Dell HDD for: 1234567890A-595B", () => {
+        expect(dellHddSolver("1234567890A-595b")).toEqual(["nyoap4lq"]);
+    });
+    it("Check bad dell tag", () => {
+        expect(dellSolver("1234567-BAD1")).toEqual([]);
     });
 });
