@@ -12,8 +12,10 @@ addons:
   firefox: latest
 script:
 - npm test
+- npm run cover
 - npm run browser-test
 - npm run lint
+- ./ci/coveralls.sh
 git:
   depth: 1
   submodules: false

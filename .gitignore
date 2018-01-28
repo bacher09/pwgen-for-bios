@@ -10,3 +10,5 @@ dist/
 *.env
 coverage/
 npm-debug.log
+test-dist/
+coverage-dist/
