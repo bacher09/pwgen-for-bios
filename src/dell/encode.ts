@@ -62,7 +62,7 @@ interface Encoder {
 function rol(x: number, bitsrot: number): number {
     // n >>> 0 used to convert signed number to unsigned
     // (unsigned(x) >> (32 - bitsrot)) | (unsigned(x) << bitsrot);
-    return ((x >>> 0) / (1 << (32 - bitsrot))) | (((x >>> 0) << bitsrot) | 0 );
+    return ((x >>> 0) / Math.pow(2, 32 - bitsrot)) | (((x >>> 0) << bitsrot) | 0 );
 }
 
 function encF2(num1: number, num2: number, num3: number): number {

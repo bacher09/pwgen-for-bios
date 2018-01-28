@@ -102,6 +102,10 @@ describe("Test keygenDell", () => {
         expect(keygenDell("1234567", DellTag.Tag2A7B, SuffixType.ServiceTag))
         .toEqual("J1KuwWpSUgnDarfi");
     });
+    it("Dell password for: 1234567-A95B", () => {
+        expect(keygenDell("1234567", DellTag.TagA95B, SuffixType.ServiceTag))
+        .toEqual("46rg65ky");
+    });
     it("Dell password for: 1234567-1D3B", () => {
         expect(keygenDell("1234567", DellTag.Tag1D3B, SuffixType.ServiceTag))
         .toEqual("Sn4fkF8bS57NymZl");
@@ -155,6 +159,10 @@ describe("Test keygenDell", () => {
         expect(keygenDell("1234567890A", DellTag.Tag2A7B, SuffixType.HDD))
         .toEqual("h6lwdi91qluUyt3u");
     });
+    it("Dell HDD password for: 1234567890A-A95B", () => {
+        expect(keygenDell("1234567890A", DellTag.TagA95B, SuffixType.HDD))
+        .toEqual("qr0s6x4n");
+    });
     it("Dell HDD password for: 1234567890A-1D3B", () => {
         expect(keygenDell("1234567890A", DellTag.Tag1D3B, SuffixType.HDD))
         .toEqual("6JQ1WacHNNR0Taia");
@@ -184,5 +192,7 @@ describe("Test Dell BIOS", () => {
     });
     it("Check bad dell tag", () => {
         expect(dellSolver("1234567-BAD1")).toEqual([]);
+        expect(dellSolver("1234567-TOLONG")).toEqual([]);
+        expect(dellHddSolver("1234567-SHORT")).toEqual([]);
     });
 });
