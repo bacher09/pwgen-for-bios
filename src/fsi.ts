@@ -19,7 +19,7 @@ function generateCRC16Table(): number[] {
 const crc16Table = generateCRC16Table();
 
 /* For Fujinsu-Siemens. 8 or 5x4 hexadecimal digits. */
-function fsi20HexKeygen(serial: string): string {
+function fsiHexKeygen(serial: string): string {
 
     function hashToString(hash: number) {
         const zero = "0".charCodeAt(0);
@@ -122,11 +122,11 @@ function fsi20DecNewKeygen(serial: string): string {
     }).join("");
 }
 
-export let fsi20HexSolver = makeSolver({
+export let fsiHexSolver = makeSolver({
     name: "Fujitsu-Siemens hexdigits",
-    examples: ["AAAA-BBBB-CCCC-DEAD-BEEF"],
-    inputValidator: (s) => /^[0-9ABCDEF]{20}$/i.test(s),
-    fun: (code: string) => [fsi20HexKeygen(code)]
+    examples: ["DEADBEEF", "AAAA-BBBB-CCCC-DEAD-BEEF"],
+    inputValidator: (s) => /^([0-9ABCDEF]{20}|[0-9ABCDEF]{8})$/i.test(s),
+    fun: (code: string) => [fsiHexKeygen(code)]
 });
 
 export let fsi20DecNewSolver = makeSolver({

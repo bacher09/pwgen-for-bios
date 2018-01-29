@@ -1,16 +1,19 @@
-import { fsi20DecNewSolver, fsi20DecOldSolver, fsi20HexSolver } from "./fsi";
+import { fsi20DecNewSolver, fsi20DecOldSolver, fsiHexSolver } from "./fsi";
 
 describe("Test Fujitsu-Siemens 5x4 hexadecimal BIOS", () => {
     it("FSI key for 1234-4321-1234-4321-1234 is 35682708", () => {
-        expect(fsi20HexSolver("1234-4321-1234-4321-1234")).toEqual(["35683789"]);
+        expect(fsiHexSolver("1234-4321-1234-4321-1234")).toEqual(["35683789"]);
     });
     it("FSI key for AAAA-BBBB-CCCC-DEAD-BEEF is 64830592", () => {
-        expect(fsi20HexSolver("AAAA-BBBB-CCCC-DEAD-BEEF")).toEqual(["64830592"]);
-        expect(fsi20HexSolver("AAAABBBBCCCCDEADBEEF")).toEqual(["64830592"]);
+        expect(fsiHexSolver("AAAA-BBBB-CCCC-DEAD-BEEF")).toEqual(["64830592"]);
+        expect(fsiHexSolver("AAAABBBBCCCCDEADBEEF")).toEqual(["64830592"]);
+    });
+    it("FSI key for DEADBEEF is 64830592", () => {
+        expect(fsiHexSolver("DEADBEEF")).toEqual(["64830592"]);
     });
     it("test invalid keys", () => {
-        expect(fsi20HexSolver("AAAA-BBBB-CCCC-DEAD-CODE")).toEqual([]);
-        expect(fsi20HexSolver("AAAA-BBBB-CCCC-DEAD-BEEF-12")).toEqual([]);
+        expect(fsiHexSolver("AAAA-BBBB-CCCC-DEAD-CODE")).toEqual([]);
+        expect(fsiHexSolver("AAAA-BBBB-CCCC-DEAD-BEEF-12")).toEqual([]);
     });
 });
 
