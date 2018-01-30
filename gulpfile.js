@@ -1,11 +1,12 @@
-var gulp = require("gulp");
-var ts = require("gulp-typescript");
-var tslint = require("gulp-tslint");
-var jasmine = require("gulp-jasmine");
-var sourcemaps = require('gulp-sourcemaps');
-var istanbul = require("gulp-istanbul");
-var remapIstanbul = require("remap-istanbul/lib/gulpRemapIstanbul");
-var tsProject = ts.createProject("tsconfig.json");
+const gulp = require("gulp");
+const ts = require("gulp-typescript");
+const tslint = require("gulp-tslint");
+const jasmine = require("gulp-jasmine");
+const sourcemaps = require('gulp-sourcemaps');
+const istanbul = require("gulp-istanbul");
+const remapIstanbul = require("remap-istanbul/lib/gulpRemapIstanbul");
+const tsProject = ts.createProject("tsconfig.json");
+const del = require('del');
 
 gulp.task("coverage-build", function() {
     return tsProject.src()
@@ -59,6 +60,10 @@ gulp.task('test-build', function() {
 gulp.task('test', ['test-build'], function() {
     return gulp.src("test-dist/*.spec.js")
         .pipe(jasmine());
+});
+
+gulp.task('clean', function(cb) {
+    del(['dist', 'test-dist', 'coverage-dist', 'coverage']).then(paths => cb());
 });
 
 gulp.task('default', ['test', 'lint', 'coverage'])
