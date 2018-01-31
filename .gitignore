@@ -1,4 +1,5 @@
 .*.sw[po]
+*.py[co]
 *.bak
 upload/
 build/
@@ -12,3 +13,4 @@ coverage/
 npm-debug.log
 test-dist/
 coverage-dist/
+venv/

@@ -1,24 +1,35 @@
 sudo: false
+dist: trusty
 language: node_js
 node_js:
 - '6'
 env:
   matrix:
   - SAUCE=true
-  global:
-    secure: fj2CF7TO1mpoM/Ft1wSIpGapoA+hqXLpUVe2iZXsGgeKVONAyh5k+s1cd9h/xGlnOmW5HyyN1M8YiTTWEjdT1yLwLYiL+cUdcW+BZBZWLN84lbjQimmDvB84ukMAdBeGz6XgSdmMYLFjZoh89qC3D0lukLZV0RdJOR8SmntwuRg=
 addons:
   chrome: stable
   firefox: latest
+  apt:
+    packages:
+    - python3-pip
 script:
 - npm test
 - npm run cover
 - npm run browser-test
 - npm run lint
-- ./ci/coveralls.sh
+after_sucess:
+- ci/coveralls.sh
 git:
   depth: 1
   submodules: false
 cache:
   directories:
   - node_modules
+before_deploy:
+- ci/build.sh
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: ci/travis_deploy.sh
+  on:
+    branch: master
