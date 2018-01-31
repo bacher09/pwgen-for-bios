@@ -24,7 +24,10 @@ function makeClosureCompiler() {
 var plugins = [
     new CleanWebpackPlugin(['dist']),
     new CopyWebpackPlugin([
-        { from: 'assets/bootstrap.min.css'}
+        {
+            from: 'assets/bootstrap.min.css',
+            to: 'assets/'
+        }
     ]),
     new HtmlWebpackPlugin({
         minify: {
@@ -45,7 +48,7 @@ if (process.env.PRODUCTION) {
 module.exports = {
     entry: "./src/ui.ts",
     output: {
-        filename: "bundle.[hash].js",
+        filename: "assets/bundle.[hash].js",
         path: path.join(__dirname, "dist")
     },
     plugins: plugins,
