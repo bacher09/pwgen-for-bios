@@ -12,6 +12,7 @@ UPLOAD_ORDER = [
 
 CACHE_RULES = [
     (re.compile(r'.*\.html$'), "public, max-age=120"),
+    (re.compile(r'^version-info\.txt$'), "public, max-age=60"),
     (re.compile(r'.*\.(css|js)$'), "public, s-maxage=31536000, max-age=86400")
 ]
 
