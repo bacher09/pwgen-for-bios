@@ -105,7 +105,7 @@ module.exports = function(config) {
         configuration.browsers = ['ChromeHeadlessTravis', 'FirefoxHeadless'];
     }
 
-    if (process.env.SAUCE) {
+    if (process.env.SAUCE && process.env.SAUCE_USERNAME) {
         var currentBrowsers = configuration.browsers;
         var sauceBrowsers = Object.keys(customLaunchers).filter((s) => s.startsWith('sl_'));
         configuration.browsers = currentBrowsers.concat(sauceBrowsers);
