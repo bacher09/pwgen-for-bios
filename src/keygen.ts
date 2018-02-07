@@ -2,6 +2,7 @@ import { dellHddSolver, dellSolver, hddOldSolver } from "./dell";
 import { fsi20DecNewSolver, fsi20DecOldSolver, fsiHexSolver } from "./fsi";
 import { hpMiniSolver } from "./hpmini";
 import { insydeSolver } from "./insyde";
+import { monotonicTime } from "./performancePolyfill";
 import {
     phoenixFsiLSolver, phoenixFsiPSolver, phoenixFsiSolver,
     phoenixFsiSSolver, phoenixFsiXSolver, phoenixHPCompaqSolver, phoenixSolver
@@ -10,7 +11,7 @@ import { samsungSolver } from "./samsung";
 import { sonySolver } from "./sony";
 import { Solver } from "./utils";
 
-export type KeygenResult = [Solver, string[]];
+export type KeygenResult = [Solver, string[], number];
 
 export const solvers: Solver[] = [
     sonySolver,
@@ -35,6 +36,10 @@ export const solvers: Solver[] = [
 // NOTE: In future this function can change or even be removed
 export function keygen(serial: string): KeygenResult[] {
     return solvers
-        .map((solver): KeygenResult => [solver, solver(serial)])
-        .filter(([_, passwords]) => passwords !== undefined && passwords.length >= 1);
+        .map((solver): KeygenResult => {
+            let startTime = monotonicTime();
+            let passwords = solver(serial);
+            let calcTime = monotonicTime() - startTime;
+            return [solver, passwords, calcTime];
+        }).filter(([_, passwords]) => passwords !== undefined && passwords.length >= 1);
 }

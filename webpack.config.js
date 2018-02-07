@@ -4,12 +4,20 @@ const ClosureCompilerPlugin = require('webpack-closure-compiler');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const webpack = require('webpack');
 
 function makeClosureCompiler() {
+    const externDir = path.join(__dirname, "externs");
+    const externs = [
+        path.join(externDir, "googleAnalytics.js"),
+        path.join(externDir, "performance.js")
+    ];
+
     var pluginOptions = {
         compiler: {
             compilation_level: "ADVANCED",
-            create_source_map: true
+            create_source_map: true,
+            externs: externs
         },
         concurrency: os.cpus().length
     };
@@ -29,6 +37,9 @@ var plugins = [
             to: 'assets/'
         }
     ]),
+    new webpack.DefinePlugin({
+        GOOGLE_ANALYTICS_TAG: JSON.stringify(process.env.GOOGLE_ANALYTICS_TAG)
+    }),
     new HtmlWebpackPlugin({
         minify: {
             collapseWhitespace: true,

@@ -13,7 +13,7 @@ export interface Solver {
     (code: string): string[];
     readonly biosName: string;
     readonly examples?: string[];
-    readonly description?: string;
+    readonly description: string;
     validator(code: string): boolean;
     cleaner(code: string): string;
     keygen(code: string): string[];
