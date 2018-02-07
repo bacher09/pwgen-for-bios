@@ -12,7 +12,8 @@ function sonyKeygen(serial: string): string {
 }
 
 export let sonySolver = makeSolver({
-    name: "Sony",
+    name: "sony",
+    description: "Old Sony",
     examples: ["1234567"],
     inputValidator: (s) => /^\d{7}$/i.test(s),
     fun: (code: string) => {

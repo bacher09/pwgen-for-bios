@@ -69,7 +69,8 @@ function samsungKeygen(serial: string): string[] {
 }
 
 export let samsungSolver = makeSolver({
-    name: "Samsung",
+    name: "samsung",
+    description: "Samsung",
     examples: ["07088120410C0000"],
     inputValidator: (s) => /^[0-9ABCDEF]+$/i.test(s) && (
         s.length === 12 || s.length === 14 || s.length === 16 || s.length === 18

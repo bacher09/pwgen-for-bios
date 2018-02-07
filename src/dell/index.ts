@@ -198,14 +198,16 @@ function checkDellTag(tag: string): boolean {
 }
 
 export let hddOldSolver = makeSolver({
-    name: "Dell HDD Serial Number (old)",
+    name: "dellHDDOld",
+    description: "Dell HDD Serial Number (old)",
     examples: ["12345678901"],
     inputValidator: (s) => s.length === 11,
     fun: (s) => [keygenHddOld(s)]
 });
 
 export let dellSolver = makeSolver({
-    name: "Dell from serial number",
+    name: "dellTag",
+    description: "Dell from serial number",
     examples: ["1234567-595B", "1234567-1D3B"],
     inputValidator: (password: string) => {
         if (password.length !== 11) {
@@ -221,7 +223,8 @@ export let dellSolver = makeSolver({
 });
 
 export let dellHddSolver = makeSolver({
-    name: "Dell from hdd serial number",
+    name: "dellHddNew",
+    description: "Dell from hdd serial number",
     examples: ["1234567890A-595B"],
     inputValidator: (password: string) => {
         if (password.length !== 15) {

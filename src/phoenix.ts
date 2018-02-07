@@ -188,49 +188,56 @@ function makePhoenixSolver(description?: PhoenixBios): PhoenixSolver {
     solver.calculateHash = calculateHash;
 
     if (description.description) {
-        solver.description = description;
+        solver.description = description.description;
     }
     return solver as PhoenixSolver;
 }
 
 export let phoenixSolver = makePhoenixSolver({
-    name: "Generic Phoenix"
+    name: "phoenix",
+    description: "Generic Phoenix"
 });
 
 export let phoenixHPCompaqSolver = makePhoenixSolver({
-    name: "HP/Compaq Phoenix BIOS",
+    name: "phoenixHP",
+    description: "HP/Compaq Phoenix BIOS",
     salt: 17232
 });
 
 export let phoenixFsiSolver = makePhoenixSolver({
-    name: "Fujitsu-Siemens Phoenix",
+    name: "phoenixFSI",
+    description: "Fujitsu-Siemens Phoenix",
     salt: 65,
     dictionary: digitsOnly
 });
 
 export let phoenixFsiLSolver = makePhoenixSolver({
-    name: "Fujitsu-Siemens (model L) Phoenix",
+    name: "phoenixFSIModelL",
+    description: "Fujitsu-Siemens (model L) Phoenix",
     shift: 1,
     salt: "L".charCodeAt(0),
     dictionary: digitsOnly
 });
 
 export let phoenixFsiPSolver = makePhoenixSolver({
-    name: "Fujitsu-Siemens (model P) Phoenix",
+    name: "phoenixFSIModelP",
+    description: "Fujitsu-Siemens (model P) Phoenix",
     shift: 1,
     salt: "P".charCodeAt(0),
     dictionary: digitsOnly
 });
 
 export let phoenixFsiSSolver = makePhoenixSolver({
-    name: "Fujitsu-Siemens (model S) Phoenix",
+    name: "phoenixFSIModelS",
+    description: "Fujitsu-Siemens (model S) Phoenix",
     shift: 1,
     salt: "S".charCodeAt(0),
     dictionary: digitsOnly
 });
 
 export let phoenixFsiXSolver = makePhoenixSolver({
-    name: "Fujitsu-Siemens (model X) Phoenix",
+    name: "phoenixFSIModelX",
+    description: "Fujitsu-Siemens (model X) Phoenix",
     shift: 1,
     salt: "X".charCodeAt(0),
     dictionary: digitsOnly

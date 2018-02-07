@@ -25,7 +25,8 @@ function insydeKeygen(serial: string): string[] {
 }
 
 export let insydeSolver = makeSolver({
-    name: "Insyde H2O",
+    name: "insydeH2O",
+    description: "Insyde H2O BIOS (Acer, HP)",
     examples: ["03133610"],
     inputValidator: (s) => /^\d{8}$/i.test(s),
     fun: insydeKeygen

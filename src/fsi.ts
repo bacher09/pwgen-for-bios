@@ -123,21 +123,24 @@ function fsi20DecNewKeygen(serial: string): string {
 }
 
 export let fsiHexSolver = makeSolver({
-    name: "Fujitsu-Siemens hexdigits",
+    name: "fsiHex",
+    description: "Fujitsu-Siemens hexdigits",
     examples: ["DEADBEEF", "AAAA-BBBB-CCCC-DEAD-BEEF"],
     inputValidator: (s) => /^([0-9ABCDEF]{20}|[0-9ABCDEF]{8})$/i.test(s),
     fun: (code: string) => [fsiHexKeygen(code)]
 });
 
 export let fsi20DecNewSolver = makeSolver({
-    name: "Fujitsu-Siemens decimal new",
+    name: "fsiDecNew",
+    description: "Fujitsu-Siemens decimal new",
     examples: ["1234-4321-1234-4321-1234"],
     inputValidator: (s) => /^\d{20}$/i.test(s),
     fun: (code: string) => [fsi20DecNewKeygen(code)]
 });
 
 export let fsi20DecOldSolver = makeSolver({
-    name: "Fujitsu-Siemens decimal old",
+    name: "fsiDecOld",
+    description: "Fujitsu-Siemens decimal old",
     examples: ["1234-4321-1234-4321-1234"],
     inputValidator: (s) => /^\d{20}$/i.test(s),
     fun: (code: string) => [fsi20DecOldKeygen(code)]

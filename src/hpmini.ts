@@ -36,7 +36,8 @@ function hpMiniKeygen(serial: string): string[] {
 }
 
 export let hpMiniSolver = makeSolver({
-    name: "HPMini",
+    name: "hpMini",
+    description: "HP/Compaq Mini Netbooks",
     examples: ["CNU1234ABC"],
     inputValidator: (s) => /^[0-9A-Z]{10}$/i.test(s),
     fun: hpMiniKeygen
