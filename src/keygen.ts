@@ -1,3 +1,4 @@
+import { asusSolver } from "./asus";
 import { dellHddSolver, dellSolver, hddOldSolver } from "./dell";
 import { fsi20DecNewSolver, fsi20DecOldSolver, fsiHexSolver } from "./fsi";
 import { hpMiniSolver } from "./hpmini";
@@ -14,6 +15,7 @@ import { Solver } from "./utils";
 export type KeygenResult = [Solver, string[], number];
 
 export const solvers: Solver[] = [
+    asusSolver,
     sonySolver,
     samsungSolver,
     hddOldSolver,
