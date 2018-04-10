@@ -3,7 +3,7 @@ import { dellHddSolver, dellSolver, hddOldSolver } from "./dell";
 import { fsi20DecNewSolver, fsi20DecOldSolver, fsiHexSolver } from "./fsi";
 import { hpMiniSolver } from "./hpmini";
 import { insydeSolver } from "./insyde";
-import { monotonicTime } from "./performancePolyfill";
+import { monotonicTime } from "../polyfills/performancePolyfill";
 import {
     phoenixFsiLSolver, phoenixFsiPSolver, phoenixFsiSolver,
     phoenixFsiSSolver, phoenixFsiXSolver, phoenixHPCompaqSolver, phoenixSolver
