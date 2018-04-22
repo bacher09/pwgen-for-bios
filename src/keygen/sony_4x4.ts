@@ -85,7 +85,7 @@ function rsaDecrypt(code: number[]): number[] {
     const q: number = 3544934711;
     const e = 41;
     const phi = (new Long(p - 1, 0, true)).mul(q - 1);
-    const d: Long = modInvEuclid(new Long(e), phi) as Long;
+    const d: Long = modInvEuclid(new Long(e, 0, true), phi) as Long;
 
     const dp = d.mod(p - 1);
     const dq = d.mod(q - 1);
