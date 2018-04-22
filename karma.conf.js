@@ -5,7 +5,7 @@ module.exports = function(config) {
             base: "SauceLabs",
             browserName: "internet explorer",
             platform: "Windows 7",
-            version: "9"
+            version: "10"
         },
         sl_safari_7: {
             base: "SauceLabs",
