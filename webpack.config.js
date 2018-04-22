@@ -10,7 +10,8 @@ function makeClosureCompiler() {
     const externDir = path.join(__dirname, "externs");
     const externs = [
         path.join(externDir, "googleAnalytics.js"),
-        path.join(externDir, "performance.js")
+        path.join(externDir, "performance.js"),
+        path.join(externDir, "webassembly.js")
     ];
 
     var pluginOptions = {
