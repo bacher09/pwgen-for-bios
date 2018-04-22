@@ -1,15 +1,16 @@
+import { monotonicTime } from "../polyfills/performancePolyfill";
 import { asusSolver } from "./asus";
 import { dellHddSolver, dellSolver, hddOldSolver } from "./dell";
 import { fsi20DecNewSolver, fsi20DecOldSolver, fsiHexSolver } from "./fsi";
 import { hpMiniSolver } from "./hpmini";
 import { insydeSolver } from "./insyde";
-import { monotonicTime } from "../polyfills/performancePolyfill";
 import {
     phoenixFsiLSolver, phoenixFsiPSolver, phoenixFsiSolver,
     phoenixFsiSSolver, phoenixFsiXSolver, phoenixHPCompaqSolver, phoenixSolver
 } from "./phoenix";
 import { samsungSolver } from "./samsung";
 import { sonySolver } from "./sony";
+import { sony4x4Solver } from "./sony_4x4";
 import { Solver } from "./utils";
 
 export type KeygenResult = [Solver, string[], number];
@@ -17,6 +18,7 @@ export type KeygenResult = [Solver, string[], number];
 export const solvers: Solver[] = [
     asusSolver,
     sonySolver,
+    sony4x4Solver,
     samsungSolver,
     hddOldSolver,
     dellSolver,

@@ -7,6 +7,7 @@ export interface SolverDescription {
     readonly examples?: string[];
     fun: SolverFunction;
     inputValidator: Predicate<string>;
+    cleaner?: (val: string) => string;
 }
 
 export interface Solver {
@@ -75,7 +76,7 @@ function cleanSerial(serial: string): string {
 export function makeSolver(description: SolverDescription): Solver {
 
     let solver: any = (code: string) => {
-        let cleanCode = cleanSerial(code);
+        let cleanCode = solver.cleaner(code);
         if (description.inputValidator(cleanCode)) {
             return description.fun(cleanCode);
         } else {
@@ -85,7 +86,13 @@ export function makeSolver(description: SolverDescription): Solver {
 
     solver.biosName = description.name;
     solver.validator = description.inputValidator;
-    solver.cleaner = cleanSerial;
+
+    if (description.cleaner) {
+        solver.cleaner = description.cleaner;
+    } else {
+        solver.cleaner = cleanSerial;
+    }
+
     solver.keygen = description.fun;
 
     if (description.examples) {

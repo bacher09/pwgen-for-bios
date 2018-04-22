@@ -23,7 +23,7 @@ gulp.task("pre-coverage", ["coverage-build"], function() {
 });
 
 gulp.task('coverage', ['coverage-build', 'pre-coverage'], function() {
-    return gulp.src("coverage-dist/*.spec.js")
+    return gulp.src("coverage-dist/**/*.spec.js")
         .pipe(jasmine())
         .pipe(istanbul.writeReports({
             dir: './coverage',
@@ -58,7 +58,7 @@ gulp.task('test-build', function() {
 });
 
 gulp.task('test', ['test-build'], function() {
-    return gulp.src("test-dist/*.spec.js")
+    return gulp.src("test-dist/**/*.spec.js")
         .pipe(jasmine());
 });
 
