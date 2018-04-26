@@ -7,7 +7,7 @@
     "@types/jasmine": "^2.8.3",
     "@types/long": "^3.0.32",
     "gulp-jasmine": "^4.0.0",
-    "long": "github:dcodeIO/long.js"
+    "long": "dcodeIO/long.js"
   },
   "devDependencies": {
     "clean-webpack-plugin": "^0.1.19",
