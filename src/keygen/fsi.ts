@@ -122,6 +122,74 @@ function fsi20DecNewKeygen(serial: string): string {
     }).join("");
 }
 
+/* 
+ * For Fujinsu-Siemens. 6x4 dicimal digits 
+ * Original Python Code Copyright 2009:  dogbert <dogber1@gmail.com>
+ */
+function fsi24DecKeygen(serial: string): string {
+    const XORkey = "<7#&9?>s";
+
+    function codeToBytes(code: string): number[] {
+        let numbers: number[] = [Number(code.substring(0, 4)), Number(code.substring(5, 8)), Number(code.substring(9, 12)),
+            Number(code.substring(13, 16)), Number(code.substring(17, 20)), Number(code.substring(21, 24))];
+
+        let bytes: number[] = [];
+        for (let i of numbers) {
+            bytes.push(i % 256);
+            bytes.push(i / 256);
+        }
+  
+        return bytes;
+    }
+
+    function byteToChar(byte: number) {
+        if (byte > 9) {
+            return String.fromCharCode(('a').charCodeAt(0) + byte - 10)
+        }
+        else {
+            return String.fromCharCode(('0').charCodeAt(0) + byte);
+        }
+    }
+
+    function decryptCode(bytes: number[]): string {
+        // swap two bytes
+        // bytes[2], bytes[6] = bytes[6], bytes[2]
+        // bytes[3], bytes[7] = bytes[7], bytes[3]
+
+        // interleave the nibbles
+        bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7] = ((bytes[3] & 0xF0) | (bytes[0] & 0x0F), (bytes[2] & 0xF0) | (bytes[1] & 0x0F), (bytes[5] & 0xF0) | (bytes[6] & 0x0F), (bytes[4] & 0xF0) | (bytes[7] & 0x0F), (bytes[7] & 0xF0) | (bytes[4] & 0x0F), (bytes[6] & 0xF0) | (bytes[5] & 0x0F), (bytes[1] & 0xF0) | (bytes[2] & 0x0F), (bytes[0] & 0xF0) | (bytes[3] & 0x0F))
+
+        // apply XOR key
+        for (let i in bytes) {
+            bytes[i] = bytes[i] ^ XORkey[i].charCodeAt(0);
+        }
+
+        // final rotations
+        bytes[0] = ((bytes[0] << 1) & 0xFF) | (bytes[0] >> 7)
+        bytes[1] = ((bytes[1] << 7) & 0xFF) | (bytes[1] >> 1)
+        bytes[2] = ((bytes[2] << 2) & 0xFF) | (bytes[2] >> 6)
+        bytes[3] = ((bytes[3] << 8) & 0xFF) | (bytes[3] >> 0)
+        bytes[4] = ((bytes[4] << 3) & 0xFF) | (bytes[4] >> 5)
+        bytes[5] = ((bytes[5] << 6) & 0xFF) | (bytes[5] >> 2)
+        bytes[6] = ((bytes[6] << 4) & 0xFF) | (bytes[6] >> 4)
+        bytes[7] = ((bytes[7] << 5) & 0xFF) | (bytes[7] >> 3)
+
+        // len(solution space) = 10 + 26
+        for (let x in bytes) {
+            bytes[x] = bytes[x] % 36;
+        }
+
+        let masterPwd: string = "";
+        for (let j of bytes) {
+            masterPwd += byteToChar(j);
+        }
+            
+        return masterPwd
+    }
+
+    return decryptCode(codeToBytes(serial));
+}
+
 export let fsiHexSolver = makeSolver({
     name: "fsiHex",
     description: "Fujitsu-Siemens hexdigits",
@@ -144,4 +212,12 @@ export let fsi20DecOldSolver = makeSolver({
     examples: ["1234-4321-1234-4321-1234"],
     inputValidator: (s) => /^\d{20}$/i.test(s),
     fun: (code: string) => [fsi20DecOldKeygen(code)]
+});
+
+export let fsi24DecSolver = makeSolver({
+    name: "fsi24Dec",
+    description: "Fujitsu-Siemens decimal 6x4",
+    examples: ["1234-4321-1234-4321-1234-2351"],
+    inputValidator: (s) => /^\d{20}$/i.test(s),
+    fun: (code: string) => [fsi24DecKeygen(code)]
 });
