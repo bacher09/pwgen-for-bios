@@ -1,4 +1,4 @@
-import { fsi20DecNewSolver, fsi20DecOldSolver, fsiHexSolver } from "./fsi";
+import { fsi20DecNewSolver, fsi20DecOldSolver, fsi24DecSolver, fsiHexSolver } from "./fsi";
 
 describe("Test Fujitsu-Siemens 5x4 hexadecimal BIOS", () => {
     it("FSI key for 1234-4321-1234-4321-1234 is 35682708", () => {
@@ -44,5 +44,21 @@ describe("Test Fujitsu-Siemens 5x4 decimal old", () => {
     it("test invalid keys", () => {
         expect(fsi20DecOldSolver("1234-4321-1234-4321-1234-1")).toEqual([]);
         expect(fsi20DecOldSolver("1234-4321-1234-4321-BEEF")).toEqual([]);
+    });
+});
+
+describe("Test Fujitsu-Siemens 6x4 decimal", () => {
+    it("FSI key for 1234-4321-1234-4321-1234-3213 is qzxuwjmt", () => {
+        let v = fsi24DecSolver("1234-4321-1234-4321-1234-3213");
+        expect(v).toEqual(["qzxuwjmt"]);
+    });
+
+    it("FSI key for 7234-4321-1234-4321-1234-3211 is qz9uwjit", () => {
+        expect(fsi24DecSolver("7234-4321-1234-4321-1234-3211")).toEqual(["qz9uwjit"]);
+    });
+
+    it("test invalid keys", () => {
+        expect(fsi24DecSolver("1234-4321-1234-4321-1234-1754-3")).toEqual([]);
+        expect(fsi24DecSolver("1234-4321-1234-4321-BEEF")).toEqual([]);
     });
 });
