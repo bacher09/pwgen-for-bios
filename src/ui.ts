@@ -8,10 +8,10 @@ let answerElement = document.getElementById("answer") as HTMLDivElement;
 
 function renderResult(results: KeygenResult[]): void {
     let table = document.createElement("table");
-    let ThemeMode = document.getElementsByName("theme_mode")[0].getAttribute("content");
-    if (ThemeMode == "light") {
+    let themeMode = document.getElementsByName("theme_mode")[0].getAttribute("content");
+    if ( themeMode === "light" ) {
         table.className = "table table-striped";
-    }else if(ThemeMode == "dark"){
+    } else if ( themeMode === "dark" ) {
         table.className = "table table-striped table-dark";
     }
     let tableHead = table.appendChild(document.createElement("thead"));
