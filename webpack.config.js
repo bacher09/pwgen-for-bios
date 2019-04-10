@@ -10,7 +10,6 @@ var webpackMode;
 function makeClosureCompiler() {
     const externDir = path.join(__dirname, "externs");
     const externs = [
-        path.join(externDir, "googleAnalytics.js"),
         path.join(externDir, "performance.js"),
         path.join(externDir, "webassembly.js")
     ];
@@ -39,9 +38,6 @@ var plugins = [
             to: 'assets/'
         }
     ]),
-    new webpack.DefinePlugin({
-        GOOGLE_ANALYTICS_TAG: JSON.stringify(process.env.GOOGLE_ANALYTICS_TAG)
-    }),
     new HtmlWebpackPlugin({
         minify: {
             collapseWhitespace: true,

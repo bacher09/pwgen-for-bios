@@ -23,6 +23,13 @@ Latest released version available [here][bios-pw] and latest testing version (*s
 * Sony &mdash; 7 digit serial number
 * Samsung &mdash; 12 hexadecimal digits
 
+## Installation/Compile
+
+1. Clone the repository
+2. cd pwgen-for-bios && npm install
+3. cd .. && tsc --project pwgen-for-bios/
+4. webpack pwgen-for-bios/webpack.config.js 
+
 ## More info
 
 * http://dogber1.blogspot.com/2009/05/table-of-reverse-engineered-bios.html

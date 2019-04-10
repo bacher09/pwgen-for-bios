@@ -1,5 +1,4 @@
-import { gtag } from "./googleAnalytics";
-import { keygen, KeygenResult, solvers } from "./keygen";
+import { keygen, KeygenResult } from "./keygen";
 
 let form = document.getElementById("form_id") as HTMLFormElement;
 let serialInput = document.getElementById("serial_id") as HTMLInputElement;
@@ -29,28 +28,7 @@ function renderResult(results: KeygenResult[]): void {
 }
 
 function trackResult(serial: string): KeygenResult[] {
-    let result = keygen(serial);
-    if (GOOGLE_ANALYTICS_TAG) {
-        let eventParams: {[key: string]: boolean} = {};
-        solvers.forEach((solver) => {
-            eventParams[solver.biosName] = false;
-        });
-
-        result.forEach(([solver, _, time]) => {
-            eventParams[solver.biosName] = true;
-
-            // send calculation timing report
-            gtag("event", "timing_complete", {
-                "name": "bios_keygen",
-                "value": Math.round(time),
-                "event_category": solver.biosName
-            });
-        });
-
-        // send event about calculation
-        gtag("event", "bios_keygen", eventParams);
-    }
-    return result;
+    return keygen(serial);
 }
 
 form.addEventListener("submit", (event) => {
