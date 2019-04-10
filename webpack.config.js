@@ -52,7 +52,13 @@ var plugins = [
     ]),
     new HtmlWebpackPlugin({
         inject: true,
-        template: 'html/index.html'
+        template: 'html/index.html',
+        filename: 'index.html',
+    }),
+    new HtmlWebpackPlugin({
+        inject: true,
+        template: 'html/index_dark.html',
+        filename: 'index_dark.html',
     })
 ];
 

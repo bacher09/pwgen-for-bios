@@ -8,14 +8,19 @@ let answerElement = document.getElementById("answer") as HTMLDivElement;
 
 function renderResult(results: KeygenResult[]): void {
     let table = document.createElement("table");
-    table.className = "table table-striped";
+    let ThemeMode = document.getElementsByName("theme_mode")[0].getAttribute("content");
+    if (ThemeMode == "light") {
+        table.className = "table table-striped";
+    }else if(ThemeMode == "dark"){
+        table.className = "table table-striped table-dark";
+    }
     let tableHead = table.appendChild(document.createElement("thead"));
     let tableHeadTR = tableHead.appendChild(document.createElement("tr"));
     let tableHeadTHDevice = tableHeadTR.appendChild(document.createElement("th"));
     let tableHeadTHCode = tableHeadTR.appendChild(document.createElement("th"));
     tableHeadTHDevice.appendChild(document.createTextNode("Device"));
     tableHeadTHCode.appendChild(document.createTextNode("Hash Code/Serial"));
-    
+
     let tableBody = table.appendChild(document.createElement("tbody"));
     results.forEach(([solver, passwords, _]) => {
         let trElem = document.createElement("tr");
