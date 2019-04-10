@@ -36,14 +36,21 @@ var plugins = [
         {
             from: 'assets/bootstrap.min.css',
             to: 'assets/'
+        },
+        {
+            from: 'assets/bootstrap.min.js',
+            to: 'assets/'
+        },
+        {
+            from: 'assets/popper.min.js',
+            to: 'assets/'
+        },
+        {
+            from: 'assets/jquery.min.js',
+            to: 'assets/'
         }
     ]),
     new HtmlWebpackPlugin({
-        minify: {
-            collapseWhitespace: true,
-            conservativeCollapse: true,
-            removeComments: true
-        },
         inject: true,
         template: 'html/index.html'
     })

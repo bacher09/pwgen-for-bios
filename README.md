@@ -27,8 +27,7 @@ Latest released version available [here][bios-pw] and latest testing version (*s
 
 1. Clone the repository
 2. cd pwgen-for-bios && npm install
-3. cd .. && tsc --project pwgen-for-bios/
-4. webpack pwgen-for-bios/webpack.config.js 
+3. npm run webpack
 
 ## More info
 

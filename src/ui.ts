@@ -8,7 +8,15 @@ let answerElement = document.getElementById("answer") as HTMLDivElement;
 
 function renderResult(results: KeygenResult[]): void {
     let table = document.createElement("table");
-    table.classList.add("answer_table");
+    table.className = "table table-striped";
+    let tableHead = table.appendChild(document.createElement("thead"));
+    let tableHeadTR = tableHead.appendChild(document.createElement("tr"));
+    let tableHeadTHDevice = tableHeadTR.appendChild(document.createElement("th"));
+    let tableHeadTHCode = tableHeadTR.appendChild(document.createElement("th"));
+    tableHeadTHDevice.appendChild(document.createTextNode("Device"));
+    tableHeadTHCode.appendChild(document.createTextNode("Hash Code/Serial"));
+    
+    let tableBody = table.appendChild(document.createElement("tbody"));
     results.forEach(([solver, passwords, _]) => {
         let trElem = document.createElement("tr");
         let tdNameElem = document.createElement("td");
@@ -22,7 +30,7 @@ function renderResult(results: KeygenResult[]): void {
             tdElem.appendChild(document.createTextNode(pwd));
         });
         trElem.appendChild(tdElem);
-        table.appendChild(trElem);
+        tableBody.appendChild(trElem);
     });
     answerElement.appendChild(table);
 }
