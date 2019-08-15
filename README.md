@@ -2,7 +2,6 @@
 ================================
 [![travis status][build-status]][travis]
 [![coverage here][coverage-status]][coverage]
-[![browserstack status][browserstack-status]][browserstack-info]
 
 [![tested-browsers][sauce-matrix]][sauce-link]
 
@@ -38,8 +37,6 @@ Latest released version available [here][bios-pw] and latest testing version (*s
 [travis]: https://travis-ci.org/bacher09/pwgen-for-bios
 [coverage-status]: https://coveralls.io/repos/github/bacher09/pwgen-for-bios/badge.svg?branch=master
 [coverage]: https://coveralls.io/github/bacher09/pwgen-for-bios?branch=master
-[browserstack-status]: https://www.browserstack.com/automate/badge.svg?badge_key=UFl5WjA4TFlkNlN6MG1XTUd3Tmt6U1NzMXFYSHJLa2NsM3F0RE1JNnF3WT0tLWFJVEpCbVRlMVBJQ2dnRitWYVdnOFE9PQ==--785e0f4cd308caa52ec30b8183c16a6a6fc38293
-[browserstack-info]: https://www.browserstack.com/automate/public-build/UFl5WjA4TFlkNlN6MG1XTUd3Tmt6U1NzMXFYSHJLa2NsM3F0RE1JNnF3WT0tLWFJVEpCbVRlMVBJQ2dnRitWYVdnOFE9PQ==--785e0f4cd308caa52ec30b8183c16a6a6fc38293
 [sauce-matrix]: https://saucelabs.com/browser-matrix/bacher09.svg
 [sauce-link]: https://saucelabs.com/u/bacher09
 [dogbert-post]: http://dogber1.blogspot.com/2009/05/table-of-reverse-engineered-bios.html
