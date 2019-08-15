@@ -3,7 +3,7 @@ const os = require('os');
 const ClosureCompilerPlugin = require('webpack-closure-compiler');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpack = require('webpack');
 var webpackMode;
 
@@ -32,7 +32,7 @@ function makeClosureCompiler() {
 }
 
 var plugins = [
-    new CleanWebpackPlugin(['dist']),
+    new CleanWebpackPlugin(),
     new CopyWebpackPlugin([
         {
             from: 'assets/bootstrap.min.css',

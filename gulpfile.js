@@ -8,21 +8,21 @@ const remapIstanbul = require("remap-istanbul/lib/gulpRemapIstanbul");
 const tsProject = ts.createProject("tsconfig.json");
 const del = require('del');
 
-gulp.task("coverage-build", function() {
+function coverage_build() {
     return tsProject.src()
         .pipe(sourcemaps.init())
         .pipe(tsProject())
         .js.pipe(sourcemaps.write('.', {includeContent: false}))
         .pipe(gulp.dest("coverage-dist"));
-});
+};
 
-gulp.task("pre-coverage", ["coverage-build"], function() {
+const pre_coverage = gulp.series(coverage_build, function() {
     return gulp.src(["coverage-dist/**/*.js"])
             .pipe(istanbul())
             .pipe(istanbul.hookRequire());
 });
 
-gulp.task('coverage', ['coverage-build', 'pre-coverage'], function() {
+const coverage = gulp.series(coverage_build, pre_coverage, function() {
     return gulp.src("coverage-dist/**/*.spec.js")
         .pipe(jasmine())
         .pipe(istanbul.writeReports({
@@ -45,25 +45,27 @@ gulp.task('coverage', ['coverage-build', 'pre-coverage'], function() {
         });
 });
 
-gulp.task('lint', function() {
+function lint() {
     return tsProject.src()
         .pipe(tslint({"formatter": "verbose"}))
         .pipe(tslint.report());
+}
+
+function clean(cb) {
+    del(['dist', 'test-dist', 'coverage-dist', 'coverage'])
+        .then(paths => cb());
+}
+
+function test_build() {
+    return tsProject.src().pipe(tsProject()).pipe(gulp.dest("test-dist"));
+}
+
+const test = gulp.series(test_build, function() {
+    return gulp.src("test-dist/**/*.spec.js").pipe(jasmine());
 });
 
-gulp.task('test-build', function() {
-    return tsProject.src()
-        .pipe(tsProject())
-        .pipe(gulp.dest("test-dist"));
-});
-
-gulp.task('test', ['test-build'], function() {
-    return gulp.src("test-dist/**/*.spec.js")
-        .pipe(jasmine());
-});
-
-gulp.task('clean', function(cb) {
-    del(['dist', 'test-dist', 'coverage-dist', 'coverage']).then(paths => cb());
-});
-
-gulp.task('default', ['test', 'lint', 'coverage'])
+exports.lint = lint;
+exports.clean = clean;
+exports.test = test;
+exports.coverage = coverage;
+exports.default = gulp.parallel(lint, gulp.series(test, coverage));
