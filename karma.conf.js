@@ -1,7 +1,7 @@
 module.exports = function(config) {
 
     var customLaunchers = {
-        sl_ie_9: {
+        sl_ie_10: {
             base: "SauceLabs",
             browserName: "internet explorer",
             platform: "Windows 7",
@@ -10,20 +10,22 @@ module.exports = function(config) {
         sl_safari_7: {
             base: "SauceLabs",
             browserName: "safari",
-            platform: "OS X 10.9",
-            version: "7.0"
+            platform: "OS X 10.10",
+            version: "8.0"
         },
         sl_ios_safari: {
             base: 'SauceLabs',
-            browserName: 'iphone',
-            platform: 'OS X 10.9',
-            version: '9.3'
+            browserName: 'safari',
+            platform: 'iOS',
+            deviceName: 'iPhone 6 Simulator',
+            version: '10.3',
+            deviceOrientation: 'portrait'
         },
         sl_android: {
             base: "SauceLabs",
             browserName: 'Browser',
             patform: 'Android',
-            version: '4.4',
+            version: '5.1',
             deviceName: 'Android Emulator',
             deviceOrientation: 'portrait'
         },
@@ -31,7 +33,7 @@ module.exports = function(config) {
             base: "SauceLabs",
             browserName: 'chrome',
             platform: 'Linux',
-            version: '41.0'
+            version: '41'
         },
         sl_firefox_8: {
             base: "SauceLabs",

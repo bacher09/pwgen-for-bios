@@ -25,7 +25,7 @@
     "karma-chrome-launcher": "^3.1.0",
     "karma-firefox-launcher": "^1.2.0",
     "karma-jasmine": "^2.0.1",
-    "karma-sauce-launcher": "^2.0.2",
+    "karma-sauce-launcher": "^1.2.0",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^4.0.2",
     "remap-istanbul": "^0.13.0",
