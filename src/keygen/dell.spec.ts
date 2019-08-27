@@ -52,6 +52,16 @@ describe("Test calculateSuffix", () => {
         expect(suffix).toEqual([117, 66, 48, 111, 83, 107, 85, 111]);
     });
 
+    it("Check tag suffix for: 1234567-1F5A", () => {
+        let suffix = checkSuffix("1234567", DellTag.Tag1F5A, SuffixType.ServiceTag);
+        expect(suffix).toEqual([101, 103, 102, 117, 115, 100, 97, 117]);
+    });
+
+    it("Check tag suffix for: ABCDEFG-1F5A", () => {
+        let suffix = checkSuffix("ABCDEFG", DellTag.Tag1F5A, SuffixType.ServiceTag);
+        expect(suffix).toEqual([0x74, 0x6e, 0x76, 0x75, 0x69, 0x6f, 0x74, 0x68]);
+    });
+
     // HDD
     it("Check hdd suffix for: 12345678901-595B", () => {
         let suffix = checkSuffix("12345678901", DellTag.Tag595B, SuffixType.HDD);
@@ -144,8 +154,23 @@ describe("Test keygenDell", () => {
     });
     it("Dell password for: 8M5RQ32-1F66", () => {
         expect(keygenDell("8M5RQ32", DellTag.Tag1F66, SuffixType.ServiceTag))
-        .toEqual("3rlrbaSj46Iw221g");
+        .toEqual("3rlrbaSj46Iw221g"); });
+
+    it("Dell password for: 1234567-1F5A", () => {
+        expect(keygenDell("1234567", DellTag.Tag1F5A, SuffixType.ServiceTag))
+        .toEqual("2ls2b8GiP9H032kx");
     });
+
+    it("Dell password for: OPENSRC-1F5A", () => {
+        expect(keygenDell("OPENSRC", DellTag.Tag1F5A, SuffixType.ServiceTag))
+        .toEqual("ZC3j2t56eIe4Thgi");
+    });
+
+    it("Dell password for: ABCDEFG-1F5A", () => {
+        expect(keygenDell("ABCDEFG", DellTag.Tag1F5A, SuffixType.ServiceTag))
+        .toEqual("x2zL5n7jj2Gl2TIh");
+    });
+
     // HDD
     it("Dell HDD password for: 1234567890A-595B", () => {
         expect(keygenDell("1234567890A", DellTag.Tag595B, SuffixType.HDD))
@@ -175,6 +200,7 @@ describe("Test keygenDell", () => {
         expect(keygenDell("1234567890A", DellTag.Tag6FF1, SuffixType.HDD))
         .toEqual("5enLLpM3Immfb8CK");
     });
+    // TODO: add HDD 1F5A
 });
 
 describe("Test Dell BIOS", () => {

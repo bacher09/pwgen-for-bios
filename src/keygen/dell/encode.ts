@@ -59,6 +59,7 @@ interface Encoder {
     encode(data: number[]): number[];
 }
 
+// Maybe optimize ? return (((param2 >>> (0x20 - param7))) | (param2 << param7)) + num1;
 function rol(x: number, bitsrot: number): number {
     // n >>> 0 used to convert signed number to unsigned
     // (unsigned(x) >> (32 - bitsrot)) | (unsigned(x) << bitsrot);
@@ -168,7 +169,7 @@ class Tag595BEncoder {
     }
 
     public result(): number[] {
-        return this.encData.map((v) => v | 0);
+        return this.encData.map((v) => (v | 0) >>> 0);
     }
 
     public static encode(encBlock: number[]): number[] {
@@ -355,6 +356,60 @@ class Tag6FF1Encoder extends Tag595BEncoder {
     }
 }
 
+class Tag1F5AEncoder extends Tag595BEncoder {
+    protected md5table = md5magic2;
+    protected f1 = encF1N;
+    protected f2 = encF2N;
+    protected f3 = encF3;
+    protected f4 = encF4N;
+    protected f5 = encF5N;
+
+    protected incrementData() {
+        this.encData[0] += this.B;
+        this.encData[1] += this.C;
+        this.encData[2] += this.A;
+        this.encData[3] += this.D;
+
+        this.encData.forEach((val, index) => {
+            this.encData[index] = val | 0;
+        });
+    }
+
+    protected calculate(func: EncFunction, key1: number, key2: number): number {
+        let temp = func(this.C, this.A, this.D);
+        return this.B + this.f1(temp, this.md5table[key2] + this.encBlock[key1]) | 0;
+    }
+
+    public makeEncode(): void {
+        let t: number = 0;
+        for (let i = 0; i < 5; i++) {
+            for (let j = 0; j < 64; j++) {
+                let k = 12 + (j & 3) - (j & 12);
+                switch (j >> 4) {
+                    case 0:
+                        t = this.calculate(this.f2, j & 15, j);
+                        break;
+                    case 1:
+                        t = this.calculate(this.f3, (j * 5 + 1) & 15, j);
+                        break;
+                    case 2:
+                        t = this.calculate(this.f4, (j * 3 + 5) & 15, k + 0x20);
+                        break;
+                    case 3:
+                        t = this.calculate(this.f5, (j * 7) & 15, k + 0x30);
+                        break;
+                }
+                this.B = this.D;
+                this.D = this.A;
+                this.A = this.C;
+                this.C = rol(t, rotationTable[j >> 4][j & 3]) + this.C | 0;
+            }
+
+            this.incrementData();
+        }
+    }
+}
+
 const encoders: {readonly [P in DellTag]: Encoder} = {
     "595B": Tag595BEncoder,
     "2A7B": Tag595BEncoder, // same as 595B
@@ -362,7 +417,8 @@ const encoders: {readonly [P in DellTag]: Encoder} = {
     "1D3B": Tag1D3BEncoder,
     "D35B": TagD35BEncoder,
     "1F66": Tag1F66Encoder,
-    "6FF1": Tag6FF1Encoder
+    "6FF1": Tag6FF1Encoder,
+    "1F5A": Tag1F5AEncoder
 };
 
 export function blockEncode(encBlock: number[], tag: DellTag): number[] {
