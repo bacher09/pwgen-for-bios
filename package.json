@@ -42,6 +42,7 @@
     "lint": "gulp lint",
     "cover": "gulp coverage",
     "clean": "gulp clean",
+    "all": "gulp default",
     "browser-test": "karma start",
     "webpack": "webpack",
     "dev-server": "webpack-dev-server"
