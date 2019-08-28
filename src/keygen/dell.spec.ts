@@ -97,6 +97,11 @@ describe("Test calculateSuffix", () => {
         let suffix = checkSuffix("12345678901", DellTag.Tag1F66, SuffixType.HDD);
         expect(suffix).toEqual([48, 114, 79, 71, 55, 48, 49, 83]);
     });
+
+    it("Check hdd suffix for: 12345678901-1F5A", () => {
+        let suffix = checkSuffix("12345678901", DellTag.Tag1F5A, SuffixType.HDD);
+        expect(suffix).toEqual([48, 51, 113, 98, 107, 48, 99, 115]);
+    });
 });
 
 describe("Test keygenDell", () => {
@@ -200,7 +205,14 @@ describe("Test keygenDell", () => {
         expect(keygenDell("1234567890A", DellTag.Tag6FF1, SuffixType.HDD))
         .toEqual("5enLLpM3Immfb8CK");
     });
-    // TODO: add HDD 1F5A
+    it("Dell HDD password for: 1234567890A-1F5A", () => {
+        expect(keygenDell("1234567890A", DellTag.Tag1F5A, SuffixType.HDD))
+        .toEqual("L9IJjYoUIXeY5wOy");
+    });
+    it("Dell HDD password for: 12345678901-1F5A", () => {
+        expect(keygenDell("12345678901", DellTag.Tag1F5A, SuffixType.HDD))
+        .toEqual("QwO5Dki1zeR1n1t2");
+    });
 });
 
 describe("Test Dell BIOS", () => {
