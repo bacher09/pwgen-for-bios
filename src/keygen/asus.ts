@@ -2,6 +2,7 @@
 /* tslint:disable:no-bitwise */
 import { makeSolver } from "./utils";
 
+/** @type {function(number=,number=,number=):Array<number>} */
 function initTable(a1: number = 11, a2: number = 19, a3: number = 6): number[] {
     let table: number[] = [];
     const zeroCode = "0".charCodeAt(0);

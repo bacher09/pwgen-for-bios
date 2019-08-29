@@ -7,6 +7,8 @@ const istanbul = require("gulp-istanbul");
 const remapIstanbul = require("remap-istanbul/lib/gulpRemapIstanbul");
 const tsProject = ts.createProject("tsconfig.json");
 const del = require('del');
+const { getWebpackConfig } = require('./webpack.base');
+const webpack = require('webpack');
 
 function coverage_build() {
     return tsProject.src()
@@ -52,8 +54,7 @@ function lint() {
 }
 
 function clean(cb) {
-    del(['dist', 'test-dist', 'coverage-dist', 'coverage'])
-        .then(paths => cb());
+    del(['dist', 'test-dist', 'coverage-dist', 'coverage']).then(paths => cb());
 }
 
 function test_build() {
@@ -64,8 +65,28 @@ const test = gulp.series(test_build, function() {
     return gulp.src("test-dist/**/*.spec.js").pipe(jasmine());
 });
 
+function build_webpack(gtag, cb) {
+    webpack(getWebpackConfig(true, gtag), (err, stats) => {
+        cb();
+    });
+}
+
+function clean_dist(cb) {
+    del(['dist']).then(paths => cb());
+}
+
+function build_prod(cb) {
+    build_webpack("UA-112154345-1", cb);
+}
+
+function build_stage(cb) {
+    build_webpack("UA-112154345-2", cb);
+}
+
 exports.lint = lint;
 exports.clean = clean;
 exports.test = test;
 exports.coverage = coverage;
+exports.build_prod = gulp.series(clean_dist, build_prod);
+exports.build_stage = gulp.series(clean_dist, build_stage);
 exports.default = gulp.parallel(lint, gulp.series(test, coverage));

@@ -1,5 +1,6 @@
 /* tslint:disable:no-empty */
 /* tslint:disable:only-arrow-functions */
+/** @type {function(...*):void} */
 export let gtag: (...args: any[]) => void = () => {};
 
 if (GOOGLE_ANALYTICS_TAG) {
