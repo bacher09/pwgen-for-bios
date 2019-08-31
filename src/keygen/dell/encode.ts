@@ -188,11 +188,6 @@ class TagD35BEncoder extends Tag595BEncoder {
 }
 
 class Tag1D3BEncoder extends Tag595BEncoder {
-    protected f1 = encF1N;
-    protected f2 = encF2N;
-    protected f3 = encF3;
-    protected f4 = encF4N;
-    protected f5 = encF5N;
 
     public makeEncode(): void {
         for (let j = 0; j < 21; j++) {
@@ -206,11 +201,6 @@ class Tag1D3BEncoder extends Tag595BEncoder {
 }
 
 class Tag1F66Encoder extends Tag595BEncoder {
-    protected f1 = encF1N;
-    protected f2 = encF2N;
-    protected f3 = encF3;
-    protected f4 = encF4N;
-    protected f5 = encF5N;
     protected md5table = md5magic2;
 
     public makeEncode(): void {
@@ -281,17 +271,14 @@ class Tag1F66Encoder extends Tag595BEncoder {
 }
 
 class Tag6FF1Encoder extends Tag595BEncoder {
-    protected f1 = encF1N;
-    protected f2 = encF2N;
-    protected f3 = encF3;
-    protected f4 = encF4N;
-    protected f5 = encF5N;
     protected md5table = md5magic2;
+
+    protected counter1: number = 23;
 
     public makeEncode(): void {
         let t: number = 0;
 
-        for (let j = 0; j < 23; j++) {
+        for (let j = 0; j < this.counter1; j++) {
             this.A |= 0xA08097;
             this.B ^= 0xA010908;
             this.C |= 0x60606161 - j;
@@ -358,11 +345,6 @@ class Tag6FF1Encoder extends Tag595BEncoder {
 
 class Tag1F5AEncoder extends Tag595BEncoder {
     protected md5table = md5magic2;
-    protected f1 = encF1N;
-    protected f2 = encF2N;
-    protected f3 = encF3;
-    protected f4 = encF4N;
-    protected f5 = encF5N;
 
     protected incrementData() {
         this.encData[0] += this.B;
@@ -410,6 +392,10 @@ class Tag1F5AEncoder extends Tag595BEncoder {
     }
 }
 
+class TagBF97Encoder extends Tag6FF1Encoder {
+    protected counter1 = 31;
+}
+
 const encoders: {readonly [P in DellTag]: Encoder} = {
     "595B": Tag595BEncoder,
     "2A7B": Tag595BEncoder, // same as 595B
@@ -418,7 +404,8 @@ const encoders: {readonly [P in DellTag]: Encoder} = {
     "D35B": TagD35BEncoder,
     "1F66": Tag1F66Encoder,
     "6FF1": Tag6FF1Encoder,
-    "1F5A": Tag1F5AEncoder
+    "1F5A": Tag1F5AEncoder,
+    "BF97": TagBF97Encoder
 };
 
 export function blockEncode(encBlock: number[], tag: DellTag): number[] {
