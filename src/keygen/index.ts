@@ -1,7 +1,7 @@
 import { monotonicTime } from "../polyfills/performancePolyfill";
 import { asusSolver } from "./asus";
 import { dellHddSolver, dellSolver, hddOldSolver } from "./dell";
-import { fsi20DecNewSolver, fsi20DecOldSolver, fsiHexSolver } from "./fsi";
+import { fsi20DecNewSolver, fsi20DecOldSolver, fsi24DecSolver, fsiHexSolver } from "./fsi";
 import { hpMiniSolver } from "./hpmini";
 import { insydeSolver } from "./insyde";
 import {
@@ -26,6 +26,7 @@ export const solvers: Solver[] = [
     fsiHexSolver,
     fsi20DecNewSolver,
     fsi20DecOldSolver,
+    fsi24DecSolver,
     hpMiniSolver,
     insydeSolver,
     phoenixSolver,
