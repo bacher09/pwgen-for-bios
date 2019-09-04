@@ -70,10 +70,9 @@ function getWebpackConfig(production, gtag) {
     var plugins = [
         new CleanWebpackPlugin(),
         new CopyWebpackPlugin([
-            {
-                from: 'assets/bootstrap.min.css',
-                to: 'assets/'
-            }
+            {from: 'assets/bootstrap.min.css', to: 'assets/'},
+            {from: 'assets/images/favicon.ico', to: 'favicon.ico'},
+            {from: 'assets/images/', to: 'assets/images/'},
         ]),
         new DefinePlugin({
             GOOGLE_ANALYTICS_TAG: JSON.stringify(gtag)
@@ -82,10 +81,9 @@ function getWebpackConfig(production, gtag) {
             minify: {
                 collapseWhitespace: true,
                 conservativeCollapse: true,
-                removeComments: true
+                removeComments: true,
             },
-            inject: true,
-            template: 'html/index.html'
+            template: 'html/index.html',
         }),
         new VersionInfoPlugin({filename: 'version-info.txt'})
     ];
