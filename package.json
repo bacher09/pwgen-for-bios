@@ -4,16 +4,16 @@
   "description": "Password generator for BIOS",
   "main": "decrypt_bios.js",
   "dependencies": {
-    "@types/jasmine": "^3.5.2",
-    "@types/long": "^3.0.32",
-    "gulp-jasmine": "^4.0.0",
     "long": "github:dcodeIO/long.js"
   },
   "devDependencies": {
+    "@types/jasmine": "^3.5.10",
+    "@types/long": "^3.0.32",
+    "gulp-jasmine": "^4.0.0",
     "clean-webpack-plugin": "^3.0.0",
-    "closure-webpack-plugin": "^2.2.1",
+    "closure-webpack-plugin": "^2.3.0",
     "copy-webpack-plugin": "^5.1.1",
-    "coveralls": "^3.0.9",
+    "coveralls": "^3.0.11",
     "del": "^5.1.0",
     "google-closure-compiler": "^20190819.0.0",
     "gulp": "^4.0.2",
@@ -31,12 +31,12 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^4.0.2",
     "remap-istanbul": "^0.13.0",
-    "ts-loader": "^6.2.1",
+    "ts-loader": "^6.2.2",
     "tslint": "^5.20.1",
-    "typescript": "3.5.3",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.10.2"
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
   },
   "scripts": {
     "test": "gulp test",

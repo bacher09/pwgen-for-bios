@@ -194,7 +194,7 @@ export function keygenDell(serial: string, tag: DellTag, type: SuffixType): stri
 function checkDellTag(tag: string): boolean {
     tag = tag.toUpperCase();
     for (let tagItem in DellTag) {
-        if (tag === DellTag[tagItem]) {
+        if (tag === (DellTag[tagItem as keyof typeof DellTag])) {
             return true;
         }
     }
