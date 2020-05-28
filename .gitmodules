@@ -1,0 +1,3 @@
+[submodule "insydious"]
+	path = insydious
+	url = https://github.com/let-def/insydious
