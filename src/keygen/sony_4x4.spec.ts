@@ -1,4 +1,4 @@
-import * as Long from "long";
+const JSBI = require("jsbi");
 import { modularPow, sony4x4Keygen, sony4x4Solver } from "./sony_4x4";
 
 describe("Sony 4x4 BIOS Keygen", () => {
@@ -30,9 +30,9 @@ describe("Sony 4x4 BIOS Solver", () => {
 
 describe("test modularPow", () => {
     it("4 ^ 13 mod 497 == 445", () => {
-        expect(modularPow(Long.fromInt(4), 13, 497)).toEqual(445);
+        expect(modularPow(JSBI.BigInt(4), 13, 497)).toEqual(445);
     });
     it("100500 ^ 100500 mod 14 == 8", () => {
-        expect(modularPow(Long.fromInt(100500), 100500, 14)).toEqual(8);
+        expect(modularPow(JSBI.BigInt(100500), 100500, 14)).toEqual(8);
     });
 });

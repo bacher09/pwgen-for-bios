@@ -1,28 +1,11 @@
 const path = require('path');
-const ClosurePlugin = require('closure-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { DefinePlugin } = require('webpack');
 const { exec } = require('child_process');
+const Terser = require('terser-webpack-plugin');
 const fs = require('fs');
-
-
-function makeClosureCompiler() {
-    const externDir = path.join(__dirname, "externs");
-    const externs = [
-        path.join(externDir, "googleAnalytics.js"),
-        path.join(externDir, "performance.js"),
-        path.join(externDir, "webassembly.js")
-    ];
-
-    var flags = {
-        compilation_level: "ADVANCED",
-        externs: externs
-    };
-
-    return new ClosurePlugin({mode: 'STANDARD'}, flags);
-}
 
 
 class VersionInfoPlugin {
@@ -89,7 +72,6 @@ function getWebpackConfig(production, gtag) {
     ];
 
     if (production) {
-        plugins.push(makeClosureCompiler());
         webpackMode = "production";
     } else {
         webpackMode = "development";
@@ -103,7 +85,10 @@ function getWebpackConfig(production, gtag) {
         },
         plugins: plugins,
         optimization: {
-            concatenateModules: false
+            concatenateModules: false,
+            minimizer: [
+                new Terser({})
+            ]
         },
         devtool: "source-map",
         devServer: {
@@ -119,7 +104,12 @@ function getWebpackConfig(production, gtag) {
                 {
                     test: /\.ts$/,
                     exclude: /node_modules/,
-                    use: [{loader: 'ts-loader', options: {transpileOnly: true}}]
+                    use: [{loader: 'ts-loader', options: {transpileOnly: false}}]
+                },
+                {
+                    test: /\.m?js$/,
+                    exclude: /node_modules/,
+                    use: [{loader: 'babel-loader', options: {presets: ['@babel/preset-env']}}]
                 }
             ]
         }

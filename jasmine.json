@@ -1,0 +1,13 @@
+{
+    "reporters": [{
+        "name": "jasmine-spec-reporter#SpecReporter",
+        "options": {
+            "displayStacktrace": "all"
+        }
+    }],
+    "spec_dir": "src",
+    "spec_files": ["**/*.spec.ts"],
+    "helpers": [
+        "./node_modules/babel-register/lib/node.js"
+    ]
+}

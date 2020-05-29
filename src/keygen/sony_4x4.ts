@@ -1,6 +1,8 @@
 // based on dogbert's pwgen-sony-4x4.py
 /* tslint:disable:no-bitwise */
-import * as Long from "long";
+import type JSBIT from "jsbi";
+const JSBI = require("jsbi");
+type JSBI = JSBIT;
 import { makeSolver } from "./utils";
 
 const otpChars: string = "9DPK7V2F3RT6HX8J";
@@ -35,73 +37,79 @@ function encodePassword(pwd: number[]): string {
 }
 
 // http://numericalrecipes.blogspot.com/2009/03/modular-multiplicative-inverse.html
-function extEuclideanAlg(a: Long, b: Long): [Long, Long, Long] {
-    if (b.isZero()) {
-        return [new Long(1), new Long(0), a];
+function extEuclideanAlg(a: JSBI, b: JSBI): [JSBI, JSBI, JSBI] {
+    if (JSBI.EQ(b, 0)) {
+        return [JSBI.BigInt(1), JSBI.BigInt(0), a];
     } else {
-        let [x, y, gcd] = extEuclideanAlg(b, a.mod(b));
-        return [y, x.sub(y.mul(a.div(b))), gcd];
+        let [x, y, gcd] = extEuclideanAlg(b, JSBI.remainder(a, b));
+        return [y, JSBI.subtract(x, JSBI.multiply(y, JSBI.divide(a, b))), gcd];
     }
 }
 
-function modInvEuclid(a: Long, m: Long): Long | undefined {
+function modInvEuclid(a: JSBI, m: JSBI): JSBI | undefined {
     let [x, , gcd] = extEuclideanAlg(a, m);
-    if (gcd.eq(1)) {
+    if (JSBI.EQ(gcd, 1)) {
         // hack for javascript modulo operation
         // https://stackoverflow.com/questions/4467539/javascript-modulo-gives-a-negative-result-for-negative-numbers
-        const temp = x.mod(m);
-        return temp.gte(0) ? temp : temp.add(m);
+        const temp = JSBI.remainder(x, m);
+        return JSBI.GE(temp, 0) ? temp : JSBI.ADD(temp, m);
     } else {
         return undefined;
     }
 }
 
 // https://en.wikipedia.org/wiki/Modular_exponentiation#Right-to-left_binary_method
-export function modularPow(base: Long, exponent: number, modulus: number): number {
-    let result: Long = new Long(1, 0, true);
+export function modularPow(base: JSBI, exponent: number, modulus: number | JSBI): number {
+    let result: JSBI = JSBI.BigInt(1);
 
-    if (modulus === 1) {
+    if (!(modulus instanceof JSBI)) {
+        modulus = JSBI.BigInt(modulus);
+    }
+
+    if (JSBI.EQ(modulus, 1)) {
         return 0;
     }
 
-    base = base.mod(modulus);
+    base = JSBI.remainder(base, modulus);
 
     while (exponent > 0) {
         if ((exponent & 1) === 1) {
-           result = result.mul(base).mod(modulus);
+           result = JSBI.remainder(JSBI.multiply(result, base), modulus);
         }
         exponent = exponent >> 1;
-        base = base.mul(base).mod(modulus);
+        base = JSBI.remainder(JSBI.multiply(base, base), modulus);
     }
-    return result.toNumber();
+    return JSBI.toNumber(result);
 }
 
 function rsaDecrypt(code: number[]): number[] {
-    const low: number = arrayToNumber(code.slice(0, 4));
-    const high: number = arrayToNumber(code.slice(4, 8));
-    const c: Long = Long.fromBits(low, high, true);
+    const low: JSBI = JSBI.BigInt(arrayToNumber(code.slice(0, 4)));
+    const high: JSBI = JSBI.BigInt(arrayToNumber(code.slice(4, 8)));
+    const c: JSBI = JSBI.bitwiseOr(JSBI.leftShift(high, JSBI.BigInt(32)), low);
 
     const p: number = 2795287379;
     const q: number = 3544934711;
     const e = 41;
-    const phi = (new Long(p - 1, 0, true)).mul(q - 1);
-    const d: Long = modInvEuclid(new Long(e, 0, true), phi) as Long;
+    const phi: JSBI = JSBI.multiply(JSBI.BigInt(p - 1), JSBI.BigInt(q - 1));
+    const d: JSBI = modInvEuclid(JSBI.BigInt(e), phi) as JSBI;
 
-    const dp = d.mod(p - 1);
-    const dq = d.mod(q - 1);
-    const qinv: Long = modInvEuclid(new Long(q), new Long(p)) as Long;
+    const dp: JSBI = JSBI.remainder(d, JSBI.BigInt(p - 1));
+    const dq: JSBI = JSBI.remainder(d, JSBI.BigInt(q - 1));
+    const qinv: JSBI = modInvEuclid(JSBI.BigInt(q), JSBI.BigInt(p)) as JSBI;
 
-    const m1 = modularPow(c, dp.toNumber(), p);
-    const m2 = modularPow(c, dq.toNumber(), q);
-    let h: Long;
+    const m1 = modularPow(c, JSBI.toNumber(dp), p);
+    const m2 = modularPow(c, JSBI.toNumber(dq), q);
+    let h: JSBI;
 
     if (m1 < m2) {
-        h = Long.fromValue(m1 - m2).add(p).mul(qinv).mod(p);
+        h = JSBI.remainder(JSBI.multiply(JSBI.add(JSBI.BigInt(m1 - m2), JSBI.BigInt(p)), qinv), JSBI.BigInt(p));
     } else {
-        h = Long.fromValue(m1 - m2).mul(qinv).mod(p);
+        h = JSBI.remainder(JSBI.multiply(JSBI.BigInt(m1 - m2), qinv), JSBI.BigInt(p));
     }
-    const m = h.mul(q).add(m2);
-    return numberToArray(m.low).concat(numberToArray(m.high));
+    const m: JSBI = JSBI.add(JSBI.multiply(h, JSBI.BigInt(q)), JSBI.BigInt(m2));
+    return numberToArray(JSBI.toNumber(JSBI.asUintN(32, m))).concat(
+        numberToArray(JSBI.toNumber(JSBI.signedRightShift(m, JSBI.BigInt(32))))
+    );
 }
 
 export function sony4x4Keygen(hash: string): string {

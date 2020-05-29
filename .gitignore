@@ -1,10 +1,10 @@
 .*.sw[po]
 *.py[co]
 *.bak
+.nyc_output/
 upload/
 build/
 temp/
-typings/
 typings.json
 node_modules/
 dist/

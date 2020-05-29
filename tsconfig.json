@@ -2,7 +2,8 @@
     "compilerOptions": {
         "module": "commonjs",
         "lib": ["dom", "es5"],
-        "target": "es3",
+        "target": "es5",
+        "moduleResolution": "node",
         "noImplicitAny": true,
         "noImplicitReturns": true,
         "noUnusedLocals": true,
@@ -11,7 +12,8 @@
         "strict": true,
         "sourceMap": true,
         "rootDir": "src/",
-        "outDir": "dist/"
+        "outDir": "dist/",
+        "typeRoots": ["./typings", "./node_modules/@types/"]
     },
     "exclude": [
         "node_modules"
