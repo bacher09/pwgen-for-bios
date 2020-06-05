@@ -32,6 +32,7 @@ Latest released version available [here][bios-pw] and latest testing version (*s
 * [asyncritius](https://github.com/A-syncritus) &mdash; for major contribution to dell generator
 * [dogbert](https://github.com/dogbert) &mdash; researched most of generators present here
 * hpgl &mdash; for dell generator
+* [let-def](https://github.com/let-def) &mdash; for Acer Insyde 10 digit
 
 [build-status]: https://api.travis-ci.org/bacher09/pwgen-for-bios.svg?branch=master
 [travis]: https://travis-ci.org/bacher09/pwgen-for-bios

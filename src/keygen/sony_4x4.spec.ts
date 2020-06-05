@@ -1,3 +1,4 @@
+/* tslint:disable:no-var-requires */
 const JSBI = require("jsbi");
 import { modularPow, sony4x4Keygen, sony4x4Solver } from "./sony_4x4";
 
