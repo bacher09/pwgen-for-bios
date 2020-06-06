@@ -1,5 +1,5 @@
 /* tslint:disable:no-var-requires */
-const JSBI = require("jsbi");
+import JSBI from "jsbi";
 import { modularPow, sony4x4Keygen, sony4x4Solver } from "./sony_4x4";
 
 describe("Sony 4x4 BIOS Keygen", () => {

@@ -2,10 +2,8 @@
 /* tslint:disable:no-var-requires */
 /* Maybe need fixing for browsers where numbers is 32-bits */
 /* Some Acer, HP  laptops. 8 digit */
-import type JSBIT from "jsbi";
+import JSBI from "jsbi";
 import { makeSolver } from "./utils";
-const JSBI = require("jsbi");
-type JSBI = JSBIT;
 
 export class Crc64 {
     private static tableCache: {[key: string]: JSBI[]} = {};

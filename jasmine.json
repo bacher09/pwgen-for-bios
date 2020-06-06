@@ -5,9 +5,10 @@
             "displayStacktrace": "all"
         }
     }],
-    "spec_dir": "src",
+    "spec_dir": "src/keygen/",
     "spec_files": ["**/*.spec.ts"],
     "helpers": [
-        "./node_modules/babel-register/lib/node.js"
+        "../node_modules/esm",
+        "../node_modules/ts-node/register/index.js"
     ]
 }

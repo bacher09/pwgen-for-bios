@@ -14,11 +14,10 @@ addons:
     - python3-pip
 script:
 - npm test
-- npm run cover
 - npm run browser-test
 - npm run lint
 after_sucess:
-- npm run send-coverage
+- cat coverage/lcov.info | ./node_modules/.bin/coveralls
 git:
   depth: 1
   submodules: false

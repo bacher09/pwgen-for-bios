@@ -1,9 +1,7 @@
 // based on dogbert's pwgen-sony-4x4.py
 /* tslint:disable:no-bitwise */
 /* tslint:disable:no-var-requires */
-import type JSBIT from "jsbi";
-const JSBI = require("jsbi");
-type JSBI = JSBIT;
+import JSBI from "jsbi";
 import { makeSolver } from "./utils";
 
 const otpChars: string = "9DPK7V2F3RT6HX8J";

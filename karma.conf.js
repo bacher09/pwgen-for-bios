@@ -1,3 +1,5 @@
+const path = require("path");
+
 module.exports = function(config) {
 
     var customLaunchers = {
@@ -33,7 +35,7 @@ module.exports = function(config) {
             {pattern: './ci/spec-bundle.js', watched: false}
         ],
         preprocessors: {
-            './ci/spec-bundle.js': ['webpack', 'sourcemap'],
+            './ci/spec-bundle.js': ['webpack'],
         },
         webpackMiddleware: {
             scripts: 'errors-only'
@@ -42,14 +44,22 @@ module.exports = function(config) {
             devtool: "inline-source-map",
             mode: "development",
             resolve: {
-                extensions: ['.ts', '.js'],
+                extensions: ['.ts', '.js', '.mjs'],
             },
             module: {
                 rules: [
                     {
                         test: /\.ts$/,
                         exclude: /node_modules/,
-                        use: [{loader: 'ts-loader', options: {transpileOnly: true}}]
+                        use: [
+                            "@jsdevtools/coverage-istanbul-loader",
+                            {loader: 'ts-loader', options: {transpileOnly: true}}
+                        ]
+                    },
+                    {
+                        test: /\.m?js$/,
+                        exclude: /node_modules/,
+                        use: [{loader: 'babel-loader', options: {presets: ['@babel/preset-env']}}]
                     }
                 ]
             },
@@ -63,7 +73,13 @@ module.exports = function(config) {
             recordVideo: false,
             recordScreenshots: false
         },
-        reporters: ["progress", "saucelabs"],
+        reporters: ["progress", "saucelabs", "coverage-istanbul"],
+        coverageIstanbulReporter: {
+            reports: ['text', 'text-summary', "lcovonly"],
+            dir: path.join(__dirname, "coverage"),
+            combineBrowserReports: true,
+            fixWebpackSourcePaths: true,
+        },
         browsers: ["ChromeHeadless", "FirefoxHeadless"],
         customLaunchers: customLaunchers,
         singleRun: true,
@@ -74,7 +90,7 @@ module.exports = function(config) {
             'karma-firefox-launcher',
             'karma-sauce-launcher',
             'karma-webpack',
-            'karma-sourcemap-loader'
+            'karma-coverage-istanbul-reporter'
         ]
     };
 
