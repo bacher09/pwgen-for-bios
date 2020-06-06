@@ -31,6 +31,10 @@ describe("Acer Insyde 10 BIOS", () => {
         expect(acerInsyde10Solver("1373072054")).toEqual(["aebeae5c425684cd"]);
         expect(acerInsyde10Solver("1373899792")).toEqual(["a26970a4ffb62d49"]);
         expect(acerInsyde10Solver("1395185025")).toEqual(["a763280d9f7396ec"]);
+        expect(acerInsyde10Solver("1205532638")).toEqual(["0f29abe2243b5a5e"]);
+        expect(acerInsyde10Solver("1378359327")).toEqual(["0cb381199969833e"]);
+        expect(acerInsyde10Solver("1880388286")).toEqual(["021df1cd9695387d"]);
+        expect(acerInsyde10Solver("2025088185")).toEqual(["018261c3cbe60945"]);
     });
 });
 

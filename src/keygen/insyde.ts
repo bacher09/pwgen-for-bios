@@ -43,7 +43,7 @@ export class Crc64 {
     }
 
     public hexdigest(): string {
-        return this.digest().toString(16);
+        return ("0".repeat(16) + this.digest().toString(16)).slice(-16);
     }
     private static makeTable(poly: JSBI): JSBI[] {
         let table: JSBI[] = [];
