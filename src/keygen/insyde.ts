@@ -28,8 +28,10 @@ export class Crc64 {
         this.crc = JSBI.BigInt(0);
     }
 
-    public update(input: number[]) {
-        for (let b of input) {
+    public update(input: Uint8Array | number[]) {
+        /* tslint:disable-next-line:prefer-for-of */
+        for (let i = 0; i < input.length; i++) {
+            const b = input[i] & 0xFF;
             const index = JSBI.toNumber(JSBI.asUintN(8, JSBI.bitwiseXor(this.crc, JSBI.BigInt(b))));
             const temp = JSBI.bitwiseXor(this.table[index], JSBI.signedRightShift(this.crc, JSBI.BigInt(8)));
             this.crc = JSBI.asUintN(64, temp);
@@ -76,7 +78,7 @@ export class Crc64 {
 
 /* tslint:disable:no-shadowed-variable */
 export class Sha256 {
-    private static readonly SHA256_CONSTANTS: number[] = [
+    private static readonly SHA256_CONSTANTS: Uint32Array = Uint32Array.from([
         0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5,
         0x3956C25B, 0x59F111F1, 0x923F82A4, 0xAB1C5ED5,
         0xD807AA98, 0x12835B01, 0x243185BE, 0x550C7DC3,
@@ -93,32 +95,31 @@ export class Sha256 {
         0x391C0CB3, 0x4ED8AA4A, 0x5B9CCA4F, 0x682E6FF3,
         0x748F82EE, 0x78A5636F, 0x84C87814, 0x8CC70208,
         0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2
-    ];
+    ]);
 
-    private static readonly SHA256_IV: number[] = [
+    private static readonly SHA256_IV: Uint32Array = Uint32Array.from([
         0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A,
         0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19
-    ];
+    ]);
 
-    private state: number[];
-    private data: number[];
+    private state: Uint32Array;
+    private data: Uint8Array;
     private bitlen: JSBI;
     private datalen: number;
 
-    constructor(input?: number[]) {
+    constructor(input?: Uint8Array | number[]) {
         this.bitlen = JSBI.BigInt(0);
         this.datalen = 0;
-        this.data = new Array(64);
+        this.data = new Uint8Array(64);
         this.state = Sha256.SHA256_IV.slice();
 
-        if (input && Array.isArray(input)) {
+        if (input && (input instanceof Uint8Array || Array.isArray(input))) {
             this.update(input);
         }
     }
 
     private transform() {
-        // Maybe Uint8Array ?
-        let m: number[] = new Array(64);
+        let m: Uint32Array = new Uint32Array(64);
 
         function ROTRIGHT(a: number, b: number): number {
             return (a >>> b) | (a << (32 - b));
@@ -169,13 +170,9 @@ export class Sha256 {
         this.state[5] += f;
         this.state[6] += g;
         this.state[7] += h;
-
-        this.state.forEach((val, index) => {
-            this.state[index] = val >>> 0;
-        });
     }
 
-    private final(): number[] {
+    private final(): Uint8Array {
         let i = this.datalen & 63;
         if (this.datalen < 56) {
             this.data[i++] = 0x80;
@@ -199,7 +196,7 @@ export class Sha256 {
             this.data[i] = JSBI.toNumber(val);
         }
         this.transform();
-        let hash: number[] = new Array(32);
+        let hash = new Uint8Array(32);
         for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 8; j++) {
                 hash[i + j * 4] = (this.state[j] >>> (24 - i * 8)) & 0xFF;
@@ -217,8 +214,10 @@ export class Sha256 {
         return item;
     }
 
-    public update(input: number[]) {
-        for (let b of input) {
+    public update(input: Uint8Array | number[]) {
+        /* tslint:disable-next-line:prefer-for-of */
+        for (let i = 0; i < input.length; i++) {
+            const b = input[i];
             this.data[this.datalen] = b;
             this.datalen++;
 
@@ -230,13 +229,13 @@ export class Sha256 {
         }
     }
 
-    public digest(): number[] {
+    public digest(): Uint8Array {
         let item = this.copy();
         return item.final();
     }
 
     public hexdigest() {
-        return this.digest().map((x) => {
+        return Array.from(this.digest()).map((x) => {
             x = x & 0xFF;
             return (x < 0xf) ? "0" + x.toString(16) : x.toString(16);
         }).join("");
@@ -249,7 +248,7 @@ export class AES128 {
     private static readonly NK = 4;
     private static readonly NR = 10;
 
-    private static readonly sbox: number[] = [
+    private static readonly sbox: Uint8Array = Uint8Array.from([
         0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
         0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
         0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,
@@ -266,19 +265,19 @@ export class AES128 {
         0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e,
         0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
-    ];
+    ]);
 
-    private static readonly rcon: number[] = [
+    private static readonly rcon: Uint8Array = Uint8Array.from([
         0x8D, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36, 0x6C, 0xD8, 0xAB, 0x4D, 0x9A
-    ];
+    ]);
 
-    private roundKey: number[];
+    private roundKey: Uint8Array;
 
-    constructor(key: number[]) {
+    constructor(key: Uint8Array) {
         this.roundKey = AES128.keyExpansion(key);
     }
 
-    public encryptBlock(input: number[]): number[] {
+    public encryptBlock(input: Uint8Array): Uint8Array {
         if (input.length !== 16) {
             throw new Error("Invalid block length");
         }
@@ -297,17 +296,17 @@ export class AES128 {
         return state;
     }
 
-    private static keyExpansion(key: number[]): number[] {
+    private static keyExpansion(key: Uint8Array): Uint8Array {
         if (key.length !== 16) {
             throw new Error("Key should be 16 bytes");
         }
 
-        let roundKey = new Array(176);
+        let roundKey = new Uint8Array(176);
         // first round key is the key itself
         for (let i = 0; i < AES128.NK * 4; i++) {
             roundKey[i] = key[i];
         }
-        let temp: number[] = new Array(4);
+        let temp = new Uint8Array(4);
         // all other round keys generated from previous ones
         for (let i = AES128.NK; i < AES128.NB * (AES128.NR + 1); i++) {
             const k = (i - 1) * 4;
@@ -347,7 +346,7 @@ export class AES128 {
         return roundKey;
     }
 
-    private static addRoundKey(round: number, state: number[], roundKey: number[]) {
+    private static addRoundKey(round: number, state: Uint8Array, roundKey: Uint8Array) {
         for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
                 state[i * 4 + j] ^= roundKey[(round * AES128.NB * 4) + (i * AES128.NB) + j];
@@ -356,7 +355,7 @@ export class AES128 {
         }
     }
 
-    private static subBytes(state: number[]) {
+    private static subBytes(state: Uint8Array) {
         for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
                 state[j * 4 + i] = AES128.sbox[state[j * 4 + i]];
@@ -364,7 +363,7 @@ export class AES128 {
         }
     }
 
-    private static shiftRows(state: number[]) {
+    private static shiftRows(state: Uint8Array) {
         // rotate first row 1 columns to left
         let temp: number = state[0 * 4 + 1];
         state[0 * 4 + 1] = state[1 * 4 + 1];
@@ -386,7 +385,7 @@ export class AES128 {
         state[1 * 4 + 3] = temp;
     }
 
-    private static mixColumns(state: number[]) {
+    private static mixColumns(state: Uint8Array) {
         let tmp1: number;
         let tmp2: number;
 
@@ -409,40 +408,44 @@ export class AES128 {
     }
 }
 
-export function insydeAcerSwitch(arr: number[]): number[] {
+export function insydeAcerSwitch(arr: Uint8Array): Uint8Array {
     if (arr.length !== 32) {
         throw new Error("Input array should have 32 length");
     }
 
-    function fun0(arr: number[]): number[] {
-        let output: number[] = [];
+    function fun0(arr: Uint8Array): Uint8Array {
+        let output = new Uint8Array(16);
+        let k = 0;
         for (let i = 3; i >= 0; i--) {
             for (let j = 0; j < 16; j += 4 ) {
-                output.push(arr[i + j]);
+                output[k++] = arr[i + j];
             }
         }
         return output;
     }
-    function fun1(arr: number[]): number[] {
-        let output: number[] = [];
+    function fun1(arr: Uint8Array): Uint8Array {
+        let output = new Uint8Array(16);
+        let k = 0;
         for (let i = 0; i < 4; i++) {
             for (let j = 12; j >= 0; j -= 4) {
-                output.push(arr[i + j]);
+                output[k++] = arr[i + j];
             }
         }
         return output;
     }
-    function fun2(arr: number[]): number[] {
-        let output: number[] = [];
+    function fun2(arr: Uint8Array): Uint8Array {
+        let output = new Uint8Array(16);
+        let k = 0;
         for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
-                output.push((arr[((j + i) & 3) + i * 4] + i) & 0xFF);
+                output[k++] = (arr[((j + i) & 3) + i * 4] + i) & 0xFF;
             }
         }
         return output;
     }
-    function fun3(arr: number[]): number[] {
-        let output: number[] = [];
+    function fun3(arr: Uint8Array): Uint8Array {
+        let output = new Uint8Array(16);
+        let k = 0;
         let acc1 = 0;
         let acc2 = 0;
         for (let i = 0; i < 4; i++) {
@@ -451,22 +454,23 @@ export function insydeAcerSwitch(arr: number[]): number[] {
         }
         for (let i = 0; i < 16; i++) {
             const pivot = ((i & 1) === 0) ? acc1 : acc2;
-            output.push(arr[i] ^ pivot);
+            output[k++] = arr[i] ^ pivot;
         }
         return output;
     }
-    function fun4(arr: number[]): number[] {
-        let output: number[] = [];
+    function fun4(arr: Uint8Array): Uint8Array {
+        let output = new Uint8Array(16);
+        let k = 0;
         for (let i = 0; i < 16; i++) {
             const temp1 = arr[i];
             const temp2 = arr[(i + 1) & 0xF]; // arr[(i + 1) % 15];
             const pivot = (temp2 < temp1) ? temp2 : 0xFF;
-            output.push(temp1 ^ pivot);
+            output[k++] = temp1 ^ pivot;
         }
         return output;
     }
-    function fun5(arr: number[]): number[] {
-        let output: number[] = new Array(16);
+    function fun5(arr: Uint8Array): Uint8Array {
+        let output = new Uint8Array(16);
         for (let i = 0; i < 4; i++) {
             let acc: number = 0;
             for (let j = 0; j < 16; j += 4) {
@@ -479,8 +483,8 @@ export function insydeAcerSwitch(arr: number[]): number[] {
         }
         return output;
     }
-    function keyProcess(arr: number[]): number[] {
-        let output: number[] = new Array(16);
+    function keyProcess(arr: Uint8Array): Uint8Array {
+        let output = new Uint8Array(16);
         for (let i = 0; i < 16; i++) {
             let acc: number = 0;
             for (let j = 0; j < 8; j++) {
@@ -510,17 +514,16 @@ export function insydeAcerSwitch(arr: number[]): number[] {
 
 // 10 digits acer key
 export function acerInsydeKeygen(serial: string): string[] {
-    // TODO: Uint8Array
-    function rotatefun(arr: number[]): number[] {
+    function rotatefun(arr: Uint8Array): Uint8Array {
         const idx = arr[9] & 0xF;
-        let output: number[] = new Array(16);
+        let output = new Uint8Array(16);
         for (let i = 0; i < output.length; i++) {
             output[i] = arr[((idx * 2 + 1) * i) % arr.length];
         }
         return output;
     }
 
-    const inputBytes: number[] = serial.split("").map((c) => c.charCodeAt(0));
+    const inputBytes = Uint8Array.from(serial.split("").map((c) => c.charCodeAt(0) & 0xFF));
     const digest = (new Sha256(inputBytes)).digest();
     const key = insydeAcerSwitch(digest);
     const blockData = rotatefun(digest);

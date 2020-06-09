@@ -6,6 +6,7 @@
         "moduleResolution": "node",
         "noImplicitAny": true,
         "noImplicitReturns": true,
+        "downlevelIteration": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "strictNullChecks": true,
