@@ -2,10 +2,19 @@ import { acerInsyde10Solver, AES128, Crc64, insydeSolver, Sha256} from "./insyde
 
 describe("Insyde BIOS", () => {
     it("Insyde key for 03133610 is 12891236", () => {
-        expect(insydeSolver("03133610")).toEqual(["12891236"]);
+        expect(insydeSolver("03133610")[0]).toEqual("12891236");
     });
     it("Insyde key for 12345678 is 03023278", () => {
-        expect(insydeSolver("12345678")).toEqual(["03023278"]);
+        expect(insydeSolver("12345678")[0]).toEqual("03023278");
+    });
+
+    it("Insyde key for 87654321 is 38732907", () => {
+        expect(insydeSolver("87654321")[0]).toEqual("38732907");
+    });
+
+    it("Insyde key for 12345678 (all variants)", () => {
+        expect(insydeSolver("12345678")).toEqual(["03023278", "16503512"]);
+        expect(insydeSolver("03133610")).toEqual(["12891236", "24094120", "99534862"]);
     });
 
     it("test invalid keys", () => {

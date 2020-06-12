@@ -534,24 +534,31 @@ export function acerInsydeKeygen(serial: string): string[] {
 }
 
 function insydeKeygen(serial: string): string[] {
-    const salt = "Iou|hj&Z";
-    let password = "";
-    let b = 0;
-    let a = 0;
+    const salt1 = "Insyde Software Corp.";
+    const salt2 = ":\x16@>\x1496H\x07.\x0f\x0e\nG-MDGHBT";
+    // some firmware has a bug in number convesion to string
+    // they use simple snprintf(dst, 0x16, "%d", serial) so leading zeros are lost
+    // and at the end buffer is filled with \x00
+    const serial2 = (parseInt(serial, 10).toString() + "\x00".repeat(8)).slice(0, 8);
+    let password1 = "";
+    let password2 = "";
+    let password3 = "";
     for (let i = 0; i < 8; i++) {
-        b = salt.charCodeAt(i) ^ serial.charCodeAt(i);
-        a = b;
-        // a = (a * 0x66666667) >> 32;
-        a = (a * 0x66666667);
-        a = Math.floor(a  / Math.pow(2, 32));
-        a = (a >> 2) | (a & 0xC0);
-        if (a & 0x80000000) {
-            a++;
-        }
-        a *= 10;
-        password += (b - a).toString();
+        // salt.charCodeAt(i % salt.length) + (i % salt.length)
+        let b: number = (salt1.charCodeAt(i) + i) ^ serial.charCodeAt(i);
+        password1 += (b % 10).toString();
+
+        b = (salt1.charCodeAt(i) + i) ^ serial2.charCodeAt(i);
+        password2 += (b % 10).toString();
+
+        b = salt2.charCodeAt(i) ^ serial2.charCodeAt(i);
+        password3 += (b % 10).toString();
     }
-    return [password];
+    if (password1 === password2) {
+        return [password1, password3];
+    } else {
+        return [password1, password2, password3];
+    }
 }
 
 export let insydeSolver = makeSolver({
