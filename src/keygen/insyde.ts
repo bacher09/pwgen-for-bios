@@ -5,6 +5,8 @@
 import JSBI from "jsbi";
 import { makeSolver } from "./utils";
 
+const INSYDE_SALT = "Insyde Software Corp.";
+
 export class Crc64 {
     private static tableCache: {[key: string]: JSBI[]} = {};
     // ECMA 182 0xC96C5795D7870F42
@@ -513,7 +515,7 @@ export function insydeAcerSwitch(arr: Uint8Array): Uint8Array {
 }
 
 // 10 digits acer key
-export function acerInsydeKeygen(serial: string): string[] {
+function acerInsydeKeygen(serial: string): string[] {
     function rotatefun(arr: Uint8Array): Uint8Array {
         const idx = arr[9] & 0xF;
         let output = new Uint8Array(16);
@@ -534,7 +536,7 @@ export function acerInsydeKeygen(serial: string): string[] {
 }
 
 function insydeKeygen(serial: string): string[] {
-    const salt1 = "Insyde Software Corp.";
+    const salt1 = INSYDE_SALT;
     const salt2 = ":\x16@>\x1496H\x07.\x0f\x0e\nG-MDGHBT";
     // some firmware has a bug in number convesion to string
     // they use simple snprintf(dst, 0x16, "%d", serial) so leading zeros are lost
@@ -561,6 +563,29 @@ function insydeKeygen(serial: string): string[] {
     }
 }
 
+function hpInsydeKeygen(serial: string): string[] {
+    const inputRe = /^i\s*(\d{8})$/i;
+    const salt1 = "c6B|wS^8";
+    const salt2 = INSYDE_SALT;
+    const match = inputRe.exec(serial);
+
+    if (!match || match.length !== 2) {
+        return [];
+    } else {
+        serial = match[1];
+    }
+    let password1 = "";
+    let password2 = "";
+    for (let i = 0; i < 8; i++) {
+        let b: number = (salt1.charCodeAt(i) + i) ^ serial.charCodeAt(i);
+        password1 += (b % 10).toString();
+
+        b = (salt2.charCodeAt(i) + i) ^ serial.charCodeAt(i);
+        password2 += (b % 10).toString();
+    }
+    return [password1, password2];
+}
+
 export let insydeSolver = makeSolver({
     name: "insydeH2O",
     description: "Insyde H2O BIOS (Acer, HP)",
@@ -575,4 +600,12 @@ export let acerInsyde10Solver = makeSolver({
     examples: ["0173549286"],
     inputValidator: (s) => /^\d{10}$/i.test(s),
     fun: acerInsydeKeygen
+});
+
+export let hpInsydeSolver = makeSolver({
+    name: "hpInsyde",
+    description: "HP Insyde H2O",
+    examples: ["i 70412809", "I 59170869"],
+    inputValidator: (s) => /^i\s*\d{8}$/i.test(s),
+    fun: hpInsydeKeygen
 });

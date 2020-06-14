@@ -3,7 +3,7 @@ import { asusSolver } from "./asus";
 import { dellHddSolver, dellSolver, hddOldSolver } from "./dell";
 import { fsi20DecNewSolver, fsi20DecOldSolver, fsi24DecSolver, fsiHexSolver } from "./fsi";
 import { hpMiniSolver } from "./hpmini";
-import { acerInsyde10Solver, insydeSolver } from "./insyde";
+import { acerInsyde10Solver, hpInsydeSolver, insydeSolver } from "./insyde";
 import {
     phoenixFsiLSolver, phoenixFsiPSolver, phoenixFsiSolver,
     phoenixFsiSSolver, phoenixFsiXSolver, phoenixHPCompaqSolver, phoenixSolver
@@ -29,6 +29,7 @@ export const solvers: Solver[] = [
     fsi20DecOldSolver,
     fsi24DecSolver,
     hpMiniSolver,
+    hpInsydeSolver,
     insydeSolver,
     phoenixSolver,
     phoenixHPCompaqSolver,

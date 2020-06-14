@@ -1,4 +1,4 @@
-import { acerInsyde10Solver, AES128, Crc64, insydeSolver, Sha256} from "./insyde";
+import { acerInsyde10Solver, AES128, Crc64, hpInsydeSolver, insydeSolver, Sha256} from "./insyde";
 
 describe("Insyde BIOS", () => {
     it("Insyde key for 03133610 is 12891236", () => {
@@ -43,6 +43,36 @@ describe("Acer Insyde 10 BIOS", () => {
         expect(acerInsyde10Solver("1378359327")).toEqual(["0cb381199969833e"]);
         expect(acerInsyde10Solver("1880388286")).toEqual(["021df1cd9695387d"]);
         expect(acerInsyde10Solver("2025088185")).toEqual(["018261c3cbe60945"]);
+    });
+});
+
+describe("HP Insyde [i \d{8}] codes", () => {
+    it("Check HP Insyde solver", () => {
+        expect(hpInsydeSolver("i 70412809")[0]).toEqual("47283646");
+        expect(hpInsydeSolver("i 76205377")[0]).toEqual("41898738");
+        expect(hpInsydeSolver("i 52669168")[0]).toEqual("65436527");
+        expect(hpInsydeSolver("i 58828448")[0]).toEqual("65477807");
+        // user can type more spaces or use wrong case for `I`
+        expect(hpInsydeSolver("I 62996480")[0]).toEqual("55507825");
+        expect(hpInsydeSolver("i  51120876")[0]).toEqual("66775639");
+        expect(hpInsydeSolver("I  69779941")[0]).toEqual("54526704");
+        expect(hpInsydeSolver("i   75582785")[0]).toEqual("42313120");
+        expect(hpInsydeSolver("I   52214872")[0]).toEqual("65889633");
+        expect(hpInsydeSolver("i	77319488")[0]).toEqual("40986827");
+        expect(hpInsydeSolver("i 68852353")[0]).toEqual("55443712");
+        expect(hpInsydeSolver("i 59170869")[0]).toEqual("64725626");
+        expect(hpInsydeSolver("i 63121056")[0]).toEqual("54774419");
+        expect(hpInsydeSolver("i 68105474")[0]).toEqual("55798831");
+        expect(hpInsydeSolver("i 87267970")[0]).toEqual("10836735");
+        expect(hpInsydeSolver("i 93641394 ")[0]).toEqual("04454731");
+        // uppercase I codes
+        expect(hpInsydeSolver("i 51974384")[1]).toEqual("44652900");
+        expect(hpInsydeSolver("I 51085312")[1]).toEqual("44983934");
+        expect(hpInsydeSolver("I 86013615")[1]).toEqual("39971231");
+        expect(hpInsydeSolver("I 59170869")[1]).toEqual("46858269");
+        // invalid input
+        expect(hpInsydeSolver("51120876")).toEqual([]);
+        expect(hpInsydeSolver("i 511")).toEqual([]);
     });
 });
 
