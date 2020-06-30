@@ -1,8 +1,9 @@
 /* tslint:disable:no-bitwise */
 import { makeSolver } from "../utils";
 import { blockEncode } from "./encode";
+import { DES, latitude3540Keygen } from "./latitude";
 import { DellTag, SuffixType } from "./types";
-export { DellTag, SuffixType};
+export { DellTag, SuffixType, DES, latitude3540Keygen };
 
 const scanCodes: string =
     "\0\x1B1234567890-=\x08\x09qwertyuiop[]\x0D\xFFasdfghjkl;'`\xFF\\zxcvbnm,./";
@@ -240,5 +241,25 @@ export let dellHddSolver = makeSolver({
     fun: (password: string) => {
         let suffix = password.slice(11, 15).toUpperCase();
         return [keygenDell(password.slice(0, 11), suffix as DellTag, SuffixType.HDD)];
+    }
+});
+
+const latitude3540RE = /^([0-9A-F]{16})([0-9A-Z]{7})$/i;
+
+// TODO: implement solver with 2 inputs
+export let dellLatitude3540Solver = makeSolver({
+    name: "dellLatitude3540",
+    description: "Dell Latitude 3540",
+    examples: ["5F3988D5E0ACE4BF-7QH8602"],
+    inputValidator: (pwd) => latitude3540RE.test(pwd),
+    fun: (input: string) => {
+        const match = latitude3540RE.exec(input);
+        if (match && match.length === 3) {
+            const output = latitude3540Keygen(match[1], match[2]);
+            if (output) {
+                return [output];
+            }
+        }
+        return [];
     }
 });

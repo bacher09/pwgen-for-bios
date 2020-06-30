@@ -6,7 +6,8 @@
 //
 // HDD SN WXH109A14712  ?
 import {
-    calculateSuffix, dellHddSolver, dellSolver, DellTag, hddOldSolver, keygenDell, SuffixType
+    calculateSuffix, dellHddSolver, dellLatitude3540Solver, dellSolver, DellTag, DES, hddOldSolver,
+    keygenDell, latitude3540Keygen, SuffixType
 } from "./dell";
 
 // shortcut for simpler testing
@@ -279,5 +280,24 @@ describe("Test Dell BIOS", () => {
         expect(dellSolver("1234567-BAD1")).toEqual([]);
         expect(dellSolver("1234567-TOLONG")).toEqual([]);
         expect(dellHddSolver("1234567-SHORT")).toEqual([]);
+    });
+});
+
+describe("Latitude 3540", () => {
+    it("DES", () => {
+        const data = Uint8Array.from("12345678".split("").map((v) => v.charCodeAt(0)));
+        let enc = new DES(data);
+        const encoded = Uint8Array.from([150, 208, 2, 136, 120, 213, 140, 137]);
+        expect(enc.encryptBlock(data)).toEqual(encoded);
+        expect(enc.decryptBlock(encoded)).toEqual(data);
+    });
+    it("Latitude 3540 Keygen", () => {
+        expect(latitude3540Keygen("5F3988D5E0ACE4BF", "7QH8602")).toEqual("98072364");
+        expect(latitude3540Keygen("76A7D90FD9563C5F", "3FN2J22")).toEqual("60485207");
+        expect(latitude3540Keygen("1B6DD24D26E7B566", "BJVDG22")).toEqual("99937880");
+        expect(latitude3540Keygen("1B6DD24D26E7C566", "BJVDG22")).toEqual(undefined);
+    });
+    it("Dell Latitude 3540 Solver", () => {
+        expect(dellLatitude3540Solver("5F3988D5E0ACE4BF-7QH8602")).toEqual(["98072364"]);
     });
 });
