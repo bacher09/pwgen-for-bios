@@ -8,7 +8,7 @@ import {
     phoenixFsiLSolver, phoenixFsiPSolver, phoenixFsiSolver,
     phoenixFsiSSolver, phoenixFsiXSolver, phoenixHPCompaqSolver, phoenixSolver
 } from "./phoenix";
-import { samsungSolver } from "./samsung";
+import { samsung44HexSolver, samsungSolver } from "./samsung";
 import { sonySolver } from "./sony";
 import { sony4x4Solver } from "./sony_4x4";
 import { Solver } from "./utils";
@@ -20,6 +20,7 @@ export const solvers: Solver[] = [
     acerInsyde10Solver,
     sonySolver,
     sony4x4Solver,
+    samsung44HexSolver,
     samsungSolver,
     hddOldSolver,
     dellSolver,
