@@ -21,6 +21,7 @@ Latest released version available [here][bios-pw] and latest testing version (*s
 * Insyde H20 (Acer, HP) &mdash; 8 decimal digits, 10 decimal digits or HP `i ` (lowercase and uppercase) prefixed 8 digits.
 * Phoenix (generic) &mdash; 5 decimal digits
 * Sony &mdash; 7 digit serial number
+* HP (AMI BIOS) &mdash; 8 hexadecimal digits (A code)
 * Samsung &mdash; 12, 18 or 44 hexadecimal digits
 
 ## More info
