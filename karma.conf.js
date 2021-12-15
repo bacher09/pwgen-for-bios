@@ -21,7 +21,7 @@ module.exports = function(config) {
             base: "SauceLabs",
             browserName: 'MicrosoftEdge',
             platform: 'Windows 10',
-            version: '13.10586'
+            version: '18.17763'
          },
         ChromeHeadlessTravis: {
             base: "ChromeHeadless",

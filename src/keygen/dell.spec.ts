@@ -123,143 +123,179 @@ describe("Test calculateSuffix", () => {
 describe("Test keygenDell", () => {
     it("Dell password for: 1234567-595B", () => {
         expect(keygenDell("1234567", DellTag.Tag595B, SuffixType.ServiceTag))
-        .toEqual("46rg65ky");
+        .toEqual(["46rg65ky"]);
     });
     it("Dell password for: 1234567-D35B", () => {
         expect(keygenDell("1234567", DellTag.TagD35B, SuffixType.ServiceTag))
-        .toEqual("5tc8q9re");
+        .toEqual(["5tc8q9re"]);
     });
     it("Dell password for: 1234567-2A7B", () => {
         expect(keygenDell("1234567", DellTag.Tag2A7B, SuffixType.ServiceTag))
-        .toEqual("J1KuwWpSUgnDarfi");
+        .toEqual(["J1KuwWpSUgnDarfi"]);
     });
     it("Dell password for: 1234567-A95B", () => {
         expect(keygenDell("1234567", DellTag.TagA95B, SuffixType.ServiceTag))
-        .toEqual("46rg65ky");
+        .toEqual(["46rg65ky"]);
     });
     it("Dell password for: 1234567-1D3B", () => {
         expect(keygenDell("1234567", DellTag.Tag1D3B, SuffixType.ServiceTag))
-        .toEqual("Sn4fkF8bS57NymZl");
+        .toEqual(["Sn4fkF8bS57NymZl"]);
     });
     it("Dell password for: 1234567-1F66", () => {
         expect(keygenDell("1234567", DellTag.Tag1F66, SuffixType.ServiceTag))
-        .toEqual("kIpTBzx0m3s10JDR");
+        .toEqual(["kIpTBzx0m3s10JDR"]);
     });
     it("Dell password for: 1234567-6FF1", () => {
         expect(keygenDell("1234567", DellTag.Tag6FF1, SuffixType.ServiceTag))
-        .toEqual("Rzn1wGe555H5bM2r");
+        .toEqual(["Rzn1wGe555H5bM2r"]);
     });
     it("Dell password for: OPENSRC-1D3B", () => {
         expect(keygenDell("OPENSRC", DellTag.Tag1D3B, SuffixType.ServiceTag))
-        .toEqual("S3yJ91q0Gar3O72I");
+        .toEqual(["S3yJ91q0Gar3O72I"]);
     });
     it("Dell password for: ABCDEFG-1D3B", () => {
         expect(keygenDell("ABCDEFG", DellTag.Tag1D3B, SuffixType.ServiceTag))
-        .toEqual("xvn0qEeftqyrkG52");
+        .toEqual(["xvn0qEeftqyrkG52"]);
     });
     it("Dell password for: 7G9C0G2-6FF1", () => {
         expect(keygenDell("7G9C0G2", DellTag.Tag6FF1, SuffixType.ServiceTag))
-        .toEqual("35c0b0tVb32Z6ivD");
+        .toEqual(["35c0b0tVb32Z6ivD"]);
     });
     it("Dell password for: DELLSUX-1F66", () => {
         expect(keygenDell("DELLSUX", DellTag.Tag1F66, SuffixType.ServiceTag))
-        .toEqual("qHXaL0ntli6Gu4c0");
+        .toEqual(["qHXaL0ntli6Gu4c0"]);
     });
     it("Dell password for: CRPP562-1F66", () => {
         expect(keygenDell("CRPP562", DellTag.Tag1F66, SuffixType.ServiceTag))
-        .toEqual("8i5qLGa9woA919Ys");
+        .toEqual(["8i5qLGa9woA919Ys"]);
     });
     it("Dell password for: CDG8T32-1F66", () => {
         expect(keygenDell("CDG8T32", DellTag.Tag1F66, SuffixType.ServiceTag))
-        .toEqual("4Ke3y2L3kTP2f6Vo");
+        .toEqual(["4Ke3y2L3kTP2f6Vo"]);
     });
     it("Dell password for: 8M5RQ32-1F66", () => {
         expect(keygenDell("8M5RQ32", DellTag.Tag1F66, SuffixType.ServiceTag))
-        .toEqual("3rlrbaSj46Iw221g"); });
+        .toEqual(["3rlrbaSj46Iw221g"]); });
 
     it("Dell password for: 1234567-1F5A", () => {
         expect(keygenDell("1234567", DellTag.Tag1F5A, SuffixType.ServiceTag))
-        .toEqual("2ls2b8GiP9H032kx");
+        .toEqual(["2ls2b8GiP9H032kx"]);
     });
 
     it("Dell password for: OPENSRC-1F5A", () => {
         expect(keygenDell("OPENSRC", DellTag.Tag1F5A, SuffixType.ServiceTag))
-        .toEqual("ZC3j2t56eIe4Thgi");
+        .toEqual(["ZC3j2t56eIe4Thgi"]);
     });
 
     it("Dell password for: ABCDEFG-1F5A", () => {
         expect(keygenDell("ABCDEFG", DellTag.Tag1F5A, SuffixType.ServiceTag))
-        .toEqual("x2zL5n7jj2Gl2TIh");
+        .toEqual(["x2zL5n7jj2Gl2TIh"]);
     });
 
     it("Dell password for: 1234567-BF97", () => {
         expect(keygenDell("1234567", DellTag.TagBF97, SuffixType.ServiceTag))
-        .toEqual("2r09GZhU[r0kW2zr");
+        .toEqual(["2r09GZhU[r0kW2zr"]);
     });
 
     it("Dell password for: OPENSRC-BF97", () => {
         expect(keygenDell("OPENSRC", DellTag.TagBF97, SuffixType.ServiceTag))
-        .toEqual("Dp29XkbyMrkBrp6Z");
+        .toEqual(["Dp29XkbyMrkBrp6Z"]);
     });
 
     it("Dell password for: ABCDEFG-BF97", () => {
         expect(keygenDell("ABCDEFG", DellTag.TagBF97, SuffixType.ServiceTag))
-        .toEqual("kr9Z1cmPpahGzsQ[");
+        .toEqual(["kr9Z1cmPpahGzsQ["]);
     });
 
     it("Dell password for: DELLSUX-BF97", () => {
         expect(keygenDell("DELLSUX", DellTag.TagBF97, SuffixType.ServiceTag))
-        .toEqual("rrNM2LrbD8nGsd2P");
+        .toEqual(["rrNM2LrbD8nGsd2P"]);
+    });
+    it("Dell password for: 1234567-E7A8", () => {
+        expect(keygenDell("1234567", DellTag.TagE7A8, SuffixType.ServiceTag).sort())
+        .toEqual(["Qk3LkU22kPeyq2jd", "rLIqjUy59IG2JU2R"].sort());
+    });
+    it("Dell password for: D875TG2-E7A8", () => {
+        expect(keygenDell("D875TG2", DellTag.TagE7A8, SuffixType.ServiceTag).sort())
+        .toEqual(["rLZc96rMZyGQ2GMG", "1Q6rxIWMGUznXZNy"].sort());
+    });
+    it("Dell password for: 2XSX273-E7A8", () => {
+        expect(keygenDell("2XSX273", DellTag.TagE7A8, SuffixType.ServiceTag).sort())
+        .toEqual(["rPQ0DGLdqckG2kUZ", "0ZaP6RzW9qk73rmq"].sort());
+    });
+    it("Dell password for: CZXKYX2-E7A8", () => {
+        expect(keygenDell("CZXKYX2", DellTag.TagE7A8, SuffixType.ServiceTag).sort())
+        .toEqual(["RGWD2BIR9UB9ZdIy", "38Gr7brmRGBPPIkz"].sort());
+    });
+    it("Dell password for: 6651WZ2-E7A8", () => {
+        expect(keygenDell("6651WZ2", DellTag.TagE7A8, SuffixType.ServiceTag).sort())
+        .toEqual(["PBjMMMsZUQR2MhmR", "Q1N6k2sLRkGGGrEN"].sort());
+    });
+    it("Dell password for: 9M2JTG2-E7A8", () => {
+        expect(keygenDell("9M2JTG2", DellTag.TagE7A8, SuffixType.ServiceTag))
+        .toContain("J2yR66N1kdn2N17m");
+    });
+    it("Dell password for: 1219P73-E7A8", () => {
+        expect(keygenDell("1219P73", DellTag.TagE7A8, SuffixType.ServiceTag))
+        .toContain("ksM02GskJ341hnDx");
     });
 
     // HDD
     it("Dell HDD password for: 1234567890A-595B", () => {
         expect(keygenDell("1234567890A", DellTag.Tag595B, SuffixType.HDD))
-        .toEqual("nyoap4lq");
+        .toEqual(["nyoap4lq"]);
     });
     it("Dell HDD password for: 1234567890A-D35B", () => {
         expect(keygenDell("1234567890A", DellTag.TagD35B, SuffixType.HDD))
-        .toEqual("dc14blrd");
+        .toEqual(["dc14blrd"]);
     });
     it("Dell HDD password for: 1234567890A-2A7B", () => {
         expect(keygenDell("1234567890A", DellTag.Tag2A7B, SuffixType.HDD))
-        .toEqual("h6lwdi91qluUyt3u");
+        .toEqual(["h6lwdi91qluUyt3u"]);
     });
     it("Dell HDD password for: 1234567890A-A95B", () => {
         expect(keygenDell("1234567890A", DellTag.TagA95B, SuffixType.HDD))
-        .toEqual("qr0s6x4n");
+        .toEqual(["qr0s6x4n"]);
     });
     it("Dell HDD password for: 1234567890A-1D3B", () => {
         expect(keygenDell("1234567890A", DellTag.Tag1D3B, SuffixType.HDD))
-        .toEqual("6JQ1WacHNNR0Taia");
+        .toEqual(["6JQ1WacHNNR0Taia"]);
     });
     it("Dell HDD password for: 1234567890A-1F66", () => {
         expect(keygenDell("1234567890A", DellTag.Tag1F66, SuffixType.HDD))
-        .toEqual("vP0M31x066Z7Rq9p");
+        .toEqual(["vP0M31x066Z7Rq9p"]);
     });
     it("Dell HDD password for: 1234567890A-6FF1", () => {
         expect(keygenDell("1234567890A", DellTag.Tag6FF1, SuffixType.HDD))
-        .toEqual("5enLLpM3Immfb8CK");
+        .toEqual(["5enLLpM3Immfb8CK"]);
     });
     it("Dell HDD password for: 1234567890A-1F5A", () => {
         expect(keygenDell("1234567890A", DellTag.Tag1F5A, SuffixType.HDD))
-        .toEqual("L9IJjYoUIXeY5wOy");
+        .toEqual(["L9IJjYoUIXeY5wOy"]);
     });
     it("Dell HDD password for: 12345678901-1F5A", () => {
         expect(keygenDell("12345678901", DellTag.Tag1F5A, SuffixType.HDD))
-        .toEqual("QwO5Dki1zeR1n1t2");
+        .toEqual(["QwO5Dki1zeR1n1t2"]);
     });
     it("Dell HDD password for: 12345678901-BF97", () => {
         expect(keygenDell("12345678901", DellTag.TagBF97, SuffixType.HDD))
-        .toEqual("nDrmUU6U5DI9ZLMI");
+        .toEqual(["nDrmUU6U5DI9ZLMI"]);
     });
     it("Dell HDD password for: 1234567890A-BF97", () => {
         expect(keygenDell("1234567890A", DellTag.TagBF97, SuffixType.HDD))
-        .toEqual("pRrky3r9ryEPNNJz");
+        .toEqual(["pRrky3r9ryEPNNJz"]);
     });
     it("Dell HDD password for: 234567890AB-BF97", () => {
         expect(keygenDell("234567890AB", DellTag.TagBF97, SuffixType.HDD))
-        .toEqual("h2RDrReN37I1NLmr");
+        .toEqual(["h2RDrReN37I1NLmr"]);
+    });
+    it("Dell HDD password for: 1234567890A-E7A8", () => {
+        expect(keygenDell("1234567890A", DellTag.TagE7A8, SuffixType.HDD).sort())
+        .toEqual(["rN2rE2RBQh[X00yr", "G1bFzRGzjXIGzr22"].sort());
+    });
+    it("Dell HDD password for: 1234567890B-E7A8", () => {
+        expect(keygenDell("1234567890B", DellTag.TagE7A8, SuffixType.HDD).sort())
+        .toEqual(["Ic18yqyXXZI5Qj22", "kzzMazZrz53sRZJm"].sort());
     });
 });
 

@@ -1,9 +1,10 @@
 /* tslint:disable:no-bitwise */
 import { makeSolver } from "../utils";
-import { blockEncode } from "./encode";
+import { blockEncode, TagE7A8Encoder, TagE7A8EncoderSecond } from "./encode";
 import { DES, latitude3540Keygen } from "./latitude";
 import { DellTag, SuffixType } from "./types";
 export { DellTag, SuffixType, DES, latitude3540Keygen };
+import { Sha256 } from "../cryptoUtils";
 
 const scanCodes: string =
     "\0\x1B1234567890-=\x08\x09qwertyuiop[]\x0D\xFFasdfghjkl;'`\xFF\\zxcvbnm,./";
@@ -112,7 +113,7 @@ export function calculateSuffix(serial: number[], tag: DellTag, type: SuffixType
     return suffix;
 }
 
-function resultToString(arr: number[], tag: DellTag): string {
+function resultToString(arr: number[] | Uint8Array, tag: DellTag): string {
     let r = arr[0] % 9;
     let result = "";
     let table = extraCharacters[tag];
@@ -130,7 +131,7 @@ function resultToString(arr: number[], tag: DellTag): string {
  * serial -- serial number without tag, 7 symbols for ServiceTag, 11 symbols for HDD
  * tag    -- tag string
  */
-export function keygenDell(serial: string, tag: DellTag, type: SuffixType): string {
+export function keygenDell(serial: string, tag: DellTag, type: SuffixType): string[] {
     let fullSerial: string;
 
     function byteArrayToInt(arr: number[]): number[] {
@@ -157,6 +158,19 @@ export function keygenDell(serial: string, tag: DellTag, type: SuffixType): stri
         return result;
     }
 
+    function calculate_e7a8(block: number[], klass: any): string {
+        // TODO: refactor this
+        const table = "Q92G0drk9y63r5DG1hLqJGW1EnRk[QxrFMNZ328I6myLr4MsPNeZR2z72czpzUJBGXbaIjkZ";
+        const res = intArrayToByte(klass.encode(block));
+        const digest = new Sha256(Uint8Array.from(res));
+        const out = digest.digest();
+        let out_str = "";
+        for (let i = 0; i < 16; i++) {
+            out_str += table[(out[i + 16] + out[i]) % table.length];
+        }
+        return out_str;
+    }
+
     if (tag === DellTag.TagA95B) {
 
         if (type === SuffixType.ServiceTag) {
@@ -175,6 +189,25 @@ export function keygenDell(serial: string, tag: DellTag, type: SuffixType): stri
         // Maybe protect against unicode symbols with: charCode & 0xFF ?
         fullSerialArray.push(fullSerial.charCodeAt(i));
     }
+    if (tag == DellTag.TagE7A8) {
+        // TODO: refactor all this
+        let encBlock = byteArrayToInt(fullSerialArray);
+        for (let i = 0; i < 16; i++) {
+            if (encBlock[i] === undefined) {
+                encBlock[i] = 0;
+            }
+        }
+        const out_str1 = calculate_e7a8(encBlock, TagE7A8Encoder);
+        const out_str2 = calculate_e7a8(encBlock, TagE7A8EncoderSecond);
+        let result = [];
+        if (out_str1) {
+            result.push(out_str1);
+        }
+        if (out_str2) {
+            result.push(out_str2);
+        }
+        return result;
+    }
 
     fullSerialArray = fullSerialArray.concat(calculateSuffix(fullSerialArray, tag, type));
     const cnt = 23;
@@ -189,7 +222,8 @@ export function keygenDell(serial: string, tag: DellTag, type: SuffixType): stri
     }
     encBlock[14] = cnt << 3;
     let decodedBytes = intArrayToByte(blockEncode(encBlock, tag));
-    return resultToString(decodedBytes, tag);
+    const result = resultToString(decodedBytes, tag);
+    return (result) ? [result] : [];
 }
 
 function checkDellTag(tag: string): boolean {
@@ -223,7 +257,7 @@ export let dellSolver = makeSolver({
     },
     fun: (password: string) => {
         let suffix = password.slice(7, 11).toUpperCase();
-        return [keygenDell(password.slice(0, 7), suffix as DellTag, SuffixType.ServiceTag)];
+        return keygenDell(password.slice(0, 7), suffix as DellTag, SuffixType.ServiceTag);
     }
 });
 
@@ -240,7 +274,7 @@ export let dellHddSolver = makeSolver({
     },
     fun: (password: string) => {
         let suffix = password.slice(11, 15).toUpperCase();
-        return [keygenDell(password.slice(0, 11), suffix as DellTag, SuffixType.HDD)];
+        return keygenDell(password.slice(0, 11), suffix as DellTag, SuffixType.HDD);
     }
 });
 
