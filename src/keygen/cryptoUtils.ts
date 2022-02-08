@@ -1,14 +1,18 @@
-/* tslint:disable:no-bitwise */
+/* eslint-disable no-bitwise */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable no-shadow */
 import JSBI from "jsbi";
 
 export class Crc64 {
-    private static tableCache: {[key: string]: JSBI[]} = {};
     // ECMA 182 0xC96C5795D7870F42
     public static readonly ECMA_POLYNOMIAL = JSBI.BigInt("14514072000185962306");
 
+    private static tableCache: {[key: string]: JSBI[]} = {};
+
+    public readonly polynom: JSBI;
+
     private table: JSBI[];
     private crc: JSBI;
-    public readonly polynom: JSBI;
 
     constructor(poly: JSBI, table?: JSBI[]) {
         this.polynom = poly;
@@ -20,27 +24,6 @@ export class Crc64 {
         this.crc = JSBI.BigInt(0);
     }
 
-    public reset() {
-        this.crc = JSBI.BigInt(0);
-    }
-
-    public update(input: Uint8Array | number[]) {
-        /* tslint:disable-next-line:prefer-for-of */
-        for (let i = 0; i < input.length; i++) {
-            const b = input[i] & 0xFF;
-            const index = JSBI.toNumber(JSBI.asUintN(8, JSBI.bitwiseXor(this.crc, JSBI.BigInt(b))));
-            const temp = JSBI.bitwiseXor(this.table[index], JSBI.signedRightShift(this.crc, JSBI.BigInt(8)));
-            this.crc = JSBI.asUintN(64, temp);
-        }
-    }
-
-    public digest(): JSBI {
-        return this.crc;
-    }
-
-    public hexdigest(): string {
-        return ("0".repeat(16) + this.digest().toString(16)).slice(-16);
-    }
     private static makeTable(poly: JSBI): JSBI[] {
         let table: JSBI[] = [];
         for (let i = 0; i < 256; i++) {
@@ -70,9 +53,29 @@ export class Crc64 {
             return table;
         }
     }
+
+    public reset() {
+        this.crc = JSBI.BigInt(0);
+    }
+
+    public update(input: Uint8Array | number[]) {
+        for (let i = 0; i < input.length; i++) {
+            const b = input[i] & 0xFF;
+            const index = JSBI.toNumber(JSBI.asUintN(8, JSBI.bitwiseXor(this.crc, JSBI.BigInt(b))));
+            const temp = JSBI.bitwiseXor(this.table[index], JSBI.signedRightShift(this.crc, JSBI.BigInt(8)));
+            this.crc = JSBI.asUintN(64, temp);
+        }
+    }
+
+    public digest(): JSBI {
+        return this.crc;
+    }
+
+    public hexdigest(): string {
+        return ("0".repeat(16) + this.digest().toString(16)).slice(-16);
+    }
 }
 
-/* tslint:disable:no-shadowed-variable */
 export class Sha256 {
     private static readonly SHA256_CONSTANTS: Uint32Array = Uint32Array.from([
         0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5,
@@ -112,6 +115,32 @@ export class Sha256 {
         if (input && (input instanceof Uint8Array || Array.isArray(input))) {
             this.update(input);
         }
+    }
+
+    public update(input: Uint8Array) {
+        for (let i = 0; i < input.length; i++) {
+            const b = input[i];
+            this.data[this.datalen] = b;
+            this.datalen++;
+
+            if (this.datalen >= 64) {
+                this.transform();
+                this.bitlen = JSBI.add(this.bitlen, JSBI.BigInt(512));
+                this.datalen = 0;
+            }
+        }
+    }
+
+    public digest(): Uint8Array {
+        let item = this.copy();
+        return item.final();
+    }
+
+    public hexdigest() {
+        return Array.from(this.digest()).map((x) => {
+            x = x & 0xFF;
+            return (x < 0xf) ? "0" + x.toString(16) : x.toString(16);
+        }).join("");
     }
 
     private transform() {
@@ -168,6 +197,15 @@ export class Sha256 {
         this.state[7] += h;
     }
 
+    private copy(): Sha256 {
+        let item = new Sha256();
+        item.state = this.state.slice();
+        item.data = this.data.slice();
+        item.bitlen = this.bitlen;
+        item.datalen = this.datalen;
+        return item;
+    }
+
     private final(): Uint8Array {
         let i = this.datalen & 63;
         if (this.datalen < 56) {
@@ -199,42 +237,6 @@ export class Sha256 {
             }
         }
         return hash;
-    }
-
-    private copy(): Sha256 {
-        let item = new Sha256();
-        item.state = this.state.slice();
-        item.data = this.data.slice();
-        item.bitlen = this.bitlen;
-        item.datalen = this.datalen;
-        return item;
-    }
-
-    public update(input: Uint8Array) {
-        /* tslint:disable-next-line:prefer-for-of */
-        for (let i = 0; i < input.length; i++) {
-            const b = input[i];
-            this.data[this.datalen] = b;
-            this.datalen++;
-
-            if (this.datalen >= 64) {
-                this.transform();
-                this.bitlen = JSBI.add(this.bitlen, JSBI.BigInt(512));
-                this.datalen = 0;
-            }
-        }
-    }
-
-    public digest(): Uint8Array {
-        let item = this.copy();
-        return item.final();
-    }
-
-    public hexdigest() {
-        return Array.from(this.digest()).map((x) => {
-            x = x & 0xFF;
-            return (x < 0xf) ? "0" + x.toString(16) : x.toString(16);
-        }).join("");
     }
 }
 
@@ -271,25 +273,6 @@ export class AES128 {
 
     constructor(key: Uint8Array) {
         this.roundKey = AES128.keyExpansion(key);
-    }
-
-    public encryptBlock(input: Uint8Array): Uint8Array {
-        if (input.length !== 16) {
-            throw new Error("Invalid block length");
-        }
-        let state = input.slice();
-        AES128.addRoundKey(0, state, this.roundKey);
-        for (let round = 1; ; round++) {
-            AES128.subBytes(state);
-            AES128.shiftRows(state);
-            if (round === 10) {
-                break;
-            }
-            AES128.mixColumns(state);
-            AES128.addRoundKey(round, state, this.roundKey);
-        }
-        AES128.addRoundKey(AES128.NR, state, this.roundKey);
-        return state;
     }
 
     private static keyExpansion(key: Uint8Array): Uint8Array {
@@ -401,5 +384,24 @@ export class AES128 {
             tmp2 = xtime(state[i * 4 + 3] ^ t);
             state[i * 4 + 3] ^= tmp2 ^ tmp1;
         }
+    }
+
+    public encryptBlock(input: Uint8Array): Uint8Array {
+        if (input.length !== 16) {
+            throw new Error("Invalid block length");
+        }
+        let state = input.slice();
+        AES128.addRoundKey(0, state, this.roundKey);
+        for (let round = 1; ; round++) {
+            AES128.subBytes(state);
+            AES128.shiftRows(state);
+            if (round === 10) {
+                break;
+            }
+            AES128.mixColumns(state);
+            AES128.addRoundKey(round, state, this.roundKey);
+        }
+        AES128.addRoundKey(AES128.NR, state, this.roundKey);
+        return state;
     }
 }

@@ -1,4 +1,4 @@
-/* tslint:disable:no-bitwise */
+/* eslint-disable no-bitwise */
 import { makeSolver } from "../utils";
 import { blockEncode, TagE7A8Encoder, TagE7A8EncoderSecond } from "./encode";
 import { DES, latitude3540Keygen } from "./latitude";
@@ -133,6 +133,7 @@ function resultToString(arr: number[] | Uint8Array, tag: DellTag): string {
  */
 export function keygenDell(serial: string, tag: DellTag, type: SuffixType): string[] {
     let fullSerial: string;
+    let encBlock: number[];
 
     function byteArrayToInt(arr: number[]): number[] {
         // convert byte array to 32-bit little-endian int array
@@ -158,7 +159,7 @@ export function keygenDell(serial: string, tag: DellTag, type: SuffixType): stri
         return result;
     }
 
-    function calculate_e7a8(block: number[], klass: any): string {
+    function calculateE7A8(block: number[], klass: {encode(data: number[]): number[]}): string {
         // TODO: refactor this
         const table = "Q92G0drk9y63r5DG1hLqJGW1EnRk[QxrFMNZ328I6myLr4MsPNeZR2z72czpzUJBGXbaIjkZ";
         const res = intArrayToByte(klass.encode(block));
@@ -174,13 +175,13 @@ export function keygenDell(serial: string, tag: DellTag, type: SuffixType): stri
     if (tag === DellTag.TagA95B) {
 
         if (type === SuffixType.ServiceTag) {
-            fullSerial = serial + DellTag.Tag595B as string;
+            fullSerial = serial + DellTag.Tag595B;
         } else { // HDD
-            fullSerial = serial.slice(3) + "\0\0\0" + DellTag.Tag595B as string;
+            fullSerial = serial.slice(3) + "\0\0\0" + DellTag.Tag595B;
         }
 
     } else {
-        fullSerial = serial + tag as string;
+        fullSerial = serial + tag;
     }
 
     let fullSerialArray: number[] = [];
@@ -189,31 +190,31 @@ export function keygenDell(serial: string, tag: DellTag, type: SuffixType): stri
         // Maybe protect against unicode symbols with: charCode & 0xFF ?
         fullSerialArray.push(fullSerial.charCodeAt(i));
     }
-    if (tag == DellTag.TagE7A8) {
+    if (tag === DellTag.TagE7A8) {
         // TODO: refactor all this
-        let encBlock = byteArrayToInt(fullSerialArray);
+        encBlock = byteArrayToInt(fullSerialArray);
         for (let i = 0; i < 16; i++) {
             if (encBlock[i] === undefined) {
                 encBlock[i] = 0;
             }
         }
-        const out_str1 = calculate_e7a8(encBlock, TagE7A8Encoder);
-        const out_str2 = calculate_e7a8(encBlock, TagE7A8EncoderSecond);
-        let result = [];
+        const out_str1 = calculateE7A8(encBlock, TagE7A8Encoder);
+        const out_str2 = calculateE7A8(encBlock, TagE7A8EncoderSecond);
+        let output = [];
         if (out_str1) {
-            result.push(out_str1);
+            output.push(out_str1);
         }
         if (out_str2) {
-            result.push(out_str2);
+            output.push(out_str2);
         }
-        return result;
+        return output;
     }
 
     fullSerialArray = fullSerialArray.concat(calculateSuffix(fullSerialArray, tag, type));
     const cnt = 23;
     // NOTE: after this array might contain undefined values
     fullSerialArray[cnt] = 0x80;
-    let encBlock = byteArrayToInt(fullSerialArray);
+    encBlock = byteArrayToInt(fullSerialArray);
     // fill empty values with zeros
     for (let i = 0; i < 16; i++) {
         if (encBlock[i] === undefined) {
@@ -222,8 +223,8 @@ export function keygenDell(serial: string, tag: DellTag, type: SuffixType): stri
     }
     encBlock[14] = cnt << 3;
     let decodedBytes = intArrayToByte(blockEncode(encBlock, tag));
-    const result = resultToString(decodedBytes, tag);
-    return (result) ? [result] : [];
+    const outputResult = resultToString(decodedBytes, tag);
+    return (outputResult) ? [outputResult] : [];
 }
 
 function checkDellTag(tag: string): boolean {

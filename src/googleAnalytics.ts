@@ -1,5 +1,8 @@
-/* tslint:disable:no-empty */
-/* tslint:disable:only-arrow-functions */
+/* eslint-disable no-empty */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable no-empty-function */
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+/* eslint-disable prefer-rest-params */
 /** @type {function(...*):void} */
 export let gtag: (...args: any[]) => void = () => {};
 

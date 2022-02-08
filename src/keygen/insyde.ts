@@ -1,6 +1,6 @@
-/* tslint:disable:no-bitwise */
-/* tslint:disable:no-var-requires */
-/* tslint:disable:no-shadowed-variable */
+/* eslint-disable no-bitwise */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable no-shadow */
 /* Maybe need fixing for browsers where numbers is 32-bits */
 /* Some Acer, HP  laptops. 8 digit */
 import { makeSolver } from "./utils";

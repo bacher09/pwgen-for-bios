@@ -1,5 +1,5 @@
+/* eslint-disable no-bitwise */
 import { makeSolver } from "./utils";
-/* tslint:disable:no-bitwise */
 
 function generateCRC16Table(): number[] {
     let table: number[] = [];
@@ -74,7 +74,7 @@ function fsi20DecOldKeygen(serial: string): string {
         return arr;
     }
 
-    function decryptCode_old(bytes: number[]) {
+    function decryptCodeOld(bytes: number[]) {
         const xorKey = ":3-v@e4i";
         // apply XOR key
         bytes.forEach((val, i, arr) => {
@@ -96,7 +96,7 @@ function fsi20DecOldKeygen(serial: string): string {
         return bytes.map((b) => (b % 36).toString(36)).join("");
     }
 
-    return decryptCode_old(codeToBytes(serial));
+    return decryptCodeOld(codeToBytes(serial));
 }
 
 /* For Fujitsu-Simens. 6x4 decimal digits */

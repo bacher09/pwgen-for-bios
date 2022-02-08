@@ -52,11 +52,13 @@ function getWebpackConfig(production, gtag) {
 
     var plugins = [
         new CleanWebpackPlugin(),
-        new CopyWebpackPlugin([
-            {from: 'assets/bootstrap.min.css', to: 'assets/'},
-            {from: 'assets/images/favicon.ico', to: 'favicon.ico'},
-            {from: 'assets/images/', to: 'assets/images/'},
-        ]),
+        new CopyWebpackPlugin({
+            patterns: [
+                {from: 'assets/bootstrap.min.css', to: 'assets/'},
+                {from: 'assets/images/favicon.ico', to: 'favicon.ico'},
+                {from: 'assets/images/', to: 'assets/images/'},
+            ]
+        }),
         new DefinePlugin({
             GOOGLE_ANALYTICS_TAG: JSON.stringify(gtag)
         }),

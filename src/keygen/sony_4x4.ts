@@ -1,6 +1,5 @@
 // based on dogbert's pwgen-sony-4x4.py
-/* tslint:disable:no-bitwise */
-/* tslint:disable:no-var-requires */
+/* eslint-disable no-bitwise */
 import JSBI from "jsbi";
 import { makeSolver } from "./utils";
 
@@ -51,7 +50,7 @@ function modInvEuclid(a: JSBI, m: JSBI): JSBI | undefined {
         // hack for javascript modulo operation
         // https://stackoverflow.com/questions/4467539/javascript-modulo-gives-a-negative-result-for-negative-numbers
         const temp = JSBI.remainder(x, m);
-        return JSBI.GE(temp, 0) ? temp : JSBI.ADD(temp, m);
+        return JSBI.GE(temp, 0) ? temp : JSBI.ADD(temp, m) as JSBI;
     } else {
         return undefined;
     }
@@ -73,7 +72,7 @@ export function modularPow(base: JSBI, exponent: number, modulus: number | JSBI)
 
     while (exponent > 0) {
         if ((exponent & 1) === 1) {
-           result = JSBI.remainder(JSBI.multiply(result, base), modulus);
+            result = JSBI.remainder(JSBI.multiply(result, base), modulus);
         }
         exponent = exponent >> 1;
         base = JSBI.remainder(JSBI.multiply(base, base), modulus);

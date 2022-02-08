@@ -1,4 +1,4 @@
-/* tslint:disable:no-bitwise */
+/* eslint-disable no-bitwise */
 /* Return password for samsung laptops
  * 12 or 18 hexhecimal digits like 07088120410C0000
  */
@@ -75,7 +75,7 @@ function samsungKeygen(serial: string): string[] {
         filter((code) => code ? true : false) as string[];
 }
 
-function byte_rol(val: number, shift: number): number {
+function byteRol(val: number, shift: number): number {
     return ((val << shift) & 0xff) | (val >> (8 - shift));
 }
 
@@ -104,7 +104,7 @@ export function samsung44HexKeygen(serial: string): string | undefined {
     const key = (hash[1] % 5) * 20;
     for (let i = 0; i < pwdLength; i++) {
         const shift = rotationMatrix3[key + i];
-        const sym = byte_rol(byte_rol(hash[i + 2], shift), 4);
+        const sym = byteRol(byteRol(hash[i + 2], shift), 4);
         if (nonprintable(sym)) {
             return undefined;
         }

@@ -1,4 +1,3 @@
-/* tslint:disable:no-var-requires */
 import JSBI from "jsbi";
 import { modularPow, sony4x4Keygen, sony4x4Solver } from "./sony_4x4";
 

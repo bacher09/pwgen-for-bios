@@ -1,4 +1,4 @@
-/* tslint:disable:no-bitwise */
+/* eslint-disable no-bitwise */
 import {
     asciiToKeyboardEnc, keyboardEncToAscii, reversedScanCodes, Solver
 } from "./utils";
@@ -16,14 +16,9 @@ export interface PhoenixInfo {
     maxLen: number;
 }
 
-export interface PhoenixBios {
+export interface PhoenixBios extends Partial<PhoenixInfo> {
     name: string;
     description?: string;
-    shift?: number;
-    salt?: number;
-    dictionary?: string[];
-    minLen?: number;
-    maxLen?: number;
 }
 
 export interface PhoenixSolver extends Solver {
@@ -56,7 +51,6 @@ const defaultPhoenix: PhoenixInfo = {
 function badCRC16(pwd: number[], salt: number = 0): number {
 
     let hash = salt;
-    // tslint:disable-next-line:prefer-for-of
     for (let c = 0; c < pwd.length; c++) {
         hash ^= pwd[c];
         for (let i = 8; i--;) {
@@ -79,7 +73,6 @@ function searchBadCRC16(pwd: number[], salt: number, requiredHash: number, minLe
 
     minLen--;
     let hash = salt;
-    // tslint:disable-next-line:prefer-for-of
     for (let c = 0; c < pwd.length; c++) {
         hash ^= pwd[c];
         for (let i = 8; i--;) {
@@ -135,13 +128,16 @@ function bruteForce(hash: number, salt: number = 0, characters: string[] = lette
 }
 
 function makePhoenixSolver(description?: PhoenixBios): PhoenixSolver {
+    /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
     if (description === void 0) {
         description = {} as PhoenixBios;
     }
 
-    for (let key in defaultPhoenix) {
-        if ((description as any)[key] === void 0) {
-            (description as any)[key] = (defaultPhoenix as any)[key];
+    let key: keyof PhoenixInfo;
+    for (key in defaultPhoenix) {
+        if (description[key] === void 0) {
+            (description[key] as (PhoenixInfo[keyof PhoenixInfo])) = defaultPhoenix[key];
         }
     }
 
@@ -155,7 +151,7 @@ function makePhoenixSolver(description?: PhoenixBios): PhoenixSolver {
 
     let keygen = (code: string) => {
         let password = bruteForce(parseInt(code, 10) + info.shift, info.salt,
-                                  info.dictionary, info.minLen, info.maxLen);
+            info.dictionary, info.minLen, info.maxLen);
 
         if (typeof password === "string") {
             return [password];

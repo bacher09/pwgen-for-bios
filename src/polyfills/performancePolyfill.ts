@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 
 function makeMonotonicTime(): () => number {
     if (typeof performance !== "undefined" && performance) {

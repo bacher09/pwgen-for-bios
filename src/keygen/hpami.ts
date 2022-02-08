@@ -1,10 +1,10 @@
-/* tslint:disable:no-bitwise */
+/* eslint-disable no-bitwise */
 import { makeSolver } from "./utils";
 
 export class Crc32 {
 
-    private static tableCache: {[key: string]: Uint32Array} = {};
     public static readonly IEEE_POLYNOMIAL = 0xEDB88320;
+    private static tableCache: {[key: string]: Uint32Array} = {};
 
     private table: Uint32Array;
     private crc: number;
@@ -15,31 +15,6 @@ export class Crc32 {
         }
         this.table = Crc32.getCRC32Table(poly);
         this.crc = 0;
-    }
-
-    public reset() {
-        this.crc = 0;
-    }
-
-    public update(input: Uint8Array | number[]) {
-        this.crc ^= -1;
-
-        /* tslint:disable-next-line:prefer-for-of */
-        for (let i = 0; i < input.length; i++) {
-            const b = input[i] & 0xFF;
-            const index = (this.crc ^ b) & 0xFF;
-            this.crc = (this.crc >>> 8) ^ this.table[index];
-        }
-
-        this.crc = ((this.crc ^ (-1)) >>> 0);
-    }
-
-    public digest(): number {
-        return this.crc;
-    }
-
-    public hexdigest(): string {
-        return ("0".repeat(8) + this.digest().toString(16)).slice(-8);
     }
 
     private static makeTable(poly: number): Uint32Array {
@@ -67,6 +42,30 @@ export class Crc32 {
             }
             return table;
         }
+    }
+
+    public reset() {
+        this.crc = 0;
+    }
+
+    public update(input: Uint8Array | number[]) {
+        this.crc ^= -1;
+
+        for (let i = 0; i < input.length; i++) {
+            const b = input[i] & 0xFF;
+            const index = (this.crc ^ b) & 0xFF;
+            this.crc = (this.crc >>> 8) ^ this.table[index];
+        }
+
+        this.crc = ((this.crc ^ (-1)) >>> 0);
+    }
+
+    public digest(): number {
+        return this.crc;
+    }
+
+    public hexdigest(): string {
+        return ("0".repeat(8) + this.digest().toString(16)).slice(-8);
     }
 }
 

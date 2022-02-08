@@ -1,5 +1,5 @@
 // based on dogbert's pwgen-asus.py
-/* tslint:disable:no-bitwise */
+/* eslint-disable no-bitwise */
 import { makeSolver } from "./utils";
 
 /** @type {function(number=,number=,number=):Array<number>} */

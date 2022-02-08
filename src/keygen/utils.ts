@@ -74,9 +74,10 @@ function cleanSerial(serial: string): string {
 }
 
 export function makeSolver(description: SolverDescription): Solver {
+    /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
     let solver: any = (code: string) => {
-        let cleanCode = solver.cleaner(code);
+        let cleanCode = (solver as Solver).cleaner(code);
         if (description.inputValidator(cleanCode)) {
             return description.fun(cleanCode);
         } else {
