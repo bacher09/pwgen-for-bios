@@ -1,0 +1,43 @@
+name: Build and run tests
+
+on:
+  push:
+    branches: [gh-actions]
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      TZ: Etc/UTC
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup node 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: npm
+      - name: Node checks
+        run: |
+          npm ci
+          npm test
+          npm lint
+
+      - name: Install browsers
+        run: |
+          apt-get update
+          apt-get install -q -y chromium-chromedriver firefoxdriver
+
+      - name: Run browser tests
+        run: npm run browser-test
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
