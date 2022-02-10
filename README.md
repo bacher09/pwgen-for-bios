@@ -1,6 +1,6 @@
   Password generator for BIOS
 ================================
-[![travis status][build-status]][travis]
+[![github actions status][build-status]][tests]
 [![coverage here][coverage-status]][coverage]
 
 [![tested-browsers][sauce-matrix]][sauce-link]
@@ -36,8 +36,8 @@ Latest released version available [here][bios-pw] and latest testing version (*s
 * hpgl &mdash; for dell generator
 * [let-def](https://github.com/let-def) &mdash; for Acer Insyde 10 digit
 
-[build-status]: https://api.travis-ci.org/bacher09/pwgen-for-bios.svg?branch=master
-[travis]: https://travis-ci.org/bacher09/pwgen-for-bios
+[build-status]: https://github.com/bacher09/pwgen-for-bios/actions/workflows/build-test.yml/badge.svg
+[tests]: https://github.com/bacher09/pwgen-for-bios/actions/workflows/build-test.yml
 [coverage-status]: https://coveralls.io/repos/github/bacher09/pwgen-for-bios/badge.svg?branch=master
 [coverage]: https://coveralls.io/github/bacher09/pwgen-for-bios?branch=master
 [sauce-matrix]: https://saucelabs.com/browser-matrix/bacher09.svg

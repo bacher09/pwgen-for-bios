@@ -3,19 +3,11 @@ const path = require("path");
 module.exports = function(config) {
 
     var customLaunchers = {
-        sl_ios_safari: {
-            base: 'SauceLabs',
-            browserName: 'safari',
-            platform: 'iOS',
-            deviceName: 'iPhone 7 Simulator',
-            version: '10.3',
-            deviceOrientation: 'portrait'
-        },
         sl_safari_7: {
             base: "SauceLabs",
             browserName: "safari",
-            platform: "OS X 10.11",
-            version: "10.0"
+            platform: "OS X 10.12",
+            version: "11.0"
         },
         sl_edge_13: {
             base: "SauceLabs",

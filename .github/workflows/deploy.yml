@@ -1,0 +1,54 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Tests"]
+    branches: [main]
+    types: [completed]
+
+
+jobs:
+  staging-deploy:
+    name: Deploy to beta.bios-pw.org
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} || ${{ github.event.workflow_dispatch.sender.site_admin == true }}
+    runs-on: ubuntu-latest
+    concurrency: beta
+    environment:
+      name: beta
+      url: https://beta.bios-pw.org/
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+          cache-dependency-path: ./ci/requirements.txt
+
+      - name: Install boto3
+        run: pip install -r ./ci/requirements.txt
+
+      - name: Setup node 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: npm
+
+      - name: Build scripts and assets
+        run: |
+          npm ci
+          npm run build-stage
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@13d241b293754004c80624b5567555c4a39ffbe3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Upload assets to S3
+        run: ./ci/deploy.py ./dist/ beta.bios-pw.org
