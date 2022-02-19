@@ -257,8 +257,8 @@ export let dellSolver = makeSolver({
         }
     },
     fun: (password: string) => {
-        let suffix = password.slice(7, 11).toUpperCase();
-        return keygenDell(password.slice(0, 7), suffix as DellTag, SuffixType.ServiceTag);
+        const suffix = password.slice(7, 11).toUpperCase();
+        return keygenDell(password.slice(0, 7).toUpperCase(), suffix as DellTag, SuffixType.ServiceTag);
     }
 });
 
@@ -274,8 +274,8 @@ export let dellHddSolver = makeSolver({
         }
     },
     fun: (password: string) => {
-        let suffix = password.slice(11, 15).toUpperCase();
-        return keygenDell(password.slice(0, 11), suffix as DellTag, SuffixType.HDD);
+        const suffix = password.slice(11, 15).toUpperCase();
+        return keygenDell(password.slice(0, 11).toUpperCase(), suffix as DellTag, SuffixType.HDD);
     }
 });
 

@@ -310,6 +310,11 @@ describe("Test Dell BIOS", () => {
     it("Dell for: 1234567-1F66", () => {
         expect(dellSolver("1234567-1f66")).toEqual(["kIpTBzx0m3s10JDR"]);
     });
+    it("Dell for: 123456a-1F66", () => {
+        // AFAIK Dell service tags is always uppercase
+        // so this supposed to calculate password for 123456A-1F66
+        expect(dellSolver("123456a-1f66")).toEqual(["5sS11TUKBmBOQKRS"]);
+    });
     it("Dell HDD for: 1234567890A-595B", () => {
         expect(dellHddSolver("1234567890A-595b")).toEqual(["nyoap4lq"]);
     });
@@ -336,5 +341,6 @@ describe("Latitude 3540", () => {
     });
     it("Dell Latitude 3540 Solver", () => {
         expect(dellLatitude3540Solver("5F3988D5E0ACE4BF-7QH8602")).toEqual(["98072364"]);
+        expect(dellLatitude3540Solver("5F3988D5E0ACE4bF-7QH8602")).toEqual(["98072364"]);
     });
 });
