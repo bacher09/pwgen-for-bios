@@ -13,6 +13,7 @@ Latest released version available [here][bios-pw] and latest testing version (*s
 ## Supported BIOS types:
 
 * Asus &mdash; current BIOS date. For example: ``01-02-2013``
+* Acer &mdash; 8-10 decimal digits (*e.g*. ``12345678``, ``1234567890``)
 * Compaq &mdash; 5 decimal digits (*e.g*. ``12345``)
 * Dell	&mdash; supports such series: ``595B``, ``D35B``, ``2A7B``, ``A95B``, ``1D3B``, ``6FF1``, ``1F66``, ``1F5A`` and ``BF97``, ``E7A8``. *e.g*: ``1234567-2A7B`` or ``1234567890A-D35B`` for HDD.
 * Dell Insyde BIOS (Latitude 3540) &mdash; *e.g.* ``5F3988D5E0ACE4BF-7QH8602`` (``7QH8602`` &mdash; service tag).
