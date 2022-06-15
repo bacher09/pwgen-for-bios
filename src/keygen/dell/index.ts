@@ -284,7 +284,7 @@ const latitude3540RE = /^([0-9A-F]{16})([0-9A-Z]{7})$/i;
 // TODO: implement solver with 2 inputs
 export let dellLatitude3540Solver = makeSolver({
     name: "dellLatitude3540",
-    description: "Dell Latitude 3540",
+    description: "Dell Insyde",
     examples: ["5F3988D5E0ACE4BF-7QH8602"],
     inputValidator: (pwd) => latitude3540RE.test(pwd),
     fun: (input: string) => {
