@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "module": "es6",
+        "lib": ["dom", "es5"],
+        "target": "es5",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "downlevelIteration": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "strictNullChecks": true,
+        "strict": true,
+        "sourceMap": true,
+        "rootDir": "src/",
+        "outDir": "dist/",
+        "typeRoots": ["./typings", "./node_modules/@types/"]
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}

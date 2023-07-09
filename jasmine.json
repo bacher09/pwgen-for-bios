@@ -1,0 +1,14 @@
+{
+    "reporters": [{
+        "name": "jasmine-spec-reporter#SpecReporter",
+        "options": {
+            "displayStacktrace": "all"
+        }
+    }],
+    "spec_dir": "src/keygen/",
+    "spec_files": ["**/*.spec.ts"],
+    "helpers": [
+        "../node_modules/esm",
+        "../node_modules/ts-node/register/index.js"
+    ]
+}

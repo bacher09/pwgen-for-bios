@@ -1,5 +1,17 @@
 .*.sw[po]
+*.py[co]
 *.bak
+.nyc_output/
 upload/
 build/
 temp/
+typings.json
+node_modules/
+dist/
+*.env
+coverage/
+npm-debug.log
+test-dist/
+coverage-dist/
+venv/
+work/

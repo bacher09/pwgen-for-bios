@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="keywords" content="bios, password, bypass, master password, generate, generator, laptop, notebook, computer, phoenix, insydeh20, sony, samsung, acer, dell, compaq, backdoor, laptop, fujitsu-siemens, hp, hewlett packard" />
+        <meta name="keywords" content="Recover laptops with lost BIOS password" />
+        <title>BIOS Master Password Generator for Laptops</title>
+        <link href="assets/bootstrap.min.css" rel="stylesheet" />
+        <link rel="icon" type="image/x-ico" href="favicon.ico">
+        <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="192x192" href="assets/images/bios-pw-192.png">
+        <style>
+            input#serial_id, div#answer { font-family: monospace }
+        </style>
+    </head>
+    <body>
+        <div class="topbar">
+            <div class="fill">
+                <div class="container">
+                    <a class="brand" href="#">Clear unknown BIOS passwords</a>
+                    <ul class="nav">
+                        <li class="active"><a href="#">Home</a></li>
+                        <li><a href="https://github.com/bacher09/pwgen-for-bios">Sources</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="hero-unit">
+                <h1></h1>
+                <p>BIOS Password Recovery for Laptops</p>
+                Quick and easy way to recover BIOS passwords on laptops. Based on research by <a href="http://dogber1.blogspot.com/2009/05/table-of-reverse-engineered-bios.html">Dogbert</a> and <a href="http://asyncrit.us">Asyncritus</a>.
+            </div>
+            <div class="row" >
+            <div id="control_id" >
+                <h2>Enter your code</h2><br/>
+                <form name="pwgen" id="form_id">
+                    <input autocomplete="off" placeholder="Code" type="text" id="serial_id" />
+                    <br/><br/>
+                    <input type="submit" class="btn primary" name="serial" id="button_id" value="Get password" />
+                </form>
+                </div>
+                <div id="result_id">
+                <h3 style="display: none;" id="try_this"><br/>Try one of the following codes:</h3>
+                <div id="answer"></div>
+				<span class="label notice" style="display: none;" id="dell_note">* for some Dell codes press Ctrl-Enter, not Enter, when entering code into the BIOS</span><br/><br/>
+                </div>
+            </div>
+<table><tbody>
+<tr style="background: #ddd;"><th>Vendor</th><th>Type</th><th>Hash Code/Serial example</th></tr>
+<tr><td class="s3" style="font-weight: bold;">Compaq</td><td class="s4">5 decimal digits</td><td class="s5" style="font-family: monospace;">12345</td></tr>
+<tr><td class="s3" style="font-weight: bold;">Dell</td><td class="s4">serial number</td><td class="s5" style="font-family: monospace;">1234567-595B<br>1234567-D35B<br>1234567-2A7B<br>1234567-1D3B<br>1234567-1F66<br>1234567-6FF1<br>1234567-1F5A<br>1234567-BF97</td></tr>
+<tr><td class="s7" style="font-weight: bold;">Fujitsu-Siemens</td><td class="s8">5 decimal digits</td><td class="s9" style="font-family: monospace;">12345</td></tr>
+<tr><td class="s7" style="font-weight: bold;">Fujitsu-Siemens</td><td class="s8">8 hexadecimal digits</td><td class="s9" style="font-family: monospace;">DEADBEEF</td></tr>
+<tr><td class="s7" style="font-weight: bold;">Fujitsu-Siemens</td><td class="s8">5x4 hexadecimal digits</td><td class="s9" style="font-family: monospace;">AAAA-BBBB-CCCC-DEAD-BEEF</td></tr>
+<tr><td class="s7" style="font-weight: bold;">Fujitsu-Siemens</td><td class="s8">5x4 decimal digits</td><td class="s9" style="font-family: monospace;">1234-4321-1234-4321-1234</td></tr>
+<tr><td class="s7" style="font-weight: bold;">Hewlett-Packard</td><td class="s8">5 decimal digits</td><td class="s9" style="font-family: monospace;">12345</td></tr>
+<tr><td class="s7" style="font-weight: bold;">Hewlett-Packard/Compaq Netbooks</td><td class="s8">10 characters</td><td class="s9" style="font-family: monospace;">CNU1234ABC</td></tr>
+<tr><td class="s11" style="font-weight: bold;">Insyde H20 (generic)</td><td class="s8">8 decimal digits</td><td class="s9" style="font-family: monospace;">03133610</td></tr>
+<tr><td class="s11" style="font-weight: bold;">Phoenix (generic)</td><td class="s8">5 decimal digits</td><td class="s9" style="font-family: monospace;">12345</td></tr>
+<tr><td class="s7" style="font-weight: bold;">Sony</td><td class="s8">7 digit serial number</td><td class="s9" style="font-family: monospace;">1234567</td></tr>
+<tr><td class="s7" style="font-weight: bold;">Samsung</td><td class="s8">12 hexadecimal digits</td><td class="s9" style="font-family: monospace;">07088120410C0000</td></tr>
+</tbody></table>
+
+            <footer style="text-align: center;">
+            </footer>
+        </div>
+    </body>
+</html>
