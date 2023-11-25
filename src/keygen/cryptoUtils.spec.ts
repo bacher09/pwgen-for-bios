@@ -1,4 +1,4 @@
-import { AES128, Crc64, Sha256 } from "./cryptoUtils";
+import { AES128, Crc32, Crc64, Sha256 } from "./cryptoUtils";
 
 describe("Crypto utils", () => {
     it("sha256", () => {
@@ -28,6 +28,16 @@ describe("Crypto utils", () => {
 
         expect(myaes.encryptBlock(Uint8Array.from("123456789abcdefg".split("").map((v) => v.charCodeAt(0)))))
             .toEqual(Uint8Array.from([111, 52, 225, 193, 98, 40, 19, 168, 122, 34, 93, 3, 146, 166, 202, 100]));
+    });
+    it("Check crc32", () => {
+        let crc = new Crc32();
+        crc.update("test".split("").map((v) => v.charCodeAt(0)));
+        expect(crc.digest()).toEqual(3632233996);
+        crc.update("123".split("").map((v) => v.charCodeAt(0)));
+        expect(crc.digest()).toEqual(4032078523); // crc32 for "test123"
+        expect(crc.hexdigest()).toEqual("f054a2bb");
+        crc.reset();
+        expect(crc.hexdigest()).toEqual("00000000");
     });
     it("crc64", () => {
         let mycrc = new Crc64(Crc64.ECMA_POLYNOMIAL);
