@@ -1,5 +1,6 @@
 /* eslint-disable no-bitwise */
 import { makeSolver } from "./utils";
+import { Crc32 } from "./cryptoUtils";
 
 function generateCRC16Table(): number[] {
     let table: number[] = [];
@@ -142,6 +143,24 @@ function fsi20DecNewKeygen(serial: string): string {
     }).join("");
 }
 
+/* For Fujitsu-Siemens. 6x4 203c-d001-xxxx-xxxx-xxxx-xxxx
+ * Based on: https://gitlab.com/polloloco/fujitsu-bios-unlocker/
+ */
+function fsiHex203Cd001Keygen(serial: string): string[] {
+    if (serial.length !== 24) {
+        return [];
+    }
+    serial = serial.toLowerCase();
+    if (serial.slice(0, 8) !== "203cd001") {
+        return [];
+    }
+    let crc = new Crc32();
+    crc.update(serial.slice(8).split("").map(c => c.charCodeAt(0)));
+    // JAMCRC
+    const output = ("0".repeat(8) + ((~crc.digest()) >>> 0).toString(16)).slice(-8);
+    return [output];
+}
+
 export let fsiHexSolver = makeSolver({
     name: "fsiHex",
     description: "Fujitsu-Siemens hexdigits",
@@ -172,4 +191,12 @@ export let fsi24DecSolver = makeSolver({
     examples: ["8F16-1234-4321-1234-4321-1234"],
     inputValidator: (s) => /^[0-9ABCDEF]{4}\d{20}$/i.test(s),
     fun: (code: string) => [fsi24DecKeygen(code)]
+});
+
+export let fsi24Hex203cSolver = makeSolver({
+    name: "fsi24Hex203c",
+    description: "Fujitsu-Siemens Hex (6x4) 203c-d001-xxxx-xxxx-xxxx-xxxx",
+    examples: ["203c-d001-0000-001d-e960-227d"],
+    inputValidator: (s) => /^[0-9ABCDEF]{24}$/i.test(s),
+    fun: (code: string) => fsiHex203Cd001Keygen(code)
 });

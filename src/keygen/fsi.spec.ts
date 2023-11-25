@@ -1,4 +1,4 @@
-import { fsi20DecNewSolver, fsi20DecOldSolver, fsi24DecSolver, fsiHexSolver } from "./fsi";
+import { fsi20DecNewSolver, fsi20DecOldSolver, fsi24DecSolver, fsi24Hex203cSolver, fsiHexSolver } from "./fsi";
 
 describe("Test Fujitsu-Siemens 5x4 hexadecimal BIOS", () => {
     it("FSI key for 1234-4321-1234-4321-1234 is 35682708", () => {
@@ -61,5 +61,18 @@ describe("Test Fujitsu-Siemens 6x4 decimal", () => {
         expect(fsi24DecSolver("1234-1234-4321-1234-4321-BEEF")).toEqual([]);
         expect(fsi24DecSolver("F234-4321-1234-4321-1234-1234-1")).toEqual([]);
         expect(fsi24DecSolver("1234-1234-4321-1234-4321-BEEF")).toEqual([]);
+    });
+});
+
+describe("Test Fujitsu-Siemens 6x4 hex 203c-d001", () => {
+    it("FSI key for 203c-d001-0000-001d-e960-227d is 494eab7c", () => {
+        expect(fsi24Hex203cSolver("203c-d001-0000-001d-e960-227d")).toEqual(["494eab7c"]);
+    });
+    it("FSI key for 203c-d001-4f30-609d-5125-646a is 66b14918", () => {
+        expect(fsi24Hex203cSolver("203c-d001-4f30-609d-5125-646a")).toEqual(["66b14918"]);
+    });
+
+    it("FSI key for 203C-D001-4F30-609D-5125-646a is 66b14918", () => {
+        expect(fsi24Hex203cSolver("203C-D001-4F30-609D-5125-646a")).toEqual(["66b14918"]);
     });
 });
