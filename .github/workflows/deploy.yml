@@ -32,10 +32,10 @@ jobs:
       - name: Install boto3
         run: pip install -r ./ci/requirements.txt
 
-      - name: Setup node 14
+      - name: Setup node 18
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '18'
           cache: npm
 
       - name: Build scripts and assets
